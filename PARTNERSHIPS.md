@@ -44,16 +44,22 @@ Selection should be supported by reputable independent rankings, market evidence
 - legal, regulatory, risk, governance and compliance professionals
 - audit, assurance, internal-control and due-diligence specialists
 
-### European real-estate & proptech
-- real-estate agents, brokers and agency networks
-- residential, commercial and luxury-property advisors
+### Global real-estate & Europe Tier-1 priority
+URBAN ONE welcomes qualified real-estate organizations globally, with **Europe as the priority market** for Tier-1 enterprise outreach.
+
+Priority profiles include:
+- major international real-estate advisory and brokerage groups
+- European Tier-1 agency networks and national market leaders
+- residential, commercial, luxury and investment-property agencies
 - property and asset managers
+- capital-markets, valuation and transaction-advisory teams
 - real-estate developers and investment/development groups
 - proptech companies, listing/data platforms and real-estate software providers
 - relocation, corporate-housing and medium-term accommodation operators
-- valuation, surveying, technical due-diligence and transaction specialists
 - cross-border property advisory and corporate real-estate teams
 - hospitality / real-estate operators interested in digital and AI-enabled workflows
+
+Potential enterprise use cases for technical evaluation include consent-aware financial-data workflows, buyer or tenant financial-readiness processes, payment and account-information orchestration, corporate-housing workflows, transaction due diligence, provenance, auditability and human-in-the-loop approvals. Any regulated implementation must use appropriately licensed or qualified providers in each jurisdiction.
 
 ### Companies and strategic partners
 - banks and regulated financial institutions
@@ -77,7 +83,7 @@ Selection should be supported by reputable independent rankings, market evidence
 7. **Accounting & tax advisory** — entity structure, accounting treatment, tax positioning, VAT and cross-border considerations, subject to local professional review.
 8. **Corporate finance & transaction advisory** — valuation, business planning, funding readiness, investor materials, commercial due diligence and transaction support.
 9. **Legal, regulatory & compliance advisory** — PSD2/PSD3/PSR, DORA, GDPR, payments, contracts, governance, risk and jurisdiction-specific requirements.
-10. **European real-estate / proptech pilots** — property workflows, data integrations, agency tools, corporate-housing use cases, valuation/due-diligence support and cross-border collaboration.
+10. **Global real-estate / proptech pilots** — property workflows, data integrations, agency tools, corporate-housing use cases, valuation/due-diligence support and cross-border collaboration, with Europe prioritized for Tier-1 outreach.
 11. **Commercial partnerships** — licensing, pilots, joint integrations and enterprise deployment evaluation.
 
 ## Engineering and governance principles
@@ -102,6 +108,7 @@ URBAN ONE is not represented here as a bank, licensed AIS/PIS provider, payment 
 Open a GitHub Issue in this repository with one of these prefixes:
 - `[EUROPE]` European collaboration, pilot or market proposal
 - `[TIER-1-ADVISORY]` senior legal, tax, accounting or corporate-finance review
+- `[GLOBAL-REAL-ESTATE]` international real-estate network, brokerage or enterprise proposal
 - `[REAL-ESTATE]` agency, brokerage, proptech, property-management or real-estate pilot
 - `[DEV]` developer contribution
 - `[SECURITY]` security review
