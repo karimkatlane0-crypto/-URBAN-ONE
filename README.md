@@ -1,93 +1,66 @@
-# URBAN ONE UNIVERSAL — v7.0.0 RC1
+# URBAN ONE UNIVERSAL — v7.0.0 FINAL
 
-Greenfield rebuild. No legacy code is trusted by default.
+Greenfield universal control plane for governed AI/data workflows, local-first Web/Android/iOS shells, consent, provenance, private contacts, real-estate search and public European spatial-data discovery.
 
-## What URBAN ONE is
-URBAN ONE is an experimental universal control-plane architecture for AI-enabled workflows, Open Banking concepts, consent-aware data orchestration, provenance, local-first web/mobile access, and auditable privileged actions.
+## Final v7 scope
 
-The project is designed for technical evaluation, integration work, developer collaboration, professional advisory review, and strategic partnerships across fintech, Open Banking, AI infrastructure, DevSecOps, data platforms, corporate finance, professional services, real estate / proptech, mobility/travel, and digital services.
+- local-first Web and Capacitor mobile shell;
+- fail-closed AI/provider and relay configuration;
+- RBAC, purpose-bound consent, sanitization and provenance receipts;
+- private owner-scoped Skebby/Data contact normalization with name, surname, phone, email, zone and certificate/document fingerprinting (SHA-256 only; no raw ID in public source);
+- exact civic-number real-estate matching (`12A`, `12 A`, `12-A`, `12/A` → `12/A`) with map-ready address queries;
+- EU INSPIRE / data.europa.eu public geospatial discovery covering all 34 official INSPIRE themes;
+- real-estate INSPIRE preset for addresses, cadastral parcels, buildings, land use, transport, orthoimagery, elevation, restrictions, natural risks, soil, statistical units and utility/governmental services;
+- public spatial-data privacy guardrail: no owner-name, fiscal/tax identifier or identity-document enrichment from cadastral geometry.
 
-> **Important:** URBAN ONE is not presented as a certified bank, AIS/PIS provider, regulated payment institution, investment firm, accounting practice, tax advisory firm, real-estate agency, brokerage, valuation practice or production-certified financial service. Any regulated financial, tax, accounting, investment, Open Banking, payment, brokerage, property-advisory or valuation capability requires appropriately qualified or licensed professionals/providers, contracts, certification, security review, and jurisdiction-specific compliance before production use.
+## EU INSPIRE / public spatial data
 
-## Release gates
-SOURCE → POLICY → CONSENT → SANITIZE → PROVENANCE → TEST → BUILD → VERIFY → PROVIDER → RECEIPT → EVIDENCE → DEVICE → RELEASE
+URBAN ONE uses the European Data Portal metadata APIs and INSPIRE catalogues as a public discovery layer. It does not scrape protected national cadastral systems or bypass authentication, licensing or payment controls.
 
-## Platforms
-- Web/PWA: local-first shell
-- Android: Capacitor local bundle (no private `server.url` bootstrap)
-- iOS: Capacitor local bundle; signing requires Apple toolchain
+INSPIRE discovery/view availability does not mean every distribution is unrestricted or free for reuse. Provider-specific licences, attribution, access restrictions and any lawful charges remain authoritative.
 
-## Universal Access
-Universal means every approved subsystem is reachable through one control plane. It does **not** mean unrestricted access. All privileged actions require RBAC, explicit scopes, consent where applicable, and auditable receipts.
+See [`docs/EU_INSPIRE.md`](docs/EU_INSPIRE.md).
+
+## API highlights
+
+- `GET /health`
+- `GET /api/universal/status`
+- `POST /api/universal/prepare`
+- `POST /api/contacts/import-preview` — private, scope `contacts:read`
+- `POST /api/properties/search` — private, scope `properties:read`
+- `GET /api/public/eu-spatial/policy` — public policy metadata
+- `POST /api/public/eu-spatial/search-plan` — builds a fixed data.europa.eu geospatial search plan
+
+See [`docs/API.md`](docs/API.md).
 
 ## Security defaults
-- deny by default
-- no secrets in client bundles
-- provider adapters disabled until explicitly configured
-- payments/PIS require human approval and provider certification
-- PII sanitized before model-provider handoff
 
-## Europe-first collaboration focus
-URBAN ONE is actively seeking serious collaboration across **Europe**, including the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
+- deny by default;
+- no secrets in client bundles;
+- provider adapters disabled until explicitly configured;
+- high-risk actions remain separate execution gates;
+- PII sanitized before model-provider handoff;
+- public cadastral/spatial data is not treated as proof of legal ownership;
+- private identity/contact data is not merged into the public INSPIRE path by default.
 
-Priority European collaboration areas include:
-- Open Banking and payment infrastructure, including PSD2 / PSD3 / PSR transition work where applicable
-- DORA-aligned operational resilience, cybersecurity, IAM and third-party risk engineering
-- GDPR-aware data governance, consent, minimization, provenance and auditability
-- regulated fintech, banking, payments, identity and compliance technology
-- consulting and professional-services firms serving European companies
-- commercialisti, chartered accountants, tax advisors and cross-border accounting specialists
-- corporate-finance, valuation, funding-readiness and transaction-advisory teams
-- legal, regulatory, governance, risk and compliance professionals
-- qualified financial and investment advisors, where appropriately authorized
-- **European real-estate agents, brokerages and agency networks**
-- **commercial and residential property advisors, property managers and asset managers**
-- **proptech companies, listing/data platforms and real-estate software providers**
-- **developers, relocation companies, corporate-housing operators and hospitality/real-estate groups**
-- **cross-border real-estate transaction, valuation and due-diligence specialists**
-- EU innovation, enterprise pilots, research and standards-oriented technical review
+## Platforms
 
-All regulated, tax, accounting, legal, investment, brokerage, property-advisory and valuation matters remain subject to jurisdiction-specific professional review and the required registrations, permissions or licences.
+- Web/PWA: local-first shell
+- Android: Capacitor local bundle; CI produces an installable debug APK for testing
+- iOS: Capacitor local bundle; production signing/TestFlight requires Apple signing/provisioning
 
-## Global developer, professional & business collaboration
-We welcome serious conversations with:
+## Release gates
 
-- Open Banking / PSD2 / PSD3 infrastructure teams
-- banks, fintechs, payment and identity providers
-- consulting and professional-services firms
-- commercialisti, accountants, tax advisors and audit professionals
-- corporate-finance, financial-planning and transaction-advisory professionals
-- legal, regulatory, risk, governance and compliance advisors
-- qualified investment and financial advisors, where appropriately authorized
-- real-estate agencies, brokers, property advisors and proptech companies
-- property managers, developers, relocation and corporate-housing operators
-- AI platform, agent and model-infrastructure developers
-- cybersecurity, DevSecOps, MLOps and data-platform teams
-- cloud, API, MCP and integration specialists
-- mobile, PWA and local-first application developers
-- travel, booking, commerce and enterprise-software partners
-- researchers and reviewers interested in auditable AI, consent, provenance and human-in-the-loop controls
+SOURCE → POLICY → CONSENT → SANITIZE → PROVENANCE → TEST → WEB/API → MOBILE → ANDROID BUILD → EVIDENCE → DEVICE TEST → PROVIDER CERTIFICATION → PRODUCTION SIGNING
 
-### Ways to collaborate
-- technical review and architecture feedback
-- provider / API integration
-- security and compliance engineering
-- accounting, tax, corporate-structure and governance review
-- corporate-finance, valuation, funding-readiness and transaction advisory
-- regulated financial-services and Open Banking compliance review
-- real-estate / proptech pilots, data integrations and professional workflows
-- cross-border property transaction, due-diligence and advisory collaboration
-- European pilot projects and proof-of-concept deployments
-- commercial licensing and strategic partnerships
-- mobile build, test and release engineering
-- developer contributions through issues and pull requests
+Source, tests, Web/API, local-first mobile and public EU spatial gateway are verified by CI. Android artifacts are verified per workflow run. Production Android signing, iOS signing, live-provider certification and real-device acceptance remain separate external gates.
 
-See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) for the collaboration brief.
+## Regulated / professional-use notice
 
-## Current status
-Core source, policy, consent, sanitization, provenance, tests, web shell, API runtime and local-first mobile boot have been validated in the current RC workflow. Android build, iOS signing, provider certification, device testing and final publication remain release gates and must be independently verified before production claims.
+URBAN ONE is not presented as a bank, payment institution, AIS/PIS provider, investment firm, accounting/tax practice, certified valuation practice or licensed real-estate brokerage. Regulated financial, tax, legal, brokerage, valuation and Open Banking functions require the appropriate providers, professionals, contracts, licences, security review and jurisdiction-specific compliance before production use.
 
-## Contact / participation
-Use this repository's Issues for technical questions, European professional advisory interest, real-estate / proptech collaboration, partnership proposals and developer collaboration. Please do not post secrets, credentials, regulated customer data or personal financial information.
+## Collaboration
 
-**Keywords:** Europe, European Union, EEA, UK, Switzerland, Open Banking, PSD2, PSD3, PSR, DORA, GDPR, fintech, consulting, professional services, commercialisti, accounting, tax advisory, corporate finance, financial advisory, compliance, governance, real estate, real-estate agents, brokerages, property management, proptech, relocation, corporate housing, property data, valuation, due diligence, AI agents, consent ledger, provenance, human-in-the-loop, DevSecOps, MLOps, MCP, API orchestration, PWA, Capacitor, local-first, digital commerce, enterprise integration.
+The repository supports technical review and European collaboration across AI, Open Banking, DevSecOps, data platforms, real estate/proptech, mobility/travel and enterprise integration. Do not post secrets, credentials, customer financial data or unnecessary personal data in public issues.
+
+See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) where available.
