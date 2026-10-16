@@ -3,27 +3,10 @@
 URBAN ONE is looking for developers, technical reviewers, professional advisors and strategic partners interested in building and validating an auditable, consent-aware control plane spanning AI-enabled workflows, Open Banking concepts, data orchestration, local-first mobile/web access and governed privileged actions.
 
 ## Europe-first focus
-
-We are actively seeking collaboration across **Europe**, with particular relevance to the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
-
-Priority European areas include:
-- Open Banking, payments and PSD2 / PSD3 / PSR transition work where applicable
-- DORA-aligned operational resilience, cybersecurity, IAM and third-party risk
-- GDPR-aware data governance, consent, minimization, provenance and auditability
-- fintech, regtech, banking, payments, identity and compliance infrastructure
-- European consulting and professional-services networks
-- accounting, tax, VAT and cross-border structuring review
-- corporate finance, valuation, funding-readiness and transaction advisory
-- legal, regulatory, governance, risk and compliance review
-- qualified financial and investment advisory, where appropriately authorized
-- European enterprise pilots, innovation programs, research and standards-oriented collaboration
-
-All regulated, legal, tax, accounting and investment matters remain subject to jurisdiction-specific professional review and any required registrations, permissions or licences.
-
-## Who we want to meet
+Priority collaboration covers the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
 
 ### Developers and technical teams
-- Open Banking / PSD2 / PSD3 API engineers
+- Open Banking / PSD2 / PSD3 / PSR API engineers
 - backend, API gateway and integration engineers
 - AI agent, LLM, inference and orchestration developers
 - DevSecOps, cloud security, IAM and zero-trust specialists
@@ -34,12 +17,23 @@ All regulated, legal, tax, accounting and investment matters remain subject to j
 ### Professional and financial advisors
 - consulting and professional-services firms
 - commercialisti, chartered accountants and accounting firms
-- tax advisors and international tax specialists
+- tax advisors, VAT and international tax specialists
 - corporate-finance, valuation and transaction-advisory professionals
 - financial-planning and funding-readiness advisors
 - qualified investment and financial advisors, where appropriately authorized
 - legal, regulatory, risk, governance and compliance professionals
 - audit, assurance, internal-control and due-diligence specialists
+
+### European real-estate & proptech
+- real-estate agents, brokers and agency networks
+- residential, commercial and luxury-property advisors
+- property and asset managers
+- real-estate developers and investment/development groups
+- proptech companies, listing/data platforms and real-estate software providers
+- relocation, corporate-housing and medium-term accommodation operators
+- valuation, surveying, technical due-diligence and transaction specialists
+- cross-border property advisory and corporate real-estate teams
+- hospitality / real-estate operators interested in digital and AI-enabled workflows
 
 ### Companies and strategic partners
 - banks and regulated financial institutions
@@ -63,7 +57,7 @@ All regulated, legal, tax, accounting and investment matters remain subject to j
 7. **Accounting & tax advisory** — entity structure, accounting treatment, tax positioning, VAT and cross-border considerations, subject to local professional review.
 8. **Corporate finance & transaction advisory** — valuation, business planning, funding readiness, investor materials, commercial due diligence and transaction support.
 9. **Legal, regulatory & compliance advisory** — PSD2/PSD3/PSR, DORA, GDPR, payments, contracts, governance, risk and jurisdiction-specific requirements.
-10. **European enterprise pilots** — proof-of-concept and controlled validation with European companies, institutions and qualified professional partners.
+10. **European real-estate / proptech pilots** — property workflows, data integrations, agency tools, corporate-housing use cases, valuation/due-diligence support and cross-border collaboration.
 11. **Commercial partnerships** — licensing, pilots, joint integrations and enterprise deployment evaluation.
 
 ## Engineering and governance principles
@@ -74,7 +68,7 @@ All regulated, legal, tax, accounting and investment matters remain subject to j
 - no secrets in client bundles
 - data minimization and redaction before model handoff
 - clear separation between prototype capability and regulated production service
-- independent professional review for regulated, accounting, tax, legal and investment matters
+- independent professional review for regulated, accounting, tax, legal, investment, brokerage and valuation matters
 
 ## Current RC status
 Validated in the current RC workflow: source, policy/RBAC, consent, sanitization, provenance, automated tests, web shell, API runtime and local-first mobile boot.
@@ -82,11 +76,12 @@ Validated in the current RC workflow: source, policy/RBAC, consent, sanitization
 Still requiring independent completion/verification before production claims: Android build, iOS signing, provider certification, device testing and final release publication.
 
 ## Regulatory note
-URBAN ONE is not represented here as a bank, licensed AIS/PIS provider, payment institution, investment firm, accounting practice, tax advisory firm or certified production financial service. Regulated capabilities and professional advice must be delivered by appropriately licensed, registered or qualified providers and validated for each target jurisdiction.
+URBAN ONE is not represented here as a bank, licensed AIS/PIS provider, payment institution, investment firm, accounting practice, tax advisory firm, licensed real-estate agency, brokerage, valuation practice or certified production financial service. Regulated capabilities and professional advice must be delivered by appropriately licensed, registered or qualified providers and validated for each target jurisdiction.
 
 ## How to engage
 Open a GitHub Issue in this repository with one of these prefixes:
 - `[EUROPE]` European collaboration, pilot or market proposal
+- `[REAL-ESTATE]` agency, brokerage, proptech, property-management or real-estate pilot
 - `[DEV]` developer contribution
 - `[SECURITY]` security review
 - `[OPEN-BANKING]` provider or PSD2/PSD3 integration
