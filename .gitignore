@@ -1,1 +1,53 @@
-c42ed3b19f9b1fdcc4b877c26ea20408f2ee746ed3dd6673f97aae2db7d71a41
+# URBAN ONE Universal — security-first ignore rules
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.DS_Store
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Android / Gradle
+.gradle/
+**/android/.gradle/
+**/android/app/build/
+**/android/build/
+local.properties
+
+# Signing material — NEVER commit
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+*.cer
+*.crt
+*.der
+upload-keystore.*
+release-keystore.*
+keystore.properties
+signing.properties
+
+# Service-account / provider credentials
+*service-account*.json
+*credentials*.json
+*secret*.json
+*secrets*.json
+
+# Generated release binaries
+*.apk
+*.aab
+*.ipa
+
+# IDE
+.idea/
+.vscode/
+*.iml
