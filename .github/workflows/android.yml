@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-java@v5
         with: {distribution: temurin, java-version: '21'}
       - working-directory: apps/mobile
-        run: npm install --no-audit --no-fund && npm install -D typescript --no-audit --no-fund
+        run: npm install --no-audit --no-fund && npm install -D typescript@5.9.3 --no-audit --no-fund
       - working-directory: apps/mobile
         run: npx cap add android && npx cap sync android
       - working-directory: apps/mobile/android
