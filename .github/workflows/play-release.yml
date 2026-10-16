@@ -1,0 +1,124 @@
+name: play-release-candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  signed-aab:
+    runs-on: ubuntu-latest
+    environment: google-play-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Validate signing secrets are configured
+        shell: bash
+        env:
+          PLAY_UPLOAD_KEYSTORE_B64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_B64 }}
+          PLAY_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEYSTORE_PASSWORD }}
+          PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$PLAY_UPLOAD_KEYSTORE_B64"
+          test -n "$PLAY_UPLOAD_KEYSTORE_PASSWORD"
+          test -n "$PLAY_UPLOAD_KEY_ALIAS"
+          test -n "$PLAY_UPLOAD_KEY_PASSWORD"
+
+      - name: Install mobile dependencies
+        working-directory: apps/mobile
+        run: npm install --no-audit --no-fund
+
+      - name: Generate Android project
+        working-directory: apps/mobile
+        run: npx cap add android && npx cap sync android
+
+      - name: Google Play policy preflight
+        working-directory: apps/mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "compileSdkVersion = 36" android/variables.gradle
+          grep -q "targetSdkVersion = 36" android/variables.gradle
+          grep -q "appId: 'com.urbanone.universal'" capacitor.config.ts
+          sed -i 's/versionCode 1/versionCode 7000001/' android/app/build.gradle
+          sed -i 's/versionName "1.0"/versionName "7.0.0"/' android/app/build.gradle
+          grep -q "versionCode 7000001" android/app/build.gradle
+          grep -q 'versionName "7.0.0"' android/app/build.gradle
+
+      - name: Build release AAB
+        working-directory: apps/mobile/android
+        run: ./gradlew bundleRelease
+
+      - name: Sign release AAB with private upload key
+        shell: bash
+        env:
+          PLAY_UPLOAD_KEYSTORE_B64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_B64 }}
+          PLAY_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEYSTORE_PASSWORD }}
+          PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          umask 077
+          KEYSTORE="$RUNNER_TEMP/urban-one-play-upload.jks"
+          printf '%s' "$PLAY_UPLOAD_KEYSTORE_B64" | base64 --decode > "$KEYSTORE"
+          AAB="apps/mobile/android/app/build/outputs/bundle/release/app-release.aab"
+          jarsigner \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
+            -keystore "$KEYSTORE" \
+            -storepass "$PLAY_UPLOAD_KEYSTORE_PASSWORD" \
+            -keypass "$PLAY_UPLOAD_KEY_PASSWORD" \
+            "$AAB" \
+            "$PLAY_UPLOAD_KEY_ALIAS"
+          jarsigner -verify -strict -certs "$AAB"
+          rm -f "$KEYSTORE"
+
+      - name: Generate checksum and release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release/play
+          AAB="apps/mobile/android/app/build/outputs/bundle/release/app-release.aab"
+          SHA="$(sha256sum "$AAB" | awk '{print $1}')"
+          printf '%s  %s\n' "$SHA" "URBAN_ONE_UNIVERSAL_v7.0.0.aab" > release/play/URBAN_ONE_UNIVERSAL_v7.0.0.sha256
+          cp "$AAB" release/play/URBAN_ONE_UNIVERSAL_v7.0.0.aab
+          cat > release/play/manifest.json <<EOF
+          {
+            "appId": "com.urbanone.universal",
+            "versionName": "7.0.0",
+            "versionCode": 7000001,
+            "targetSdk": 36,
+            "commit": "${GITHUB_SHA}",
+            "aabSha256": "${SHA}",
+            "signedWith": "private Play upload key from GitHub Environment secrets"
+          }
+          EOF
+
+      - name: Attest AAB provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: release/play/URBAN_ONE_UNIVERSAL_v7.0.0.aab
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: urban-one-universal-v7-play-signed
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            release/play/URBAN_ONE_UNIVERSAL_v7.0.0.aab
+            release/play/URBAN_ONE_UNIVERSAL_v7.0.0.sha256
+            release/play/manifest.json
