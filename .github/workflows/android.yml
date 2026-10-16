@@ -1,5 +1,9 @@
 name: android
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - build/v7.0.0-rc.1-android
 permissions:
   contents: read
 jobs:
