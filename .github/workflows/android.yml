@@ -1,5 +1,15 @@
 name: android
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main-@URBAN-ONE
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/**'
+      - 'services/**'
+      - 'db/**'
+      - '.github/workflows/android.yml'
 permissions:
   contents: read
 jobs:
