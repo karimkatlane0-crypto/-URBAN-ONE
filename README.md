@@ -27,6 +27,23 @@ Universal means every approved subsystem is reachable through one control plane.
 - payments/PIS require human approval and provider certification
 - PII sanitized before model-provider handoff
 
+## Europe-first collaboration focus
+URBAN ONE is actively seeking serious collaboration across **Europe**, including the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
+
+Priority European collaboration areas include:
+- Open Banking and payment infrastructure, including PSD2 / PSD3 / PSR transition work where applicable
+- DORA-aligned operational resilience, cybersecurity, IAM and third-party risk engineering
+- GDPR-aware data governance, consent, minimization, provenance and auditability
+- regulated fintech, banking, payments, identity and compliance technology
+- consulting and professional-services firms serving European companies
+- commercialisti, chartered accountants, tax advisors and cross-border accounting specialists
+- corporate-finance, valuation, funding-readiness and transaction-advisory teams
+- legal, regulatory, governance, risk and compliance professionals
+- qualified financial and investment advisors, where appropriately authorized
+- EU innovation, enterprise pilots, research and standards-oriented technical review
+
+All regulated, tax, accounting, legal and investment matters remain subject to jurisdiction-specific professional review and the required registrations, permissions or licences.
+
 ## Global developer, professional & business collaboration
 We welcome serious conversations with:
 
@@ -51,7 +68,7 @@ We welcome serious conversations with:
 - accounting, tax, corporate-structure and governance review
 - corporate-finance, valuation, funding-readiness and transaction advisory
 - regulated financial-services and Open Banking compliance review
-- pilot projects and proof-of-concept deployments
+- European pilot projects and proof-of-concept deployments
 - commercial licensing and strategic partnerships
 - mobile build, test and release engineering
 - developer contributions through issues and pull requests
@@ -62,6 +79,6 @@ See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) for the collaboration brief.
 Core source, policy, consent, sanitization, provenance, tests, web shell, API runtime and local-first mobile boot have been validated in the current RC workflow. Android build, iOS signing, provider certification, device testing and final publication remain release gates and must be independently verified before production claims.
 
 ## Contact / participation
-Use this repository's Issues for technical questions, professional advisory interest, partnership proposals and developer collaboration. Please do not post secrets, credentials, regulated customer data or personal financial information.
+Use this repository's Issues for technical questions, European professional advisory interest, partnership proposals and developer collaboration. Please do not post secrets, credentials, regulated customer data or personal financial information.
 
-**Keywords:** Open Banking, PSD2, PSD3, fintech, consulting, professional services, commercialisti, accounting, tax advisory, corporate finance, financial advisory, compliance, governance, AI agents, consent ledger, provenance, human-in-the-loop, DevSecOps, MLOps, MCP, API orchestration, PWA, Capacitor, local-first, digital commerce, enterprise integration.
+**Keywords:** Europe, European Union, EEA, UK, Switzerland, Open Banking, PSD2, PSD3, PSR, DORA, GDPR, fintech, consulting, professional services, commercialisti, accounting, tax advisory, corporate finance, financial advisory, compliance, governance, AI agents, consent ledger, provenance, human-in-the-loop, DevSecOps, MLOps, MCP, API orchestration, PWA, Capacitor, local-first, digital commerce, enterprise integration.
