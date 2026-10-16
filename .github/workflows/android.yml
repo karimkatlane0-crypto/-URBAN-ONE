@@ -25,12 +25,28 @@ jobs:
         run: npm install --no-audit --no-fund
       - working-directory: apps/mobile
         run: npx cap add android && npx cap sync android
-      - working-directory: apps/mobile/android
-        run: ./gradlew assembleDebug
-      - run: mkdir -p release && sha256sum apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk > release/android.sha256
+      - name: Google Play preflight
+        working-directory: apps/mobile
+        run: |
+          grep -q "compileSdkVersion = 36" android/variables.gradle
+          grep -q "targetSdkVersion = 36" android/variables.gradle
+          sed -i 's/versionCode 1/versionCode 7000001/' android/app/build.gradle
+          sed -i 's/versionName "1.0"/versionName "7.0.0"/' android/app/build.gradle
+          grep -q "versionCode 7000001" android/app/build.gradle
+          grep -q 'versionName "7.0.0"' android/app/build.gradle
+      - name: Build installable APK and Play bundle
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleDebug bundleRelease
+      - name: Checksums
+        run: |
+          mkdir -p release
+          sha256sum apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk > release/android-apk.sha256
+          sha256sum apps/mobile/android/app/build/outputs/bundle/release/app-release.aab > release/android-aab.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: urban-one-universal-android
+          name: urban-one-universal-android-play-preflight
           path: |
             apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
-            release/android.sha256
+            apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
+            release/android-apk.sha256
+            release/android-aab.sha256
