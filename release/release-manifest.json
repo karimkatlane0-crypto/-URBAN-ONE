@@ -1,0 +1,225 @@
+{
+  "name": "URBAN ONE UNIVERSAL",
+  "version": "7.0.0-rc.1",
+  "status": "greenfield-source-verified",
+  "generatedAt": "2026-10-15T22:20:10.299516+00:00",
+  "fileCount": 40,
+  "releaseGates": {
+    "source": "PASS",
+    "policy": "PASS",
+    "consent": "PASS",
+    "sanitize": "PASS",
+    "provenance": "PASS",
+    "tests": "PASS",
+    "webShell": "PASS",
+    "apiRuntime": "PASS",
+    "mobileLocalFirst": "PASS",
+    "androidNativeBuild": "OPEN",
+    "iosNativeSigning": "OPEN",
+    "providerLiveCertification": "OPEN",
+    "deviceRetest": "OPEN",
+    "githubPublication": "OPEN"
+  },
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 68,
+      "sha256": "4ba8e8819b67d16977b28e4c3d1134fd06a023ab84364d81240383f152770252"
+    },
+    {
+      "path": ".github/workflows/android.yml",
+      "bytes": 919,
+      "sha256": "928544dea0c8182babc7be65abb3ff03644b1211698d81b60c432f887c5e11c1"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 452,
+      "sha256": "dc37d39e2963178b1161ed0cc83d7348519e875fb73700cd814a416b9025f892"
+    },
+    {
+      "path": ".github/workflows/ios.yml",
+      "bytes": 486,
+      "sha256": "fd510c789208ac69161b306dfa27ba5f65a6a37ac8d52727db6451196b21cea6"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 93,
+      "sha256": "743dba771f6993900e575d7e92f3c01f97ed2bece212458c81801ac1f122fa76"
+    },
+    {
+      "path": "README.md",
+      "bytes": 927,
+      "sha256": "1a213b376bf21127046ad01462dfa52033eab128835a6f8a556725dfb09d3ff8"
+    },
+    {
+      "path": "apps/mobile/capacitor.config.ts",
+      "bytes": 256,
+      "sha256": "e187f89d628092bfa7fc25d0230962879534cc4740c964fe13093b4f538c6306"
+    },
+    {
+      "path": "apps/mobile/package.json",
+      "bytes": 238,
+      "sha256": "680c21f48be862c451da7c2746f5a87a98d304eda78413ae8b194d074f4ce215"
+    },
+    {
+      "path": "apps/mobile/www/index.html",
+      "bytes": 654,
+      "sha256": "1fa8b5e1bab7f16c584457817dbdc79efb19af5e4aba2045e82af4ce12bcefc4"
+    },
+    {
+      "path": "apps/web/index.html",
+      "bytes": 654,
+      "sha256": "1fa8b5e1bab7f16c584457817dbdc79efb19af5e4aba2045e82af4ce12bcefc4"
+    },
+    {
+      "path": "apps/web/manifest.webmanifest",
+      "bytes": 149,
+      "sha256": "842b3117c14639e284f2d7cb65428155acc5986886e94dec9c98643c62dfb3e2"
+    },
+    {
+      "path": "db/schema.sql",
+      "bytes": 764,
+      "sha256": "f0dc9a1d24f0fda2e38ddef94f0e86cacd52da43b9c1272a85945d146846151e"
+    },
+    {
+      "path": "docs/API.md",
+      "bytes": 723,
+      "sha256": "02428a9f42b70579dd9a3f32a4bb12c45e32e6d0f8c9369c7759465f57b1d2f4"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 482,
+      "sha256": "6cbb31720423bb305ae24e85ad11e25962d1f3365fa255f0d952ef1e85fd86ce"
+    },
+    {
+      "path": "docs/DEPLOY.md",
+      "bytes": 697,
+      "sha256": "b628b59e130fd1174bc4996babb0b162a7ffc326775e5ca55a2468e65296b98c"
+    },
+    {
+      "path": "docs/RELEASE_CONTROL.md",
+      "bytes": 1871,
+      "sha256": "9e34d3f5dc633be230b000c00beb2012a7ce2901b6ed6f7bb437528a7a5a1008"
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "bytes": 542,
+      "sha256": "27bb514ccf27da884167231319ac25d19c60dd0a2a798b43c6cd11da23adee3b"
+    },
+    {
+      "path": "docs/SUPERSESSION.md",
+      "bytes": 300,
+      "sha256": "1e937705e64e20cb7771c52568feccd01b571cbd98ef23aca8c1d1ebad18e4d0"
+    },
+    {
+      "path": "package.json",
+      "bytes": 282,
+      "sha256": "28b7bf8e997df2a9012f16d52b0cbfc1575a322e8d7ddd3f1cb6d45c705fc13c"
+    },
+    {
+      "path": "packages/ai/providers.mjs",
+      "bytes": 275,
+      "sha256": "30d48e415e50671b662f1ae9c8ed10017997dfabe9deaba93202c6667481c256"
+    },
+    {
+      "path": "packages/ai/universal-access.mjs",
+      "bytes": 630,
+      "sha256": "0f23542d5242323c22594a6077aebcfe68577cf2717dc54d22adc46a9d63f60d"
+    },
+    {
+      "path": "packages/core/consent.mjs",
+      "bytes": 286,
+      "sha256": "e53c6fb8a074063f29747746b0d3935c1c029360f4950f0203d5c14ce17c3fd5"
+    },
+    {
+      "path": "packages/core/provenance.mjs",
+      "bytes": 680,
+      "sha256": "03138dbddb7474ff7febd689f6f6ee2f867cbb8eb26c8dc4a04957a3bd97ca36"
+    },
+    {
+      "path": "packages/finance/psd2.mjs",
+      "bytes": 302,
+      "sha256": "51ef770f9ec8cefc7dd420b6807301581202ba2811178b1beb6eb2e783d618e2"
+    },
+    {
+      "path": "packages/real-estate/property.mjs",
+      "bytes": 360,
+      "sha256": "ab73f13e4c101ef3209a762c82efcc964a7c8b6a08e230d8c0d1c7e3c7aefcae"
+    },
+    {
+      "path": "packages/relay/relay.mjs",
+      "bytes": 301,
+      "sha256": "17e509abc4d8d6968a46e43304a08b5282f92d2deaaaed06c17035c051fc0012"
+    },
+    {
+      "path": "packages/security/policy.mjs",
+      "bytes": 493,
+      "sha256": "7864f83f360574e9c0051c71cd1372089a179b799e0442b2c22126944eb9c2ef"
+    },
+    {
+      "path": "packages/security/sanitize.mjs",
+      "bytes": 722,
+      "sha256": "b026bd73aef466d1fe6640551b6c55b724b1d3b1e2ed3bb063354e6aee122064"
+    },
+    {
+      "path": "release/evidence-ledger.json",
+      "bytes": 648,
+      "sha256": "461d906ba76249932ddc6f1f8f3b6a9ed3fa1f5095ee86e57790a1fc0dbf91e3"
+    },
+    {
+      "path": "release/release-manifest.json",
+      "bytes": 6859,
+      "sha256": "69c3a53042efc382fec0cc4effd114a9e94b804662eda882897a9275ab430313"
+    },
+    {
+      "path": "scripts/evidence.mjs",
+      "bytes": 767,
+      "sha256": "7cdb72e08f36f065c0936c6a1ee320864e365309cf42a8cc0db719cc34f06f70"
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "bytes": 471,
+      "sha256": "582cc8319f756e36caa7a592ba3788a3f067c7f98129e1b896dc5bb96e011c80"
+    },
+    {
+      "path": "services/api/router.mjs",
+      "bytes": 675,
+      "sha256": "5bb906e79472c6fa86b946a4df7e3cc5b098c8de71c802b69bf89b77234a2b5c"
+    },
+    {
+      "path": "services/api/server.mjs",
+      "bytes": 844,
+      "sha256": "3df47be4b68000824ca43d351784cdb64858213b43666124e3cb2aa18a871584"
+    },
+    {
+      "path": "tests/api.test.mjs",
+      "bytes": 600,
+      "sha256": "e52e652bd80941c5cd6a8767a7ffb0af1421ee75679aa47ee75dae9f90d67131"
+    },
+    {
+      "path": "tests/finance.test.mjs",
+      "bytes": 268,
+      "sha256": "e1493008ff0e6265494a2d1b21355d9798a1bddf70f0910bc84ea47748afd7ad"
+    },
+    {
+      "path": "tests/mobile.test.mjs",
+      "bytes": 319,
+      "sha256": "fc94f8c74ea520b0ad0e44fdeef451867877a0cb885ae8f77f7a388095ab28ab"
+    },
+    {
+      "path": "tests/relay.test.mjs",
+      "bytes": 260,
+      "sha256": "fdc84a9864b5963c122044896b3f3d4d9978bc0ff5ef16cb0f94d861d69875f0"
+    },
+    {
+      "path": "tests/security.test.mjs",
+      "bytes": 431,
+      "sha256": "5662849a193bfbce83cd93071799ae11754e0dbc0e1c8e5c5b20326912dbfb21"
+    },
+    {
+      "path": "tests/universal-access.test.mjs",
+      "bytes": 703,
+      "sha256": "4d9a4fea84b25d48b30ad6a5755f84a31e7c0d9cf5b22f49737a7de7d5016e44"
+    }
+  ]
+}
