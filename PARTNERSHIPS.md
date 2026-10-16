@@ -1,6 +1,24 @@
-# URBAN ONE — Global Partnership, Advisory & Developer Call
+# URBAN ONE — Europe & Global Partnership, Advisory & Developer Call
 
 URBAN ONE is looking for developers, technical reviewers, professional advisors and strategic partners interested in building and validating an auditable, consent-aware control plane spanning AI-enabled workflows, Open Banking concepts, data orchestration, local-first mobile/web access and governed privileged actions.
+
+## Europe-first focus
+
+We are actively seeking collaboration across **Europe**, with particular relevance to the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
+
+Priority European areas include:
+- Open Banking, payments and PSD2 / PSD3 / PSR transition work where applicable
+- DORA-aligned operational resilience, cybersecurity, IAM and third-party risk
+- GDPR-aware data governance, consent, minimization, provenance and auditability
+- fintech, regtech, banking, payments, identity and compliance infrastructure
+- European consulting and professional-services networks
+- accounting, tax, VAT and cross-border structuring review
+- corporate finance, valuation, funding-readiness and transaction advisory
+- legal, regulatory, governance, risk and compliance review
+- qualified financial and investment advisory, where appropriately authorized
+- European enterprise pilots, innovation programs, research and standards-oriented collaboration
+
+All regulated, legal, tax, accounting and investment matters remain subject to jurisdiction-specific professional review and any required registrations, permissions or licences.
 
 ## Who we want to meet
 
@@ -44,8 +62,9 @@ URBAN ONE is looking for developers, technical reviewers, professional advisors 
 6. **Mobile release engineering** — Android/iOS build, signing, device tests and controlled distribution.
 7. **Accounting & tax advisory** — entity structure, accounting treatment, tax positioning, VAT and cross-border considerations, subject to local professional review.
 8. **Corporate finance & transaction advisory** — valuation, business planning, funding readiness, investor materials, commercial due diligence and transaction support.
-9. **Legal, regulatory & compliance advisory** — PSD2/PSD3, payments, data protection, contracts, governance, risk and jurisdiction-specific requirements.
-10. **Commercial partnerships** — licensing, pilots, joint integrations and enterprise deployment evaluation.
+9. **Legal, regulatory & compliance advisory** — PSD2/PSD3/PSR, DORA, GDPR, payments, contracts, governance, risk and jurisdiction-specific requirements.
+10. **European enterprise pilots** — proof-of-concept and controlled validation with European companies, institutions and qualified professional partners.
+11. **Commercial partnerships** — licensing, pilots, joint integrations and enterprise deployment evaluation.
 
 ## Engineering and governance principles
 - deny-by-default authorization
@@ -67,6 +86,7 @@ URBAN ONE is not represented here as a bank, licensed AIS/PIS provider, payment 
 
 ## How to engage
 Open a GitHub Issue in this repository with one of these prefixes:
+- `[EUROPE]` European collaboration, pilot or market proposal
 - `[DEV]` developer contribution
 - `[SECURITY]` security review
 - `[OPEN-BANKING]` provider or PSD2/PSD3 integration
