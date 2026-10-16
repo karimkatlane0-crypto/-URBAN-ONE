@@ -5,6 +5,26 @@ URBAN ONE is looking for developers, technical reviewers, professional advisors 
 ## Europe-first focus
 Priority collaboration covers the **European Union / EEA, United Kingdom and Switzerland**, while remaining open to global partners.
 
+### Tier-1 legal, tax, accounting & corporate-finance strategy
+URBAN ONE uses an **elite-first, evidence-first** outreach model for professional advisory relationships. Priority is given to firms and senior professionals with independently verifiable strength in the exact practice areas required by the project rather than generic mass outreach.
+
+Preferred profiles include:
+- globally or nationally leading law firms in financial regulation, technology, data/privacy, corporate/M&A, real estate and cross-border transactions
+- top-tier commercialisti, chartered accountants, tax boutiques and multinational accounting/advisory networks
+- corporate-finance, valuation, transaction-services and funding-readiness teams
+- senior partners, practice heads and specialists with proven fintech, Open Banking, AI/data, real-estate or cross-border experience
+- firms with credible European multi-jurisdictional capability and local regulatory depth
+
+Selection should be supported by reputable independent rankings, market evidence, relevant mandates and demonstrated sector expertise. No firm is described as universally “the best”; the objective is to identify the strongest fit for each legal, tax, accounting, finance or transaction workstream.
+
+### Outreach protocol
+1. **Target precisely** — approach the relevant practice leader or senior specialist, not a generic mass list.
+2. **Lead with evidence** — provide a concise non-confidential project brief, current release status, governance controls and the exact advisory question.
+3. **Segment the mandate** — legal/regulatory, tax/accounting, corporate finance, real estate and technology/security are separate workstreams.
+4. **Ask for a bounded first step** — independent review, scoping call, due-diligence note, pilot or engagement proposal.
+5. **Protect confidential information** — no credentials, banking data, customer data or privileged material in public channels.
+6. **Verify before claims** — professional conclusions, certifications and regulated-market statements require the responsible qualified adviser/provider.
+
 ### Developers and technical teams
 - Open Banking / PSD2 / PSD3 / PSR API engineers
 - backend, API gateway and integration engineers
@@ -81,6 +101,7 @@ URBAN ONE is not represented here as a bank, licensed AIS/PIS provider, payment 
 ## How to engage
 Open a GitHub Issue in this repository with one of these prefixes:
 - `[EUROPE]` European collaboration, pilot or market proposal
+- `[TIER-1-ADVISORY]` senior legal, tax, accounting or corporate-finance review
 - `[REAL-ESTATE]` agency, brokerage, proptech, property-management or real-estate pilot
 - `[DEV]` developer contribution
 - `[SECURITY]` security review
