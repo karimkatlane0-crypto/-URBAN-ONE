@@ -1,0 +1,5 @@
+.git
+node_modules
+apps/mobile/android
+apps/mobile/ios
+release/*.zip

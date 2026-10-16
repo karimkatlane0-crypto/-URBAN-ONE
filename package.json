@@ -1,0 +1,12 @@
+{
+  "name": "urban-one-universal",
+  "version": "7.0.0-rc.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node scripts/verify.mjs",
+    "evidence": "node scripts/evidence.mjs"
+  },
+  "engines": {"node": ">=22"}
+}

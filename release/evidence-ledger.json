@@ -1,0 +1,24 @@
+{
+  "version": "7.0.0-rc.1",
+  "generatedAt": "2026-10-15T22:20:09.793Z",
+  "gates": {
+    "source": "PASS",
+    "policy": "PASS",
+    "consent": "PASS",
+    "sanitize": "PASS",
+    "provenance": "PASS",
+    "tests": "PASS",
+    "webShell": "PASS",
+    "apiRuntime": "PASS",
+    "mobileLocalFirst": "PASS",
+    "androidBuild": "OPEN",
+    "iosSigning": "OPEN",
+    "providerCertification": "OPEN",
+    "deviceTest": "OPEN",
+    "githubPublication": "OPEN"
+  },
+  "files": {
+    "readme": "1a213b376bf21127046ad01462dfa52033eab128835a6f8a556725dfb09d3ff8",
+    "mobileConfig": "e187f89d628092bfa7fc25d0230962879534cc4740c964fe13093b4f538c6306"
+  }
+}

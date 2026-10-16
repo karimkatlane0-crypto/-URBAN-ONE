@@ -1,26 +1,21 @@
-{
-   
-  "version": "7.0.0-rc.1",
-  "generatedAt": "2026-10-15T22:20:09.793Z",
-  "gates": {
-    "source": "PASS",
-    "policy": "PASS",
-    "consent": "PASS",
-    "sanitize": "PASS",
-    "provenance": "PASS",
-    "tests": "PASS",
-    "webShell": "PASS",
-    "apiRuntime": "PASS",
-    "mobileLocalFirst": "PASS",
-    "androidBuild": "OPEN",
-    "iosSigning": "OPEN",
-    "providerCertification": "OPEN",
-    "deviceTest": "OPEN",
-    "githubPublication": "OPEN"
-  },
-  "files": {
-    "readme": "1a213b376bf21127046ad01462dfa52033eab128835a6f8a556725dfb09d3ff8",
-    "mobileConfig": "e187f89d628092bfa7fc25d0230962879534cc4740c964fe13093b4f538c6306"
-  }
-}
+# URBAN ONE UNIVERSAL — v7.0.0 RC1
 
+Greenfield rebuild. No legacy code is trusted by default.
+
+## Release gates
+SOURCE → POLICY → CONSENT → SANITIZE → PROVENANCE → TEST → BUILD → VERIFY → PROVIDER → RECEIPT → EVIDENCE → DEVICE → RELEASE
+
+## Platforms
+- Web/PWA: local-first shell
+- Android: Capacitor local bundle (no private `server.url` bootstrap)
+- iOS: Capacitor local bundle; signing requires Apple toolchain
+
+## Universal Access
+Universal means every approved subsystem is reachable through one control plane. It does **not** mean unrestricted access. All privileged actions require RBAC, explicit scopes, consent where applicable, and auditable receipts.
+
+## Security defaults
+- deny by default
+- no secrets in client bundles
+- provider adapters disabled until explicitly configured
+- payments/PIS require human approval and provider certification
+- PII sanitized before model-provider handoff
