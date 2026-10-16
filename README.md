@@ -5,9 +5,9 @@ Greenfield rebuild. No legacy code is trusted by default.
 ## What URBAN ONE is
 URBAN ONE is an experimental universal control-plane architecture for AI-enabled workflows, Open Banking concepts, consent-aware data orchestration, provenance, local-first web/mobile access, and auditable privileged actions.
 
-The project is designed for technical evaluation, integration work, developer collaboration, professional advisory review, and strategic partnerships across fintech, Open Banking, AI infrastructure, DevSecOps, data platforms, corporate finance, professional services, mobility/travel, and digital services.
+The project is designed for technical evaluation, integration work, developer collaboration, professional advisory review, and strategic partnerships across fintech, Open Banking, AI infrastructure, DevSecOps, data platforms, corporate finance, professional services, real estate / proptech, mobility/travel, and digital services.
 
-> **Important:** URBAN ONE is not presented as a certified bank, AIS/PIS provider, regulated payment institution, investment firm, accounting practice, tax advisory firm, or production-certified financial service. Any regulated financial, tax, accounting, investment, Open Banking, or payment capability requires appropriately qualified or licensed professionals/providers, contracts, certification, security review, and jurisdiction-specific compliance before production use.
+> **Important:** URBAN ONE is not presented as a certified bank, AIS/PIS provider, regulated payment institution, investment firm, accounting practice, tax advisory firm, real-estate agency, brokerage, valuation practice or production-certified financial service. Any regulated financial, tax, accounting, investment, Open Banking, payment, brokerage, property-advisory or valuation capability requires appropriately qualified or licensed professionals/providers, contracts, certification, security review, and jurisdiction-specific compliance before production use.
 
 ## Release gates
 SOURCE → POLICY → CONSENT → SANITIZE → PROVENANCE → TEST → BUILD → VERIFY → PROVIDER → RECEIPT → EVIDENCE → DEVICE → RELEASE
@@ -40,9 +40,14 @@ Priority European collaboration areas include:
 - corporate-finance, valuation, funding-readiness and transaction-advisory teams
 - legal, regulatory, governance, risk and compliance professionals
 - qualified financial and investment advisors, where appropriately authorized
+- **European real-estate agents, brokerages and agency networks**
+- **commercial and residential property advisors, property managers and asset managers**
+- **proptech companies, listing/data platforms and real-estate software providers**
+- **developers, relocation companies, corporate-housing operators and hospitality/real-estate groups**
+- **cross-border real-estate transaction, valuation and due-diligence specialists**
 - EU innovation, enterprise pilots, research and standards-oriented technical review
 
-All regulated, tax, accounting, legal and investment matters remain subject to jurisdiction-specific professional review and the required registrations, permissions or licences.
+All regulated, tax, accounting, legal, investment, brokerage, property-advisory and valuation matters remain subject to jurisdiction-specific professional review and the required registrations, permissions or licences.
 
 ## Global developer, professional & business collaboration
 We welcome serious conversations with:
@@ -54,6 +59,8 @@ We welcome serious conversations with:
 - corporate-finance, financial-planning and transaction-advisory professionals
 - legal, regulatory, risk, governance and compliance advisors
 - qualified investment and financial advisors, where appropriately authorized
+- real-estate agencies, brokers, property advisors and proptech companies
+- property managers, developers, relocation and corporate-housing operators
 - AI platform, agent and model-infrastructure developers
 - cybersecurity, DevSecOps, MLOps and data-platform teams
 - cloud, API, MCP and integration specialists
@@ -68,6 +75,8 @@ We welcome serious conversations with:
 - accounting, tax, corporate-structure and governance review
 - corporate-finance, valuation, funding-readiness and transaction advisory
 - regulated financial-services and Open Banking compliance review
+- real-estate / proptech pilots, data integrations and professional workflows
+- cross-border property transaction, due-diligence and advisory collaboration
 - European pilot projects and proof-of-concept deployments
 - commercial licensing and strategic partnerships
 - mobile build, test and release engineering
@@ -79,6 +88,6 @@ See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) for the collaboration brief.
 Core source, policy, consent, sanitization, provenance, tests, web shell, API runtime and local-first mobile boot have been validated in the current RC workflow. Android build, iOS signing, provider certification, device testing and final publication remain release gates and must be independently verified before production claims.
 
 ## Contact / participation
-Use this repository's Issues for technical questions, European professional advisory interest, partnership proposals and developer collaboration. Please do not post secrets, credentials, regulated customer data or personal financial information.
+Use this repository's Issues for technical questions, European professional advisory interest, real-estate / proptech collaboration, partnership proposals and developer collaboration. Please do not post secrets, credentials, regulated customer data or personal financial information.
 
-**Keywords:** Europe, European Union, EEA, UK, Switzerland, Open Banking, PSD2, PSD3, PSR, DORA, GDPR, fintech, consulting, professional services, commercialisti, accounting, tax advisory, corporate finance, financial advisory, compliance, governance, AI agents, consent ledger, provenance, human-in-the-loop, DevSecOps, MLOps, MCP, API orchestration, PWA, Capacitor, local-first, digital commerce, enterprise integration.
+**Keywords:** Europe, European Union, EEA, UK, Switzerland, Open Banking, PSD2, PSD3, PSR, DORA, GDPR, fintech, consulting, professional services, commercialisti, accounting, tax advisory, corporate finance, financial advisory, compliance, governance, real estate, real-estate agents, brokerages, property management, proptech, relocation, corporate housing, property data, valuation, due diligence, AI agents, consent ledger, provenance, human-in-the-loop, DevSecOps, MLOps, MCP, API orchestration, PWA, Capacitor, local-first, digital commerce, enterprise integration.
