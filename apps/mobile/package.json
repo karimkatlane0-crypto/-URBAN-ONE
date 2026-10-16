@@ -1,7 +1,7 @@
 {
   "name":"urban-one-universal-mobile",
   "private":true,
-  "version":"7.0.0-rc.1",
+  "version":"7.0.0",
   "dependencies":{"@capacitor/android":"^7.4.0","@capacitor/core":"^7.4.0","@capacitor/ios":"^7.4.0"},
   "devDependencies":{"@capacitor/cli":"^7.4.0","typescript":"5.9.3"}
 }
