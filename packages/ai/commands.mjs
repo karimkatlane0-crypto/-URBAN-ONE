@@ -1,5 +1,5 @@
 export const AI_COMMAND_CAPACITY=100000;
-export const AI_COMMAND_MAX_PAGE_SIZE=1000;
+export const AI_COMMAND_MAX_PAGE_SIZE=100000;
 
 const ID_PATTERN=/^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const MODES=new Set(['read','prepare','write','external','payment']);
