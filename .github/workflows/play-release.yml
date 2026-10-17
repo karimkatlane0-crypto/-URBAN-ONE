@@ -2,11 +2,6 @@ name: play-release-candidate
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main-@URBAN-ONE
-    paths:
-      - .github/workflows/play-release.yml
 
 permissions:
   contents: read
