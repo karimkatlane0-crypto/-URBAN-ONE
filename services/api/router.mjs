@@ -1,5 +1,6 @@
 import {prepareUniversalAccess} from '../../packages/ai/universal-access.mjs';
 import {providerStatus} from '../../packages/ai/providers.mjs';
+import {AI_COMMAND_CAPACITY,aiCommandCapabilities} from '../../packages/ai/commands.mjs';
 import {relayStatus} from '../../packages/relay/relay.mjs';
 import {prepareContactImport} from '../../packages/contacts/contact.mjs';
 import {searchProperties} from '../../packages/real-estate/property.mjs';
@@ -27,7 +28,8 @@ function safe(fn){
 export function route(req, env={}){
   const {method='GET',path='/',body={}}=req;
   if(method==='GET'&&path==='/health') return {status:200,body:{ok:true,version:'7.0.0'}};
-  if(method==='GET'&&path==='/api/universal/status') return {status:200,body:{providers:providerStatus(env),relay:relayStatus(env),features:{privateContacts:true,exactCivicSearch:true,mapReadyQuery:true,euInspirePublicData:true,inspireThemeCount:INSPIRE_THEMES.length,dataEuropaSearchApi:true}}};
+  if(method==='GET'&&path==='/api/ai/commands/capabilities') return {status:200,body:aiCommandCapabilities()};
+  if(method==='GET'&&path==='/api/universal/status') return {status:200,body:{providers:providerStatus(env),relay:relayStatus(env),features:{privateContacts:true,exactCivicSearch:true,mapReadyQuery:true,euInspirePublicData:true,inspireThemeCount:INSPIRE_THEMES.length,dataEuropaSearchApi:true,aiCommandRegistry:true,aiCommandCapacity:AI_COMMAND_CAPACITY}}};
   if(method==='GET'&&path==='/api/public/eu-spatial/policy') return {status:200,body:publicSpatialPolicy()};
   if(method==='POST'&&path==='/api/public/eu-spatial/search-plan') return safe(()=>buildDataEuropaSpatialSearch(body));
   if(method==='POST'&&path==='/api/universal/prepare') return {status:200,body:prepareUniversalAccess(body)};
