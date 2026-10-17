@@ -1,0 +1,24 @@
+{
+  "name": "URBAN ONE UNIVERSAL",
+  "version": "7.0.0",
+  "release": "FINAL",
+  "branch": "main-@URBAN-ONE",
+  "status": "CURRENT_GOVERNED_BASELINE",
+  "authoritativeDocs": [
+    "docs/RELEASE_CONTROL.md",
+    "docs/PLAY_STORE_RELEASE.md",
+    "docs/PLAY_RELEASE_PREFLIGHT_2026-10-16.md"
+  ],
+  "evidenceLedger": "release/evidence-ledger.json",
+  "historicalManifest": {
+    "path": "release/release-manifest.json",
+    "note": "Immutable RC1 source-manifest snapshot retained for provenance; it is not the current release-state pointer."
+  },
+  "openExternalGates": [
+    "production Android signing",
+    "real-device acceptance",
+    "Google Play Console policy/review/production rollout",
+    "iOS signing/TestFlight/App Store",
+    "live provider certification where applicable"
+  ]
+}
