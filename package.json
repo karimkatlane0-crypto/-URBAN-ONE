@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "verify": "node scripts/verify.mjs",
-    "evidence": "node scripts/evidence.mjs"
+    "evidence": "node scripts/evidence.mjs",
+    "smoke:openai": "node scripts/openai-smoke.mjs"
   },
   "engines": {"node": ">=22"}
 }
