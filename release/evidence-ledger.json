@@ -1,6 +1,8 @@
 {
-  "version": "7.0.0-rc.1",
-  "generatedAt": "2026-10-16T05:44:39Z",
+  "version": "7.0.0",
+  "release": "FINAL",
+  "generatedAt": "2026-10-17T03:51:51Z",
+  "sourceCommit": "2d24520a9cca2eb28910d875f7b1a8129d8e18b5",
   "gates": {
     "source": "PASS",
     "policy": "PASS",
@@ -11,23 +13,25 @@
     "webShell": "PASS",
     "apiRuntime": "PASS",
     "mobileLocalFirst": "PASS",
-    "androidBuild": "PASS",
+    "euInspirePublicData": "PASS",
+    "githubPublication": "PASS",
+    "androidApi36Preflight": "PASS",
+    "androidAabBuild": "PASS",
     "iosSigning": "OPEN",
+    "productionAndroidSigning": "OPEN",
     "providerCertification": "OPEN",
     "deviceTest": "OPEN",
-    "githubPublication": "PASS"
-  },
-  "files": {
-    "readme": "1a213b376bf21127046ad01462dfa52033eab128835a6f8a556725dfb09d3ff8",
-    "mobileConfig": "e187f89d628092bfa7fc25d0230962879534cc4740c964fe13093b4f538c6306"
+    "playConsolePublication": "OPEN"
   },
   "artifacts": {
     "android": {
-      "workflowRun": 38857231450,
-      "artifactId": 12027896334,
-      "artifactZipSha256": "94ffec377303dda78fea722d523958671410c62860b94e5c9bfc6df94e652ef3",
-      "apkSha256": "d80915cddf8a14ec442e120a1776f7520c2c5222e2cea6199255dfb9889f714a",
-      "kind": "debug"
+      "workflowRun": 38912303224,
+      "artifactId": 12050293976,
+      "name": "urban-one-universal-android-play-preflight",
+      "targetSdk": 36,
+      "versionName": "7.0.0",
+      "versionCode": 7000001,
+      "productionSigned": false
     }
   }
 }
