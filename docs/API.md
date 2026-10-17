@@ -59,6 +59,25 @@ Behavior:
 - returns a provider-neutral `mapQuery` string ready for a configured maps/geocoder adapter;
 - does not claim that every European civic address is indexed.
 
+## POST /api/stripe/webhook
+Server-only Stripe Billing webhook endpoint. The HTTP server passes the unmodified raw request body to signature verification before JSON parsing.
+
+Requirements:
+- HTTPS deployment of the API service;
+- server-side `STRIPE_WEBHOOK_SECRET` from the matching Stripe LIVE webhook endpoint;
+- `Stripe-Signature` header must validate using HMAC-SHA256;
+- signatures older than the configured five-minute tolerance are rejected;
+- the signing secret must never be committed to GitHub, included in clients/mobile builds, or written to logs.
+
+Handled lifecycle events:
+- `checkout.session.completed` and `checkout.session.async_payment_succeeded` → verify the Stripe subscription/payment state before granting entitlement;
+- `invoice.paid` → continue entitlement after provider-side verification;
+- `invoice.payment_failed` → enter payment-recovery handling;
+- `customer.subscription.updated` → synchronize subscription state;
+- `customer.subscription.deleted` → revoke entitlement when cancellation is effective.
+
+Unknown event types are acknowledged as `IGNORE`. A verified webhook delivery is evidence of event authenticity, not by itself proof that a user is entitled. Event IDs must be persisted idempotently and application entitlement changes must be based on authoritative Stripe object state before production access is granted.
+
 ## Database additions
 `db/schema.sql` includes:
 - private owner-scoped `contacts` with consent/RPO fields and certificate fingerprint storage;
