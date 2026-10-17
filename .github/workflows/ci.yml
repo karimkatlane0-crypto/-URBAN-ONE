@@ -9,6 +9,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22}
+      - run: npm run security:secrets
       - run: npm test
       - run: npm run verify
       - run: npm run evidence
