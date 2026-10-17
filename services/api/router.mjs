@@ -5,6 +5,7 @@ import {relayStatus} from '../../packages/relay/relay.mjs';
 import {prepareContactImport} from '../../packages/contacts/contact.mjs';
 import {searchProperties} from '../../packages/real-estate/property.mjs';
 import {buildDataEuropaSpatialSearch,INSPIRE_THEMES,publicSpatialPolicy} from '../../packages/geo/inspire.mjs';
+import {networkPassPolicy,quoteNetworkPass} from '../../packages/bnb/network-pass.mjs';
 
 function hasScope(req,scope){
   const auth=req?.auth||{};
@@ -29,9 +30,11 @@ export function route(req, env={}){
   const {method='GET',path='/',body={}}=req;
   if(method==='GET'&&path==='/health') return {status:200,body:{ok:true,version:'7.0.0'}};
   if(method==='GET'&&path==='/api/ai/commands/capabilities') return {status:200,body:aiCommandCapabilities()};
-  if(method==='GET'&&path==='/api/universal/status') return {status:200,body:{providers:providerStatus(env),relay:relayStatus(env),features:{privateContacts:true,exactCivicSearch:true,mapReadyQuery:true,euInspirePublicData:true,inspireThemeCount:INSPIRE_THEMES.length,dataEuropaSearchApi:true,aiCommandRegistry:true,aiCommandCapacity:AI_COMMAND_CAPACITY}}};
+  if(method==='GET'&&path==='/api/universal/status') return {status:200,body:{providers:providerStatus(env),relay:relayStatus(env),features:{privateContacts:true,exactCivicSearch:true,mapReadyQuery:true,euInspirePublicData:true,inspireThemeCount:INSPIRE_THEMES.length,dataEuropaSearchApi:true,aiCommandRegistry:true,aiCommandCapacity:AI_COMMAND_CAPACITY,bnbNetworkPassModel:true}}};
   if(method==='GET'&&path==='/api/public/eu-spatial/policy') return {status:200,body:publicSpatialPolicy()};
   if(method==='POST'&&path==='/api/public/eu-spatial/search-plan') return safe(()=>buildDataEuropaSpatialSearch(body));
+  if(method==='GET'&&path==='/api/public/bnb-network/model') return {status:200,body:networkPassPolicy()};
+  if(method==='POST'&&path==='/api/public/bnb-network/quote') return safe(()=>quoteNetworkPass(body));
   if(method==='POST'&&path==='/api/universal/prepare') return {status:200,body:prepareUniversalAccess(body)};
   if(method==='POST'&&path==='/api/contacts/import-preview'){
     return guarded(req,'contacts:read',()=>prepareContactImport(body.records||[],{source:body.source||'skebby',maxRecords:body.maxRecords||500}));
