@@ -1,0 +1,172 @@
+name: app-store-release-candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload-app-store:
+    runs-on: macos-latest
+    environment: apple-app-store-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate Apple release secrets are configured
+        shell: bash
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY_B64: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_B64 }}
+        run: |
+          set -euo pipefail
+          test -n "$APPLE_TEAM_ID"
+          test -n "$APP_STORE_CONNECT_KEY_ID"
+          test -n "$APP_STORE_CONNECT_ISSUER_ID"
+          test -n "$APP_STORE_CONNECT_PRIVATE_KEY_B64"
+
+      - name: Require an App Store-compatible Xcode generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          XCODE_MAJOR="$(xcodebuild -version | awk '/^Xcode /{split($2,v,"."); print v[1]}')"
+          test -n "$XCODE_MAJOR"
+          test "$XCODE_MAJOR" -ge 26
+
+      - name: Install mobile dependencies
+        working-directory: apps/mobile
+        run: npm install --no-audit --no-fund
+
+      - name: Generate and sync iOS project
+        working-directory: apps/mobile
+        run: npx cap add ios && npx cap sync ios
+
+      - name: iOS release preflight
+        working-directory: apps/mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "appId: 'com.urbanone.universal'" capacitor.config.ts
+          test -f ios/App/App.xcodeproj/project.pbxproj
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -showBuildSettings >/dev/null
+
+      - name: Materialize App Store Connect team API key
+        shell: bash
+        env:
+          KEY_B64: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_B64 }}
+          KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 - <<'PY'
+          import base64, os, pathlib
+          target = pathlib.Path(os.environ['KEY_PATH'])
+          target.write_bytes(base64.b64decode(os.environ['KEY_B64']))
+          PY
+          chmod 600 "$KEY_PATH"
+
+      - name: Archive signed iOS release candidate with Apple cloud signing
+        working-directory: apps/mobile
+        shell: bash
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          ARCHIVE_PATH: ${{ runner.temp }}/URBAN_ONE_UNIVERSAL_v7.0.0.xcarchive
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            PRODUCT_BUNDLE_IDENTIFIER=com.urbanone.universal \
+            MARKETING_VERSION=7.0.0 \
+            CURRENT_PROJECT_VERSION=7000001 \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_KEY_ID" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
+            clean archive
+
+      - name: Upload signed archive to App Store Connect
+        shell: bash
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          ARCHIVE_PATH: ${{ runner.temp }}/URBAN_ONE_UNIVERSAL_v7.0.0.xcarchive
+          EXPORT_PATH: ${{ runner.temp }}/app-store-upload
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          plutil -lint "$RUNNER_TEMP/ExportOptions.plist"
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_KEY_ID" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID"
+
+      - name: Record release evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release/app-store
+          cat > release/app-store/manifest.json <<EOF
+          {
+            "bundleId": "com.urbanone.universal",
+            "version": "7.0.0",
+            "build": 7000001,
+            "commit": "${GITHUB_SHA}",
+            "distribution": "App Store Connect upload",
+            "signing": "Apple cloud signing via team App Store Connect API key",
+            "reviewStatus": "NOT_SUBMITTED_BY_THIS_WORKFLOW"
+          }
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: urban-one-universal-v7-app-store-evidence
+          if-no-files-found: error
+          retention-days: 30
+          path: release/app-store/manifest.json
+
+      - name: Remove private API key
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8"
