@@ -12,7 +12,7 @@ test('only signed contract with verified property can pass early gates',()=>{
   assert.equal(assess('monthly_subscription',{}, {signed:false}).decision,'BLOCKED');
 });
 test('monthly service requires matching Stripe recurring price and payer mandate',()=>{
-  const invoice={customerMandate:att('consent-1'),stripePrice:att('price-1',{currency:'EUR',interval:'month',amountCents:9900})};
+  const invoice={customerMandate:att('consent-1',{agreementReference:'agreement-1'}),stripePrice:att('price-1',{currency:'EUR',interval:'month',amountCents:9900})};
   assert.equal(assess('monthly_subscription').reason,'CUSTOMER_AUTOPAY_MANDATE_MISSING');
   assert.equal(assess('monthly_subscription',{...invoice,stripePrice:att('price-2',{currency:'EUR',interval:'month',amountCents:10000})}).reason,'STRIPE_RECURRING_PRICE_NOT_VERIFIED');
   const r=assess('monthly_subscription',invoice);
