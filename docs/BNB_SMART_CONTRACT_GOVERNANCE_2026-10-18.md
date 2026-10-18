@@ -19,7 +19,8 @@ An attestation with `verified:true` is **NOT** self-authenticating. Trusted serv
 - Suggested EUR 99/month host SaaS is a **non-binding illustration**; Stripe B&B products previously observed inactive and without prices.
 - Booking.com/OTA stays are ineligible for **automatic direct-booking commissions**. Avoid charging accommodation already collected by Booking.com or the property.
 - Optional upsells require a voluntary purchase, fulfillment and verified payment.
-- A Network Pass host settlement additionally requires an eligible stay, Stripe Connect-recipient verification, sufficient eligible funds and review. Stripe is not an escrow account.
+- A Network Pass host settlement additionally requires an explicit `completedStay.status = completed`, a reconciliation bound to the **same reservation** and the **same Stripe Connect recipient**, `settlementAlreadyProcessed = false`, sufficient eligible funds and human review. Missing or mismatched fields block review. Stripe is not an escrow account.
+- Each verification must be produced by a trusted server reviewing the underlying events; booleans or references supplied by a guest, host, or browser alone are not proof. The policy is an advisory gate, not an idempotent payment engine.
 - The first pilot requires a genuinely authorized host, PMS and operational transaction evidence.
 - No costs, charges or transfers without separate specific approval.
 
