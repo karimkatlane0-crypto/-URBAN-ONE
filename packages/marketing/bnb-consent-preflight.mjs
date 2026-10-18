@@ -8,7 +8,7 @@ const CHANNELS=new Set(['EMAIL','SMS']);
 const EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const E164=/^\+[1-9]\d{6,14}$/;
 function nonempty(s){return typeof s==='string'&&s.trim().length>0}
-function timestamp(s){return typeof s==='string'&&/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/.test(s)&&Number.isFinite(Date.parse(s))}
+function timestamp(s){return typeof s==='string'&&/\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/.test(s)&&Number.isFinite(Date.parse(s))&&Date.parse(s)<=Date.now()}
 function evidence(s){return nonempty(s)&&s.length<=512}
 function key(channel,address){return channel+':'+String(address||'').trim().toLowerCase()}
 
