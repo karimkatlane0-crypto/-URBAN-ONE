@@ -2,6 +2,8 @@
 
 **Non-binding asking price: EUR 1,000,000** for a negotiated enterprise software licensing package, **subject to due diligence, ownership/licensability confirmation, scope and signed contract**. This price is the seller's stated target, **not** a market valuation, completed sale, investment return, regulated entitlement or Stripe checkout.
 
+**Commercial milestone: 28 October 2026.** The seller intends to highlight this public, non-binding enterprise licensing opportunity on that date, with a target commercial response window through **18 November 2026**. Qualified inquiries are welcome before that date. These dates are commercial targets only and do not indicate buyer acceptance, a signed agreement, or a guaranteed payment.
+
 > International licensing inquiry: describe the jurisdiction, expected workflow, deployment constraints, modules requested and intended user organization. No automated purchase or privileged access is activated by viewing this page.
 
 ## Proposed package
