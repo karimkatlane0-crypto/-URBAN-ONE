@@ -59,6 +59,12 @@ Source, tests, Web/API, local-first mobile and public EU spatial gateway are ver
 
 URBAN ONE is not presented as a bank, payment institution, AIS/PIS provider, investment firm, accounting/tax practice, certified valuation practice or licensed real-estate brokerage. Regulated financial, tax, legal, brokerage, valuation and Open Banking functions require the appropriate providers, professionals, contracts, licences, security review and jurisdiction-specific compliance before production use.
 
+## Enterprise licensing opportunity
+
+URBAN ONE Enterprise is available for **qualified, non-binding international licence discussions** at a seller-selected **EUR 1,000,000 negotiable asking price**. This is not a certified market valuation, a completed sale or an online payment request. Any licence is conditional on verified intellectual-property rights, technical and regulatory diligence, agreed scope and a signed contract.
+
+Read the [URBAN ONE Enterprise Global Licensing Opportunity](docs/URBAN_ONE_ENTERPRISE_GLOBAL_OFFER_EUR_1M.md). Prospective buyers may use public GitHub Issues for **non-confidential initial interest** and request a private channel before sharing business, financial or proprietary details.
+
 ## Collaboration
 
 The repository supports technical review and European collaboration across AI, Open Banking, DevSecOps, data platforms, real estate/proptech, mobility/travel and enterprise integration. Do not post secrets, credentials, customer financial data or unnecessary personal data in public issues.
