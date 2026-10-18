@@ -8,10 +8,10 @@ const common={signedAgreement:att('contract-1'),authorizedProperty:att('property
 const decide=(action,more={},terms={})=>evaluateBnbContract({action,now:'2026-10-18T12:00:00.000Z',agreement:{...agreement,...terms},proofs:{...common,...more}});
 test('settlement requires verified stay and connected recipient',()=>{
   const items={
-    reservation:att('reservation-1',{channel:'network_pass'}),
+    reservation:att('reservation-1',{channel:'network_pass',membershipPaymentReference:'paid-1'}),
     memberPayment:att('paid-1',{status:'succeeded'}),
     completedStay:att('checkout-1',{reservationReference:'reservation-1'}),
-    connectRecipient:att('recipient-1',{payoutsEnabled:true}),
+    connectRecipient:att('recipient-1',{payoutsEnabled:true,propertyReference:'property-1'}),
     reconciliation:att('ledger-1',{noRefundOrDispute:true,eligibleFundsCents:12000})
   };
   assert.equal(decide('network_pass_host_settlement',items,{hostSettlementCents:13000}).reason,'SETTLEMENT_AMOUNT_EXCEEDS_ELIGIBLE_FUNDS');
@@ -25,7 +25,7 @@ test('settlement requires verified stay and connected recipient',()=>{
 test('optional services require consumer choice, payment and fulfillment',()=>{
   const service=att('service-1',{fulfilled:true,paidCents:5000,paymentReference:'pay-1'});
   assert.equal(decide('optional_service_commission',{service}).reason,'OPTIONAL_PURCHASE_NOT_AUTHORIZED');
-  const result=decide('optional_service_commission',{service,guestPurchaseConsent:att('choice-1'),payment:att('pay-1',{status:'succeeded'})});
+  const result=decide('optional_service_commission',{service,guestPurchaseConsent:att('choice-1',{serviceReference:'service-1'}),payment:att('pay-1',{status:'succeeded'})});
   assert.equal(result.proposedAmountCents,500);
   assert.equal(result.externalActionPerformed,false);
 });
