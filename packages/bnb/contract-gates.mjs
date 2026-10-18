@@ -121,13 +121,19 @@ export function evaluateBnbContract(input = {}) {
       proofs.memberPayment.reference !== proofs.reservation.membershipPaymentReference)
     return deny('MEMBERSHIP_PAYMENT_NOT_VERIFIED');
   if (!isTrustedAttestation(proofs.completedStay, now) ||
-      proofs.completedStay.reservationReference !== proofs.reservation.reference)
+      proofs.completedStay.reservationReference !== proofs.reservation.reference ||
+      proofs.completedStay.status !== 'completed')
     return deny('COMPLETED_STAY_NOT_VERIFIED');
   if (!isTrustedAttestation(proofs.connectRecipient, now) ||
       proofs.connectRecipient.payoutsEnabled !== true ||
       proofs.connectRecipient.propertyReference !== proofs.authorizedProperty.reference)
     return deny('HOST_PAYOUT_RECIPIENT_NOT_VERIFIED');
+  // Never reuse another reservation's ledger or another host's funds.
+  // Reconciliation is independently signed and verified by the trusted backend.
   if (!isTrustedAttestation(proofs.reconciliation, now) ||
+      proofs.reconciliation.reservationReference !== proofs.reservation.reference ||
+      proofs.reconciliation.recipientReference !== proofs.connectRecipient.reference ||
+      proofs.reconciliation.settlementAlreadyProcessed !== false ||
       proofs.reconciliation.noRefundOrDispute !== true ||
       !intNonNegative(proofs.reconciliation.eligibleFundsCents))
     return deny('SETTLEMENT_RECONCILIATION_MISSING');
