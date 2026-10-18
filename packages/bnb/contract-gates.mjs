@@ -64,6 +64,8 @@ export function evaluateBnbContract(input = {}) {
   if (action === 'monthly_subscription') {
     if (!intPositive(agreement.monthlyFeeCents)) return deny('RECURRING_PRICE_NOT_AGREED');
     if (!isTrustedAttestation(proofs.customerMandate, now)) return deny('CUSTOMER_AUTOPAY_MANDATE_MISSING');
+    if (proofs.customerMandate.agreementReference !== agreement.reference)
+      return deny('AUTOPAY_MANDATE_AGREEMENT_MISMATCH');
     if (!isTrustedAttestation(proofs.stripePrice, now) ||
         proofs.stripePrice.currency !== 'EUR' ||
         proofs.stripePrice.interval !== 'month' ||
@@ -99,6 +101,8 @@ export function evaluateBnbContract(input = {}) {
         !intPositive(proofs.service.paidCents)) return deny('SERVICE_NOT_FULFILLED');
     if (!isTrustedAttestation(proofs.guestPurchaseConsent, now))
       return deny('OPTIONAL_PURCHASE_NOT_AUTHORIZED');
+    if (proofs.guestPurchaseConsent.serviceReference !== proofs.service.reference)
+      return deny('OPTIONAL_SERVICE_CONSENT_MISMATCH');
     if (!isTrustedAttestation(proofs.payment, now) ||
         proofs.payment.status !== 'succeeded' ||
         proofs.payment.reference !== proofs.service.paymentReference)
@@ -113,13 +117,15 @@ export function evaluateBnbContract(input = {}) {
       proofs.reservation.channel !== 'network_pass' || proofs.reservation.cancelled)
     return deny('ELIGIBLE_NETWORK_PASS_STAY_MISSING');
   if (!isTrustedAttestation(proofs.memberPayment, now) ||
-      proofs.memberPayment.status !== 'succeeded')
+      proofs.memberPayment.status !== 'succeeded' ||
+      proofs.memberPayment.reference !== proofs.reservation.membershipPaymentReference)
     return deny('MEMBERSHIP_PAYMENT_NOT_VERIFIED');
   if (!isTrustedAttestation(proofs.completedStay, now) ||
       proofs.completedStay.reservationReference !== proofs.reservation.reference)
     return deny('COMPLETED_STAY_NOT_VERIFIED');
   if (!isTrustedAttestation(proofs.connectRecipient, now) ||
-      proofs.connectRecipient.payoutsEnabled !== true)
+      proofs.connectRecipient.payoutsEnabled !== true ||
+      proofs.connectRecipient.propertyReference !== proofs.authorizedProperty.reference)
     return deny('HOST_PAYOUT_RECIPIENT_NOT_VERIFIED');
   if (!isTrustedAttestation(proofs.reconciliation, now) ||
       proofs.reconciliation.noRefundOrDispute !== true ||
