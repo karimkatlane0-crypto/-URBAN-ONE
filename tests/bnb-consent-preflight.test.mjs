@@ -61,3 +61,14 @@ test('No consent proof blocks recipient, regardless of supplied address',()=>{
   const r=run([{...rec,consentProofRef:null}]);
   assert.equal(r.eligible.length,0);
 });
+
+test('Future-dated consent, source checks and legal reviews cannot qualify',()=>{
+  const future=new Date(Date.now()+24*60*60*1000).toISOString();
+  const badConsent=run([{...rec,consentedAt:future}]);
+  assert.ok(badConsent.blocked[0].reasons.includes('CHANNEL_AND_PURPOSE_OPT_IN_PROOF_REQUIRED'));
+  const badSource=run([{...rec,sourceCheckedAt:future}]);
+  assert.ok(badSource.blocked[0].reasons.includes('CONTACT_PROVENANCE_REQUIRED'));
+  const badReview=run([rec],{countryReviews:[{...review,reviewedAt:future}]});
+  assert.ok(badReview.blocked[0].reasons.includes('COUNTRY_CHANNEL_LEGAL_REVIEW_REQUIRED'));
+  assert.equal(badReview.sendAuthorized,false);
+});
