@@ -27,3 +27,7 @@ test('PIS mock requires synthetic beneficiary, positive amount, consent, approva
   assert.equal(r.providerCalls,0);
   assert.equal(r.moneyMovedCents,0);
 });
+test('PIS mock rejects unsupported currency and unsafe integer amounts',()=>{
+  assert.throws(()=>prepareFabrickMockPis({...pis,currency:'USD'}),/UNSUPPORTED_MOCK_CURRENCY/);
+  assert.throws(()=>prepareFabrickMockPis({...pis,amountCents:Number.MAX_SAFE_INTEGER+1}),/INVALID_MOCK_PIS_AMOUNT/);
+});
