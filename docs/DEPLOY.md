@@ -3,6 +3,12 @@
 ## Web
 Static local-first shell. Publish only after CI tests pass and hosting auth policy is tested independently.
 
+For a combined local Web/API runtime, run `node services/api/server.mjs` with Node 22 or later and open `http://localhost:8787/`. `PORT` overrides the port. The server serves only public HTML/CSS/SVG/manifest assets from `apps/web`; repository files and secrets are excluded.
+
+The Web and bundled Android home screens include a manual integration check at `/api/integrations/readiness`. On a static host or bundled mobile origin without that endpoint, the panel reports the server unavailable and preserves local tools. No backend URL, credentials or automatic provider calls are embedded in the mobile bundle. A remote authenticated backend for mobile remains a separate integration task.
+
+Readiness reports credential presence separately from live verification. AI execution still requires a certified runtime; Fabrick and InfoCert remain offline mocks. This endpoint does not verify a payment, create a booking, sign a document or attest device installation. Private API routes continue to require authenticated scopes; the standalone server does not provide identity middleware.
+
 ## Android
 GitHub Actions `android.yml` installs Capacitor dependencies, creates/syncs Android, builds debug APK and produces SHA-256. Production signing is a later release gate.
 
