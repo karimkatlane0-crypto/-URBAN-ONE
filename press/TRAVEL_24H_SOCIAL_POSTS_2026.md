@@ -15,6 +15,12 @@ Scopri il progetto e manifesta interesse: [inserire URL HTTPS verificato della p
 
 #UrbanOne #CheckIn #CheckOut #BB #Viaggi #TravelTech
 
+## Public organic post for qualified B&B decision makers — Italian
+
+**Gestisci un B&B, affittacamere o hotel?** URBAN ONE apre un invito pubblico e non vincolante a richiedere **demo o preventivi su check-in/check-out e workflow concierge**. Nessun canone o collegamento PMS attivato senza accordo. Richieste volontarie, solo dati non riservati: https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/39
+
+Informazioni sul percorso Booking.com / CJ affiliazione: https://www.booking.com/affiliate-program/v2/index.it.html (URBAN ONE **non è ancora affiliato** e non pubblica link promozionali Booking.com).
+
 ## English Facebook / Instagram / LinkedIn
 **URBAN ONE Travel — an opt-in 24-hour preview idea for European travellers and hospitality operators.**
 

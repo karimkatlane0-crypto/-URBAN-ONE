@@ -82,6 +82,12 @@ This source is public on GitHub after a reviewed merge. A live hosted campaign, 
 - [Fail-closed 24-hour preview policy simulation](packages/marketing/preview-policy.mjs): UTC timing tests, not production authentication or access to airfares.
 - No Booking.com booking/inventory permissions, airline partnership, offer feed or guest data implied; any paid B2B work requires written agreement and Stripe payment verification.
 
+## URBAN ONE B&B EU Pilot — non-binding requests now open
+
+**[Express interest in a paid, independently quoted B&B check-in/out workflow pilot](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/39)**. No payment, consent to marketing, signed agreement or property-data access arises from an issue. Please share only public-safe business needs; use private communication for contracting.
+
+**[Booking.com / CJ affiliate application brief](docs/BOOKING_CJ_PUBLISHER_APPLICATION_2026.md)**: formal approval, authentic affiliate link, provider-reported completed bookings and independent payout required. No affiliate earnings verified.
+
 ## Booking.com: B&B provider connectivity vs affiliate travel revenue
 
 Two **different** routes: approved PMS/channel manager for property-authorized Booking inventory and reservations; separately, Booking.com’s publisher affiliate programme or Managed Affiliate Demand API for eligible tracked traveler referrals. Neither membership nor commission is currently verified. Never treat a low-cost-flight post, a Booking.com click or a Stripe service checkout as a payable affiliate booking.
