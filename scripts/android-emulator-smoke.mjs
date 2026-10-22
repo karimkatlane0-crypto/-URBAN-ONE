@@ -17,6 +17,7 @@ try {
   const device=(...args)=>adb('-s',serial,...args);
   if(device('shell','getprop','ro.kernel.qemu')!=='1')throw Error('PHYSICAL_DEVICE_BLOCKED');
   api=device('shell','getprop','ro.build.version.sdk');report.api=api;
+  report.webview=device('shell','dumpsys','webviewupdate').split('\n').find(line=>line.includes('Current WebView package'))?.trim()||'not_reported';
   report.apkSha256=createHash('sha256').update(readFileSync(apk)).digest('hex');
   device('install','-r',apk);report.checks.install=true;
   device('shell','am','force-stop',pkg);
@@ -63,7 +64,7 @@ try {
     if(status.includes('non disponibile'))break;
     await pause(1000);
   }
-  if(!status.includes('non disponibile'))throw Error('LOCAL_SERVER_FALLBACK_FAILED');
+  if(!status.includes('non disponibile')){report.fallbackStatus=status;throw Error('LOCAL_SERVER_FALLBACK_FAILED');}
   report.checks.unconfiguredBackendFallback=true;
   ws.close();ws=undefined;
   device('shell','am','force-stop',pkg);
