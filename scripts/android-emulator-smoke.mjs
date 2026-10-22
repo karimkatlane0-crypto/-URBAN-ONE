@@ -44,13 +44,21 @@ try {
       function receive(event){
         const m=JSON.parse(event.data);if(m.id!==id)return;
         clearTimeout(timer);ws.removeEventListener('message',receive);
-        if(m.error||m.result?.exceptionDetails)reject(Error('WEBVIEW_SCRIPT_FAILED'));
+        if(m.error||m.result?.exceptionDetails)reject(Error('WEBVIEW_SCRIPT_FAILED: '+(m.error?.message||m.result?.exceptionDetails?.exception?.description||m.result?.exceptionDetails?.text||'unknown')));
         else resolve(m.result?.result?.value);
       }
       ws.addEventListener('message',receive);
       ws.send(JSON.stringify({id,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:true}}));
     });
   }
+  // A debuggable WebView can exist before its local document has finished loading.
+  let loaded=false;
+  for(let i=0;i<30;i++){
+    loaded=await evaluate("document.readyState==='complete' && Boolean(document.getElementById('bnbPool'))");
+    if(loaded)break;
+    await pause(1000);
+  }
+  if(!loaded)throw Error('LOCAL_DOCUMENT_NOT_READY');
   const initial=await evaluate("({title:document.title,pool:document.getElementById('bnbPool').textContent})");
   if(!initial.title.includes('URBAN ONE')||!initial.pool.includes('720'))throw Error('LOCAL_CALCULATOR_NOT_INITIALIZED');
   report.checks.initialCalculation=true;

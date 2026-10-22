@@ -50,5 +50,7 @@ jobs:
         if: always()
         with:
           name: android-emulator-api-${{ matrix.api }}
-          path: release/emulator-*.json
+          path: |
+            release/emulator-*.json
+            apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: warn
