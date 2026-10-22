@@ -37,21 +37,22 @@ const $=id=>document.getElementById(id);
 const integrationStates={available_local:'Disponibile localmente',configured_not_verified:'Configurato · prova live da completare',configuration_required:'Configurazione necessaria',offline_mock_only:'Solo simulazione offline',provider_authorization_and_live_test_required:'Autorizzazione provider e prova live necessarie',device_acceptance_required:'Prova sul Redmi necessaria'};
 $('checkIntegrations').addEventListener('click',async()=>{
   const button=$('checkIntegrations');button.disabled=true;
-  $('integrationItems').replaceChildren();
+  $('integrationItems').textContent='';
   if(location.protocol!=='https:'&&location.protocol!=='http:'){
     $('integrationStatus').textContent='Questa copia locale non ha un server collegato. Apri il workspace autorizzato per i servizi cloud.';button.disabled=false;return;
   }
   $('integrationStatus').textContent='Verifica in corso…';
+  let timeout;
   try{
-    const response=await fetch('/api/integrations/readiness',{credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(8000)});
+    const response=await Promise.race([fetch('/api/integrations/readiness',{credentials:'same-origin',cache:'no-store'}),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('timeout')),8000)})]);
     if(!response.ok)throw new Error('unavailable');
     const data=await response.json();
     if(data.version!=='7.0.0'||!Array.isArray(data.items)||data.liveProvidersVerified!==false)throw new Error('invalid');
-    for(const item of data.items){const li=document.createElement('li');li.textContent=String(item.label)+': '+(integrationStates[item.state]||'Stato non verificato');$('integrationItems').append(li);}
+    for(const item of data.items){const li=document.createElement('li');li.textContent=String(item.label)+': '+(integrationStates[item.state]||'Stato non verificato');$('integrationItems').appendChild(li);}
     $('integrationStatus').textContent='Server raggiungibile · v'+data.version+'. La configurazione non attesta il funzionamento live dei provider.';
   }catch{
     $('integrationStatus').textContent='Server di integrazione non disponibile su questa origine. Le funzioni locali restano utilizzabili.';
-  }finally{button.disabled=false;}
+  }finally{clearTimeout(timeout);button.disabled=false;}
 });
 
 const eur=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n);
