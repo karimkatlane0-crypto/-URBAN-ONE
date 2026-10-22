@@ -37,6 +37,15 @@ export function classifyStripeEvent(type=''){
     case 'checkout.session.completed':
     case 'checkout.session.async_payment_succeeded':
       return 'VERIFY_SUBSCRIPTION_BEFORE_GRANT';
+    case 'payment_intent.succeeded':
+      // Signature authenticates the event, NOT the merchant's contract or paid order.
+      return 'VERIFY_ONE_TIME_PAYMENT_BEFORE_FULFILLMENT';
+    case 'payment_intent.payment_failed':
+    case 'checkout.session.async_payment_failed':
+      return 'PAYMENT_FAILURE_REVIEW';
+    case 'charge.refunded':
+    case 'charge.dispute.created':
+      return 'PAYMENT_ADJUSTMENT_REVIEW';
     case 'invoice.paid':
       return 'CONTINUE_ENTITLEMENT';
     case 'invoice.payment_failed':
@@ -58,5 +67,5 @@ export function handleStripeWebhook({rawBody,headers={},env={},now}){
   try{event=JSON.parse(Buffer.isBuffer(rawBody)?rawBody.toString('utf8'):String(rawBody??''));}
   catch{throw new Error('STRIPE_EVENT_JSON_INVALID');}
   if(!event?.id||!event?.type)throw new Error('STRIPE_EVENT_INVALID');
-  return {status:200,body:{received:true,eventId:event.id,type:event.type,action:classifyStripeEvent(event.type)}};
+  return {status:200,body:{received:true,eventId:event.id,type:event.type,action:classifyStripeEvent(event.type),paymentVerified:false,fulfillmentAuthorized:false}};
 }
