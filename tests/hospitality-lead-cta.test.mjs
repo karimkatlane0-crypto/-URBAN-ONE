@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const target='https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/39';
+test('public B&B pilot issue is linked from all 5 localized offers',()=>{
+ for(const lang of ['it','en','de','fr','es']){
+  const page=read('apps/web/hospitality-'+lang+'.html');
+  assert.ok(page.includes(target),lang);
+  assert.ok(page.includes('rel="noopener noreferrer"'),lang);
+ }
+ for(const p of ['README.md','apps/web/index.html','press/TRAVEL_24H_SOCIAL_POSTS_2026.md'])
+   assert.ok(read(p).includes(target),p);
+});
+test('CJ application brief never invents partner membership or service activation',()=>{
+ const brief=read('docs/BOOKING_CJ_PUBLISHER_APPLICATION_2026.md');
+ assert.match(brief,/APPLICATION_NOT_SUBMITTED/);
+ assert.match(brief,/NO_AFFILIATE_ID_VERIFIED/);
+ assert.match(brief,/completed booking/);
+ assert.match(brief,/https:\/\/www\.booking\.com\/affiliate-program\/v2\/index\.it\.html/);
+ assert.doesNotMatch(brief,/sk_live_|whsec_|IT28R0100502200000000003986/);
+});
