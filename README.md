@@ -75,6 +75,13 @@ Sono aperte **richieste di demo, analisi dei processi, incarichi software e prop
 
 This source is public on GitHub after a reviewed merge. A live hosted campaign, authorized customer contracts, paid SaaS, provider connections, external press pickup and receipts are separately verifiable stages. The ChatGPT plugin cannot be used to sell digital services under the currently published plugin policies.
 
+## URBAN ONE Travel · 24h preview concept
+
+- [Early Access Travel preview source](apps/web/travel-preview.html): proposal for a voluntary, rights-verified 24-hour early information window, followed by general release.
+- [Facebook, Instagram, social and media campaign copy](press/TRAVEL_24H_SOCIAL_POSTS_2026.md): publicly accessible drafts; **not posted to external accounts**, no ad spend and no claimed affiliate relationship.
+- [Fail-closed 24-hour preview policy simulation](packages/marketing/preview-policy.mjs): UTC timing tests, not production authentication or access to airfares.
+- No Booking.com booking/inventory permissions, airline partnership, offer feed or guest data implied; any paid B2B work requires written agreement and Stripe payment verification.
+
 ## European hospitality press and trade-association kit
 
 Original materials are published for voluntary editorial consideration by hotel federations, B&B associations, regional tourism networks, specialist blogs and press desks. **No external association, news outlet, Booking.com, Fabrick, InfoCert or OpenAI endorsement is implied or claimed.**
