@@ -27,6 +27,11 @@ test('classifies subscription lifecycle events',()=>{
   assert.equal(classifyStripeEvent('invoice.payment_failed'),'PAYMENT_RECOVERY');
   assert.equal(classifyStripeEvent('customer.subscription.updated'),'SYNC_SUBSCRIPTION');
   assert.equal(classifyStripeEvent('customer.subscription.deleted'),'REVOKE_ENTITLEMENT');
+  assert.equal(classifyStripeEvent('payment_intent.succeeded'),'VERIFY_ONE_TIME_PAYMENT_BEFORE_FULFILLMENT');
+  assert.equal(classifyStripeEvent('payment_intent.payment_failed'),'PAYMENT_FAILURE_REVIEW');
+  assert.equal(classifyStripeEvent('checkout.session.async_payment_failed'),'PAYMENT_FAILURE_REVIEW');
+  assert.equal(classifyStripeEvent('charge.refunded'),'PAYMENT_ADJUSTMENT_REVIEW');
+  assert.equal(classifyStripeEvent('charge.dispute.created'),'PAYMENT_ADJUSTMENT_REVIEW');
   assert.equal(classifyStripeEvent('customer.created'),'IGNORE');
 });
 
@@ -36,4 +41,6 @@ test('webhook handler returns a verified event envelope',()=>{
   assert.equal(result.body.received,true);
   assert.equal(result.body.eventId,'evt_123');
   assert.equal(result.body.action,'CONTINUE_ENTITLEMENT');
+  assert.equal(result.body.paymentVerified,false);
+  assert.equal(result.body.fulfillmentAuthorized,false);
 });
