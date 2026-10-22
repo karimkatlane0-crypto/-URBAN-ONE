@@ -6,7 +6,9 @@ function parseStripeSignature(header=''){
   const parts=String(header).split(',').map(part=>part.trim()).filter(Boolean);
   const timestamps=[];const signatures=[];
   for(const part of parts){
-    const [key,value]=part.split('=',2);
+    const separator=part.indexOf('=');
+    const key=separator<0?part:part.slice(0,separator);
+    const value=separator<0?undefined:part.slice(separator+1);
     if(key==='t')timestamps.push(value);
     if(key==='v1'&&value)signatures.push(value);
   }

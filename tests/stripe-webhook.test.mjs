@@ -47,7 +47,7 @@ test('webhook handler returns a verified event envelope',()=>{
 
 
 test('rejects malformed HMAC encodings instead of accepting a decoded prefix',()=>{
-  for(const malformed of [signature+'zz',signature+'0',signature+'00',signature.slice(0,-1),signature.slice(0,-2)+'xx']){
+  for(const malformed of [signature+'zz',signature+'0',signature+'00',signature+'=zz',signature.slice(0,-1),signature.slice(0,-2)+'xx']){
     assert.throws(()=>verifyStripeSignature({payload,signatureHeader:`t=${now},v1=${malformed}`,secret,now}),/STRIPE_SIGNATURE_INVALID/);
   }
   // Secret rotation may include more than one v1; any strictly valid match is accepted.
@@ -66,7 +66,7 @@ test('rejects invalid clock and tolerance values that could bypass freshness che
 });
 
 test('requires exactly one canonical safe integer timestamp',()=>{
-  for(const timestamp of ['', 'NaN', 'Infinity', '-1', `${now}.0`, `0${now}`, '9007199254740992', `${now},t=${now}`]){
+  for(const timestamp of ['', 'NaN', 'Infinity', '-1', `${now}.0`, `${now}=extra`, `0${now}`, '9007199254740992', `${now},t=${now}`]){
     assert.throws(()=>verifyStripeSignature({payload,signatureHeader:`t=${timestamp},v1=${signature}`,secret,now}),/STRIPE_SIGNATURE_INVALID/);
   }
 });
