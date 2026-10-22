@@ -4,6 +4,7 @@
 URBAN ONE is an independent Italian-led software initiative. The documents in this folder may be considered for **voluntary, editorially approved** publication by hospitality trade associations, hotels, B&B networks, journalists, blog editors and software-industry partners.
 
 ## Press materials
+- [Travel 24h: voluntary public-social drafts](TRAVEL_24H_SOCIAL_POSTS_2026.md) — not posted to Facebook or other third-party services.
 - [5-language editorial announcements](ANNOUNCEMENT_EU_2026.md) — IT / EN / DE / FR / ES.
 - [Voluntary association and affiliate proposal](ASSOCIATION_PARTNER_BRIEF.md) — no paid or signed agreements presumed.
 - [Official European association gateways](ASSOCIATION_GATEWAYS_2026.md) — research sources, not a mailing list or a partnership roster.
