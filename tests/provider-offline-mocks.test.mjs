@@ -59,3 +59,15 @@ test('InfoCert offline flow never yields a qualified legal signature',()=>{
   assert.equal(flow.providerCalled,false);
   assert.throws(()=>advanceInfocertMock(flow,{mode:'sandbox_mock',event:'invite'}),/INVALID_MOCK_TRANSITION/);
 });
+
+test('InfoCert rejects inherited and non-string transition names',()=>{
+  for(const state of ['ready_for_review','invited_mock','in_progress_mock',
+    'completed_mock','declined_mock','expired_mock','cancelled_mock']){
+    const flow={...prepareInfocertMock(signing),state};
+    for(const event of ['toString','constructor','__proto__','hasOwnProperty',
+      {toString:()=> 'invite'},null,undefined]){
+      assert.throws(()=>advanceInfocertMock(flow,{mode:'sandbox_mock',event}),/INVALID_MOCK_TRANSITION/);
+      assert.equal(flow.state,state);
+    }
+  }
+});
