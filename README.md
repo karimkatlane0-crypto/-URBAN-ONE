@@ -82,6 +82,12 @@ This source is public on GitHub after a reviewed merge. A live hosted campaign, 
 - [Fail-closed 24-hour preview policy simulation](packages/marketing/preview-policy.mjs): UTC timing tests, not production authentication or access to airfares.
 - No Booking.com booking/inventory permissions, airline partnership, offer feed or guest data implied; any paid B2B work requires written agreement and Stripe payment verification.
 
+## Booking.com: B&B provider connectivity vs affiliate travel revenue
+
+Two **different** routes: approved PMS/channel manager for property-authorized Booking inventory and reservations; separately, Booking.com’s publisher affiliate programme or Managed Affiliate Demand API for eligible tracked traveler referrals. Neither membership nor commission is currently verified. Never treat a low-cost-flight post, a Booking.com click or a Stripe service checkout as a payable affiliate booking.
+
+**[Booking affiliate vs Connectivity source-backed roadmap](docs/BOOKING_AFFILIATE_VS_CONNECTIVITY_2026.md)** · [Official Booking.com affiliate programme](https://w1.booking.com/affiliate-program/v2/index.it.html) · [Managed Affiliate Demand API prerequisites](https://developers.booking.com/demand/docs/getting-started/prerequisites).
+
 ## European hospitality press and trade-association kit
 
 Original materials are published for voluntary editorial consideration by hotel federations, B&B associations, regional tourism networks, specialist blogs and press desks. **No external association, news outlet, Booking.com, Fabrick, InfoCert or OpenAI endorsement is implied or claimed.**
