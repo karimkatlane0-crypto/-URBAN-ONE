@@ -1,4 +1,17 @@
 # URBAN ONE — Booking.com / CJ publisher application brief
+
+## Verified onboarding checkpoint — 22 October 2026
+
+- Gmail has received CJ-origin **publisher email verification requests** and subsequently **company and user profile change notifications**. Therefore a CJ account is identifiable, but this does **not** independently prove the email-verification state, any accepted publisher contract, or Booking.com advertiser approval.
+- CJ publisher login and Booking.com advertiser application must be verified in CJ's authenticated interface. No confirmed Booking.com approval email, authorized tracking link or commission was found in the connected Gmail at this checkpoint.
+- A Booking.com affiliate **publisher** receives commission from the affiliate network only for qualifying bookings under its terms. These amounts are **not routed through the URBAN ONE Stripe merchant checkout**. Configure the beneficiary's banking details in CJ's secure payout settings after verification, not in a public repo or Stripe connected-account object.
+- Do not reuse any password supplied in a chat. The account holder should rotate that password immediately and activate MFA; never post passwords, email-verification tokens, account IDs, tax files or full bank details in GitHub.
+- Official CJ advertiser application entry: https://signup.cj.com/member/signup/publisher/?cid=5096493 ; **existing CJ account holders should log in and apply**, not create duplicate profiles.
+- Business owner must read/accept CJ terms and any specific Booking.com programme terms inside the authenticated provider portal. Neither the chat nor the public documentation substitutes for actual provider acceptance.
+
+**Evidence:** `CJ_ACCOUNT_IDENTIFIED_FROM_PROVIDER_NOTIFICATIONS` · `BOOKING_ADVERTISER_APPLICATION_STATUS_UNKNOWN` · `AFFILIATE_LINK_NOT_VERIFIED` · `EARNED_BOOKING_COMMISSION_NOT_VERIFIED`.
+
+
 **22 October 2026 — draft only, not submitted or approved.**
 
 ## Publisher identity and channels
