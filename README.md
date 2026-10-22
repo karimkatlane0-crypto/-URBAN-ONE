@@ -65,6 +65,14 @@ Sono aperte **richieste di demo, analisi dei processi, incarichi software e prop
 
 **[Consulta l'offerta commerciale e richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Apri richiesta commerciale](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/new)** (prefisso `[COMMERCIAL]`, senza dati riservati).
 
+## Europe · B2B service enquiries (IT / EN / DE / FR / ES)
+
+URBAN ONE offers **scoped software/process engagements and consent-aware pilots** for European businesses. All pricing is subject to a signed offer; no live Booking.com, Fabrick, InfoCert or other regulated integration is claimed by marketing content. No marketing emails or paid campaigns are initiated by the repository.
+
+**Five-language landing-page source:** [Italiano](apps/web/europe-it.html) · [English](apps/web/europe-en.html) · [Deutsch](apps/web/europe-de.html) · [Français](apps/web/europe-fr.html) · [Español](apps/web/europe-es.html).
+
+**[EU27 go-to-market, sales and compliance gates](docs/EU_MARKET_LAUNCH_2026.md)**. These are static source pages: website deployment and live reachability are separate verification steps. Business inquiries can use [a non-confidential GitHub Issue](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/new) or [email](mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20EU%20enquiry).
+
 ## Enterprise licensing opportunity
 
 URBAN ONE Enterprise is available for **qualified, non-binding international licence discussions** at a seller-selected **EUR 1,000,000 negotiable asking price**. This is not a certified market valuation, a completed sale or an online payment request. Any licence is conditional on verified intellectual-property rights, technical and regulatory diligence, agreed scope and a signed contract.
