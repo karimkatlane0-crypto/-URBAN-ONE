@@ -65,6 +65,18 @@ Sono aperte **richieste di demo, analisi dei processi, incarichi software e prop
 
 **[Consulta l'offerta commerciale e richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Apri richiesta commerciale](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/new)** (prefisso `[COMMERCIAL]`, senza dati riservati).
 
+## European hospitality press and trade-association kit
+
+Original materials are published for voluntary editorial consideration by hotel federations, B&B associations, regional tourism networks, specialist blogs and press desks. **No external association, news outlet, Booking.com, Fabrick, InfoCert or OpenAI endorsement is implied or claimed.**
+
+- **[Press kit and factual editorial status](press/README.md)**
+- **[Europe-wide announcement in IT / EN / DE / FR / ES](press/ANNOUNCEMENT_EU_2026.md)**
+- **[Original vector banners](apps/web/assets/urban-one-press-1200x628.svg)** · [web banner](apps/web/assets/urban-one-banner-728x90.svg)
+- **[Association cooperation proposal](press/ASSOCIATION_PARTNER_BRIEF.md)** · [official research gateways](press/ASSOCIATION_GATEWAYS_2026.md)
+- **[Static press-room source page](apps/web/press.html)** — hosted domain deployment and editorial pickup require separate verification.
+
+The press kit invites qualified, voluntary reviews and inbound enquiries. It authorizes **no bulk outreach**, third-party site publishing, association membership list access, paid promotion, referral charge, financial service or commercial partnership.
+
 ## Europe · B2B service enquiries (IT / EN / DE / FR / ES)
 
 URBAN ONE offers **scoped software/process engagements and consent-aware pilots** for European businesses. All pricing is subject to a signed offer; no live Booking.com, Fabrick, InfoCert or other regulated integration is claimed by marketing content. No marketing emails or paid campaigns are initiated by the repository.

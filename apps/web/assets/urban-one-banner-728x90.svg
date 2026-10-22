@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" width="728" height="90" viewBox="0 0 728 90">
+<title id="title">URBAN ONE — European B2B partnership enquiries</title>
+<desc id="desc">Independent software project for hospitality, workflow and data pilots. No third-party endorsement.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#091325"/><stop offset=".6" stop-color="#13344A"/><stop offset="1" stop-color="#143145"/></linearGradient>
+<linearGradient id="line" x1="0" x2="1"><stop stop-color="#BAEFD1"/><stop offset="1" stop-color="#EED19F"/></linearGradient>
+</defs>
+<rect width="728" height="90" rx="10" fill="url(#bg)"/>
+<path d="M 0 88 L 410 4 M 225 90 L 700 0 M 448 90 L 728 34" fill="none" stroke="#D4F2E7" stroke-opacity=".09" stroke-width="2"/>
+<rect x="17" y="16" width="5" height="58" rx="2.5" fill="url(#line)"/>
+<text x="36" y="46" fill="#F9F9F8" font-family="Arial,DejaVu Sans,sans-serif" font-weight="700" font-size="29" letter-spacing="2">URBAN ONE</text>
+<text x="38" y="66" fill="#BDCFDC" font-family="Arial,DejaVu Sans,sans-serif" font-size="11" letter-spacing=".8">HOSPITALITY  ·  DATA  ·  SOFTWARE</text>
+<rect x="527" y="25" width="182" height="41" rx="20.5" fill="#B4EED4"/>
+<text x="618" y="51" text-anchor="middle" fill="#082033" font-family="Arial,DejaVu Sans,sans-serif" font-size="12.5" font-weight="700">EU B2B PILOTS</text>
+</svg>
