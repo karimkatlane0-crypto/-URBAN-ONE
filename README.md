@@ -59,6 +59,12 @@ Source, tests, Web/API, local-first mobile and public EU spatial gateway are ver
 
 URBAN ONE is not presented as a bank, payment institution, AIS/PIS provider, investment firm, accounting/tax practice, certified valuation practice or licensed real-estate brokerage. Regulated financial, tax, legal, brokerage, valuation and Open Banking functions require the appropriate providers, professionals, contracts, licences, security review and jurisdiction-specific compliance before production use.
 
+## Servizi URBAN ONE per clienti B2B
+
+Sono aperte **richieste di demo, analisi dei processi, incarichi software e proposte di progetti pilota**, in particolare per imprese, hospitality B&B, property management, dati e governance AI. Ogni servizio retribuito prevede **ambito, prezzo in EUR e contratto concordati prima dell'incasso Stripe**; non sono autorizzati rinnovi, commissioni o accessi a provider per il solo fatto di aver richiesto informazioni. Il progetto non dichiara partnership o sponsorizzazioni ufficiali con OpenAI/ChatGPT.
+
+**[Consulta l'offerta commerciale e richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Apri richiesta commerciale](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/new)** (prefisso `[COMMERCIAL]`, senza dati riservati).
+
 ## Enterprise licensing opportunity
 
 URBAN ONE Enterprise is available for **qualified, non-binding international licence discussions** at a seller-selected **EUR 1,000,000 negotiable asking price**. This is not a certified market valuation, a completed sale or an online payment request. Any licence is conditional on verified intellectual-property rights, technical and regulatory diligence, agreed scope and a signed contract.
