@@ -1,0 +1,57 @@
+name: publish-hospitality-site
+on:
+  push:
+    branches:
+      - main-@URBAN-ONE
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/publish-hospitality-site.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pages-urban-one
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check repository source and prevent private asset publication
+        run: |
+          npm run security:secrets
+          npm test
+          test -f apps/web/index.html
+          test -f apps/web/press.html
+          test -f apps/web/hospitality-it.html
+          test -f apps/web/hospitality-en.html
+          test -f apps/web/hospitality-de.html
+          test -f apps/web/hospitality-fr.html
+          test -f apps/web/hospitality-es.html
+          if find apps/web -type f \( -name '*.key' -o -name '*.pem' -o -name '*.env' -o -name '*.p12' -o -name '*.keystore' \) | grep .; then
+            echo 'Secret-like file detected; aborting Pages artifact'
+            exit 1
+          fi
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload public static web site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: apps/web
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
