@@ -7,6 +7,7 @@ URBAN ONE is an independent Italian-led software initiative. The documents in th
 - [5-language editorial announcements](ANNOUNCEMENT_EU_2026.md) — IT / EN / DE / FR / ES.
 - [Voluntary association and affiliate proposal](ASSOCIATION_PARTNER_BRIEF.md) — no paid or signed agreements presumed.
 - [Official European association gateways](ASSOCIATION_GATEWAYS_2026.md) — research sources, not a mailing list or a partnership roster.
+- [EU27 country-by-country national hospitality association discovery map](EU27_ASSOCIATION_MAP.md) — official membership sources, no contacts or partner claims.
 - [Outreach and media submission templates](EDITORIAL_REQUESTS.md) — **unsent**, require permissions and per-country legal checks.
 - [Brand usage and reprint policy](BRAND_AND_EDITORIAL_LICENSE.md) — editorial reference permission limited to URBAN ONE's own original media. No third-party trademarks/licences granted.
 
