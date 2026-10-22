@@ -33,7 +33,9 @@ export function advanceInfocertMock(flow,{mode='disabled',event}={}){
     invited_mock:{start:'in_progress_mock',decline:'declined_mock',expire:'expired_mock',cancel:'cancelled_mock'},
     in_progress_mock:{mock_complete:'completed_mock',decline:'declined_mock',expire:'expired_mock',cancel:'cancelled_mock'}
   };
-  const next=map[flow.state]?.[event];
+  const transitions=map[flow.state];
+  const next=typeof event==='string'&&transitions&&Object.hasOwn(transitions,event)
+    ?transitions[event]:undefined;
   if(!next)throw new Error('INVALID_MOCK_TRANSITION');
   return {...flow,state:next,signatureApplied:false,legalSignature:false,providerCalled:false};
 }
