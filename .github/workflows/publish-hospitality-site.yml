@@ -35,8 +35,6 @@ jobs:
             echo 'Secret-like file detected; aborting Pages artifact'
             exit 1
           fi
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
       - name: Upload public static web site
         uses: actions/upload-pages-artifact@v4
         with:
@@ -52,6 +50,26 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Initial Pages enablement requires a repository administrator in Settings > Pages.
+      # GITHUB_TOKEN cannot perform first-time enablement.
+      - name: Setup GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Explain missing Pages configuration
+        if: failure() && steps.pages.outcome == 'failure'
+        run: |
+          echo '::error::Open https://github.com/karimkatlane0-crypto/-URBAN-ONE/settings/pages and select Build and deployment > Source > GitHub Actions, then re-run failed jobs.'
+          echo 'Publication is blocked. The validated github-pages artifact is available in the build job. CJ/Booking activation is not established by this workflow.' >> "$GITHUB_STEP_SUMMARY"
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published public pages
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          test -n "$PAGE_URL"
+          for page in index.html press.html hospitality-it.html hospitality-en.html hospitality-de.html hospitality-fr.html hospitality-es.html; do
+            curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
+          done
+          echo "Public static site verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo 'This verifies web publication only. CJ publisher acceptance, Booking.com advertiser approval, authorized tracking links and commissions require separate provider evidence.' >> "$GITHUB_STEP_SUMMARY"
