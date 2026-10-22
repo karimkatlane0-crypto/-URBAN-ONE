@@ -5,6 +5,8 @@ on:
       - main-@URBAN-ONE
     paths:
       - 'apps/web/**'
+      - 'index.html'
+      - 'scripts/build-pages.mjs'
       - '.github/workflows/publish-hospitality-site.yml'
   workflow_dispatch:
 permissions:
@@ -35,10 +37,12 @@ jobs:
             echo 'Secret-like file detected; aborting Pages artifact'
             exit 1
           fi
+      - name: Package stable public entry and app paths
+        run: node scripts/build-pages.mjs
       - name: Upload public static web site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: apps/web
+          path: dist/pages
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -68,7 +72,7 @@ jobs:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           test -n "$PAGE_URL"
-          for page in index.html press.html hospitality-it.html hospitality-en.html hospitality-de.html hospitality-fr.html hospitality-es.html; do
+          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html; do
             curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
           done
           echo "Public static site verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
