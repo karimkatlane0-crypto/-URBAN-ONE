@@ -65,6 +65,16 @@ Sono aperte **richieste di demo, analisi dei processi, incarichi software e prop
 
 **[Consulta l'offerta commerciale e richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Apri richiesta commerciale](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/new)** (prefisso `[COMMERCIAL]`, senza dati riservati).
 
+## URBAN ONE Hospitality Operations · Check-in / Check-out EU
+
+**Inbound B2B campaign:** process mapping, controlled demo and individually priced projects for hotel, guesthouse and B&B check-in/out workflows. A written contract and verified customer-initiated Stripe payment are required before delivery; SaaS subscriptions, optional-service commissions and any API integration require independent consent and provider authorization.
+
+- [Italiano](apps/web/hospitality-it.html) · [English](apps/web/hospitality-en.html) · [Deutsch](apps/web/hospitality-de.html) · [Français](apps/web/hospitality-fr.html) · [Español](apps/web/hospitality-es.html)
+- [Pilot technical limits and conversion plan](docs/HOSPITALITY_CHECKIN_CHECKOUT_EU.md)
+- [Offline check-in/out workflow simulation](packages/bnb/guest-journey-offline.mjs) — demonstration only, no property guest data or payments.
+
+This source is public on GitHub after a reviewed merge. A live hosted campaign, authorized customer contracts, paid SaaS, provider connections, external press pickup and receipts are separately verifiable stages. The ChatGPT plugin cannot be used to sell digital services under the currently published plugin policies.
+
 ## European hospitality press and trade-association kit
 
 Original materials are published for voluntary editorial consideration by hotel federations, B&B associations, regional tourism networks, specialist blogs and press desks. **No external association, news outlet, Booking.com, Fabrick, InfoCert or OpenAI endorsement is implied or claimed.**
