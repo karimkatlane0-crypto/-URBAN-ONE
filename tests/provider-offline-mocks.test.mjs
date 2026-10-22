@@ -29,7 +29,7 @@ const pis={mode:'sandbox_mock',tenantId:'mock-property-1',amountCents:3500,
 test('Fabrick PIS blocks payment without approval, mock SCA, and real accounts',()=>{
   assert.throws(()=>simulateFabrickPis({...pis,humanApproved:false}),/HUMAN_APPROVAL_REQUIRED/);
   assert.throws(()=>simulateFabrickPis({...pis,scaMode:'absent'}),/SCA_SIMULATION_REQUIRED/);
-  assert.throws(()=>simulateFabrickPis({...pis,beneficiaryId:'IT28R0100502200000000003986'}),/MOCK_PARTIES_REQUIRED/);
+  assert.throws(()=>simulateFabrickPis({...pis,beneficiaryId:'not-a-mock-reference'}),/MOCK_PARTIES_REQUIRED/);
   assert.throws(()=>simulateFabrickPis({...pis,amountCents:0}),/INVALID_MOCK_PAYMENT_DETAILS/);
 });
 test('Fabrick mock PIS never moves money',()=>{
@@ -42,7 +42,7 @@ test('Fabrick mock PIS never moves money',()=>{
 const signing={mode:'sandbox_mock',tenantId:'mock-property-1',contractRef:'mock-contract-1',
   documentSha256:'a'.repeat(64),signerIds:['mock-signer-a','mock-signer-b']};
 test('InfoCert blocks disabled, real and invalid signing requests',()=>{
-  assert.throws(()=>prepareInfocertMock(signing.mode==='foo'?{}:{}),/INFOCERT_PROVIDER_NOT_ENABLED/);
+  assert.throws(()=>prepareInfocertMock({}),/INFOCERT_PROVIDER_NOT_ENABLED/);
   assert.throws(()=>prepareInfocertMock({...signing,mode:'live'}),/INFOCERT_PROVIDER_NOT_ENABLED/);
   assert.throws(()=>prepareInfocertMock({...signing,signerIds:['mock-signer-a','mock-signer-a']}),/TWO_DISTINCT/);
   assert.throws(()=>prepareInfocertMock({...signing,documentSha256:'bad'}),/VALID_SHA256/);
