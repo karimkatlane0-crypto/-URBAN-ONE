@@ -1,6 +1,7 @@
 import http from 'node:http';
 import {route} from './router.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
+import {serveWeb} from './web.mjs';
 
 const port=Number(process.env.PORT||8787);
 
@@ -10,6 +11,7 @@ const server=http.createServer(async(req,res)=>{
   const path=new URL(req.url,'http://localhost').pathname;
 
   try{
+    if(await serveWeb(req,res,path)) return;
     if(req.method==='POST'&&path==='/api/stripe/webhook'){
       const r=handleStripeWebhook({rawBody,headers:req.headers,env:process.env});
       res.writeHead(r.status,{'content-type':'application/json'});
