@@ -129,3 +129,12 @@ See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) where available.
 ## Pole Position Immobiliare · dossier e visite tra privati
 
 [Apri il prototipo locale](apps/web/pole-position.html): dossier del proprietario, anteprima informativa di 24 ore, slot visite, richieste, conferma/arrivo/conclusione e messaggi locali. Incluso nella shell Web e nel bundle mobile. Tutti i dati sono dimostrativi e volatili; nessun messaggio reale, prenotazione condivisa o pagamento viene attivato. [Modello di business e passaggi verso il servizio live](docs/POLE_POSITION_IMMOBILIARE.md). Metodi e configurazioni di pagamento esistenti invariati.
+
+
+### Link Web Pole Position (anteprima pubblicabile)
+
+- **[Apri Pole Position sul sito URBAN ONE](https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web/pole-position.html)** — il percorso e gli asset sono inclusi nel build GitHub Pages; la raggiungibilità della versione corrente deve risultare dal job `Verify published public pages` del workflow [publish-hospitality-site](.github/workflows/publish-hospitality-site.yml).
+- **[Home pubblica URBAN ONE](https://karimkatlane0-crypto.github.io/-URBAN-ONE/)** — ingresso alla shell Web.
+- Demo con dossier e calendario; **nessuna** prenotazione multiutente, messaggistica server, DBRELAY live o visita a pagamento reale. Tariffe solo simulative e `paymentStatus=NOT_PROCESSED`.
+- Backend reale: da sviluppare con autorizzazione proprietario, RBAC, database privato e booking atomico, conversazioni autenticate, audit e verifica transazioni lato server. Non aggiungere endpoint DBRELAY non definito; la sua integrazione richiede contratto API/autenticazione/scopi dei dati espliciti.
+- **Invariante:** nessuna variazione a Stripe, metodi di pagamento, IBAN, checkout, split, webhook o abbonamenti esistenti.
