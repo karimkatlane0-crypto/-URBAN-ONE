@@ -31,6 +31,16 @@ function createPreview(){
  ...legal[type].map((item,index)=>(index+1)+'. '+item),
  'Non autorizza firme, successioni, partecipazione ad aste, offerte né incassi.'
  ];
+ const clauses=type==='listing_sale'?
+  ['Parti e poteri di rappresentanza [da verificare]','Descrizione, identificativi e provenienza immobile [da verificare]',
+   'Prezzo, caparra, tempi e modalità di pagamento [da negoziare]',
+   'Gravami, conformità, condizioni sospensive e garanzie [revisione professionale]',
+   'Forma dell’atto, imposte e consegna [secondo diritto locale]']:
+   type==='rental'?
+  ['Parti e titoli del locatore [da verificare]','Immobile e uso consentito [da verificare]',
+   'Durata, canone, deposito, spese e imposte [da negoziare]',
+   'Manutenzione, recesso, registrazione e restituzione [secondo diritto locale]']:[];
+ if(clauses.length)notes.push('---','SCHEMA DI MINUTA NON FIRMABILE · sezioni da validare da un professionista',...clauses.map((item,index)=>(index+1)+'. '+item));
  $('memo').textContent=notes.join('\n');
  say('draftStatus','Schema creato solo nel dispositivo. Nessun documento inviato o firmato.');
 }
