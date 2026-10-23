@@ -33,6 +33,10 @@ jobs:
           test -f apps/web/hospitality-de.html
           test -f apps/web/hospitality-fr.html
           test -f apps/web/hospitality-es.html
+          test -f apps/web/pole-position.html
+          test -f apps/web/pole-position.js
+          test -f apps/mobile/www/pole-position.html
+          test -f apps/mobile/www/pole-position.js
           if find apps/web -type f \( -name '*.key' -o -name '*.pem' -o -name '*.env' -o -name '*.p12' -o -name '*.keystore' \) | grep .; then
             echo 'Secret-like file detected; aborting Pages artifact'
             exit 1
@@ -72,8 +76,16 @@ jobs:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           test -n "$PAGE_URL"
-          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html; do
+          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js; do
             curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
           done
-          echo "Public static site verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+          # Verify that the published property preview is this release's demo,
+          # not a stale/empty page or a misleading live payment flow.
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-position.html" "${PAGE_URL%/}/apps/web/pole-position.html"
+          grep -q 'La visita parte dal dossier' "$RUNNER_TEMP/pole-position.html"
+          grep -q 'Demo locale' "$RUNNER_TEMP/pole-position.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-position.js" "${PAGE_URL%/}/apps/web/pole-position.js"
+          grep -q 'NOT_PROCESSED' "$RUNNER_TEMP/pole-position.js"
+          echo "Public static site and Pole Position demo verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Pole Position demo URL: ${PAGE_URL%/}/apps/web/pole-position.html" >> "$GITHUB_STEP_SUMMARY"
           echo 'This verifies web publication only. CJ publisher acceptance, Booking.com advertiser approval, authorized tracking links and commissions require separate provider evidence.' >> "$GITHUB_STEP_SUMMARY"
