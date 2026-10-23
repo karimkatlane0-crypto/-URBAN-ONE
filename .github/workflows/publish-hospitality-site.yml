@@ -39,6 +39,10 @@ jobs:
           test -f apps/web/pole-position.js
           test -f apps/mobile/www/pole-position.html
           test -f apps/mobile/www/pole-position.js
+          test -f apps/web/pole-premium.html
+          test -f apps/web/pole-premium.js
+          cmp apps/web/pole-premium.html apps/mobile/www/pole-premium.html
+          cmp apps/web/pole-premium.js apps/mobile/www/pole-premium.js
           if find apps/web -type f \( -name '*.key' -o -name '*.pem' -o -name '*.env' -o -name '*.p12' -o -name '*.keystore' \) | grep .; then
             echo 'Secret-like file detected; aborting Pages artifact'
             exit 1
@@ -78,7 +82,7 @@ jobs:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           test -n "$PAGE_URL"
-          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/europe-immobili.html; do
+          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/europe-immobili.html apps/web/pole-premium.html apps/web/pole-premium.js; do
             curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
           done
           # Verify that the published property preview is this release's demo,
@@ -91,6 +95,11 @@ jobs:
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/europe-immobili.html" "${PAGE_URL%/}/apps/web/europe-immobili.html"
           grep -q "Demo con immobili e indirizzi inventati" "$RUNNER_TEMP/europe-immobili.html"
           grep -q "In vendita" "$RUNNER_TEMP/europe-immobili.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-premium.html" "${PAGE_URL%/}/apps/web/pole-premium.html"
+          grep -q "Sperimentazione locale" "$RUNNER_TEMP/pole-premium.html"
+          grep -q "walkConsent" "$RUNNER_TEMP/pole-premium.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-premium.js" "${PAGE_URL%/}/apps/web/pole-premium.js"
+          grep -q "const entitled=false" "$RUNNER_TEMP/pole-premium.js"
           echo "Public static site, Pole Position and EU property catalogue verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
           echo "Pole Position demo URL: ${PAGE_URL%/}/apps/web/pole-position.html" >> "$GITHUB_STEP_SUMMARY"
           echo 'This verifies web publication only. CJ publisher acceptance, Booking.com advertiser approval, authorized tracking links and commissions require separate provider evidence.' >> "$GITHUB_STEP_SUMMARY"
