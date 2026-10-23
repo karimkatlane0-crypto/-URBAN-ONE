@@ -1,5 +1,13 @@
 name: ios-source
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main-@URBAN-ONE
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/real-estate/**'
+      - '.github/workflows/ios.yml'
 permissions:
   contents: read
 jobs:
@@ -9,6 +17,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22}
+      - name: Verify local-first EU property parity and security before iOS source generation
+        run: |
+          npm test
+          npm run security:secrets
+          cmp apps/web/europe-immobili.html apps/mobile/www/europe-immobili.html
+          cmp apps/web/pole-position.html apps/mobile/www/pole-position.html
       - working-directory: apps/mobile
         run: npm install --no-audit --no-fund && npx cap add ios && npx cap sync ios
       - uses: actions/upload-artifact@v4
