@@ -44,6 +44,9 @@ jobs:
           test -f apps/mobile/www/v10-workspace.html
           cmp apps/web/v10-workspace.html apps/mobile/www/v10-workspace.html
           test -f apps/web/pole-premium.js
+          test -f apps/web/pole-spectrum.css
+          test -f apps/mobile/www/pole-spectrum.css
+          cmp apps/web/pole-spectrum.css apps/mobile/www/pole-spectrum.css
           cmp apps/web/pole-premium.html apps/mobile/www/pole-premium.html
           cmp apps/web/pole-premium.js apps/mobile/www/pole-premium.js
           if find apps/web -type f \( -name '*.key' -o -name '*.pem' -o -name '*.env' -o -name '*.p12' -o -name '*.keystore' \) | grep .; then
@@ -85,7 +88,7 @@ jobs:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           test -n "$PAGE_URL"
-          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/europe-immobili.html apps/web/pole-premium.html apps/web/pole-premium.js apps/web/v10-workspace.html; do
+          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/europe-immobili.html apps/web/pole-premium.html apps/web/pole-premium.js apps/web/pole-spectrum.css apps/web/v10-workspace.html; do
             curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
           done
           # Verify that the published property preview is this release's demo,
@@ -103,6 +106,9 @@ jobs:
           grep -q "walkConsent" "$RUNNER_TEMP/pole-premium.html"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-premium.js" "${PAGE_URL%/}/apps/web/pole-premium.js"
           grep -q "const entitled=false" "$RUNNER_TEMP/pole-premium.js"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-spectrum.css" "${PAGE_URL%/}/apps/web/pole-spectrum.css"
+          grep -q -- '--uo-accent' "$RUNNER_TEMP/pole-spectrum.css"
+          grep -q 'Adobe Styles' "$RUNNER_TEMP/pole-premium.html"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/v10-workspace.html" "${PAGE_URL%/}/apps/web/v10-workspace.html"
           grep -q 'non è una release v10 certificata' "$RUNNER_TEMP/v10-workspace.html"
           echo "Public static site, Pole Position and EU property catalogue verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"

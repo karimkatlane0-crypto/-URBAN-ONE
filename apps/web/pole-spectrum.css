@@ -1,0 +1,111 @@
+/* URBAN ONE Pole Premium visual layer.
+   Original local stylesheet informed by Adobe Spectrum interface principles.
+   Not an Adobe SDK, Spectrum CSS package, endorsement, or Adobe login integration. */
+:root {
+  --uo-background:#0a101a;
+  --uo-surface:#141e2c;
+  --uo-surface-raised:#1d2b3e;
+  --uo-border:#465871;
+  --uo-text:#f3f6ff;
+  --uo-muted:#bfcee2;
+  --uo-accent:#80b9ff;
+  --uo-action:#9ac9ff;
+  --uo-action-text:#0a1d35;
+  --uo-focus:#a7d1ff;
+  --uo-radius:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(ellipse 70% 35% at 13% 0%,#172f4e 0%,transparent 85%),
+    radial-gradient(ellipse 36% 32% at 100% 4%,#252348 0%,transparent 95%),
+    var(--uo-background);
+  color:var(--uo-text);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.55;
+}
+main{max-width:1150px;padding:24px 24px 85px}
+nav{
+  display:flex;align-items:center;flex-wrap:wrap;gap:7px 12px;
+  padding:9px 0 20px;margin-bottom:27px;
+  border-bottom:1px solid var(--uo-border);
+  color:var(--uo-muted)
+}
+nav a{display:inline-flex;align-items:center;min-height:44px}
+a{color:#9ccaff;text-underline-offset:3px}
+a:hover{color:#daedff}
+.eyebrow{color:#b9ddfd;font-weight:680;letter-spacing:.13em}
+h1{font-weight:770;letter-spacing:-.04em;max-width:930px;line-height:1.08}
+h2{font-weight:730;letter-spacing:-.015em}
+p{max-width:80ch}
+.panel{
+  background:linear-gradient(155deg,var(--uo-surface-raised),var(--uo-surface) 73%);
+  border:1px solid var(--uo-border);
+  border-radius:var(--uo-radius);
+  padding:24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+.notice{
+  background:#172e37;
+  border:1px solid #4a8192;
+  border-left:5px solid #85d2df;
+  border-radius:0 12px 12px 0;
+  color:#e6f7f7;
+  padding:18px 20px;
+}
+.muted,small{color:var(--uo-muted)}
+.grid{gap:18px}
+label{font-weight:640;color:#e5eeff}
+input,select,button{
+  min-height:46px;
+  background:#101b2a;
+  border:1px solid #7085a3;
+  border-radius:10px;
+  color:var(--uo-text);
+  transition:background-color .12s ease,border-color .12s ease,box-shadow .12s ease;
+}
+input:hover,select:hover{border-color:#bfd6f9}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{
+  outline:3px solid var(--uo-focus);
+  outline-offset:3px;
+}
+input[type=checkbox]{accent-color:#93c5fd}
+button{
+  border-color:transparent;
+  background:var(--uo-action);
+  color:var(--uo-action-text);
+  font-weight:750;
+  cursor:pointer;
+}
+button:hover:not(:disabled){background:#b2d8ff}
+button:disabled{opacity:.48;cursor:not-allowed}
+button.secondary{background:#314762;color:#f7fbff;border-color:#8398b1}
+button.secondary:hover:not(:disabled){background:#3b5573}
+pre{
+  background:#0d1623;
+  border:1px solid #334a64;
+  border-radius:12px;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+  max-height:520px;
+  overflow:auto;
+}
+#draftStatus,#mlOutput,#walkStatus,#premiumStatus{color:#d5e9fd}
+#premiumStatus{padding:12px 14px;border:1px solid #425a75;border-radius:10px;background:#172336}
+.adobe-reference{
+  border-color:#536f8d;
+  background:linear-gradient(135deg,#1d2940,#162135);
+}
+.adobe-reference a{font-weight:670}
+.adobe-reference small{display:block;margin-top:12px}
+@media(max-width:650px){
+  main{padding:15px 15px 65px}
+  h1{font-size:clamp(2rem,9vw,3rem)}
+  .panel{padding:19px}
+  .actions{display:grid}
+  .actions button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  input,select,button{transition:none}
+}
