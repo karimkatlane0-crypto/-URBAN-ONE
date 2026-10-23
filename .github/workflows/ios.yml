@@ -7,6 +7,7 @@ on:
     paths:
       - 'apps/mobile/**'
       - 'packages/real-estate/**'
+      - 'packages/geo/pole-walk.mjs'
       - '.github/workflows/ios.yml'
 permissions:
   contents: read
@@ -23,6 +24,8 @@ jobs:
           npm run security:secrets
           cmp apps/web/europe-immobili.html apps/mobile/www/europe-immobili.html
           cmp apps/web/pole-position.html apps/mobile/www/pole-position.html
+          cmp apps/web/pole-premium.html apps/mobile/www/pole-premium.html
+          cmp apps/web/pole-premium.js apps/mobile/www/pole-premium.js
       - working-directory: apps/mobile
         run: npm install --no-audit --no-fund && npx cap add ios && npx cap sync ios
       - uses: actions/upload-artifact@v4
