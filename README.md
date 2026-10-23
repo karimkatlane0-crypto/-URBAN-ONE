@@ -125,3 +125,7 @@ Read the [URBAN ONE Enterprise Global Licensing Opportunity](docs/URBAN_ONE_ENTE
 The repository supports technical review and European collaboration across AI, Open Banking, DevSecOps, data platforms, real estate/proptech, mobility/travel and enterprise integration. Do not post secrets, credentials, customer financial data or unnecessary personal data in public issues.
 
 See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) where available.
+
+## Pole Position Immobiliare · dossier e visite tra privati
+
+[Apri il prototipo locale](apps/web/pole-position.html): dossier del proprietario, anteprima informativa di 24 ore, slot visite, richieste, conferma/arrivo/conclusione e messaggi locali. Incluso nella shell Web e nel bundle mobile. Tutti i dati sono dimostrativi e volatili; nessun messaggio reale, prenotazione condivisa o pagamento viene attivato. [Modello di business e passaggi verso il servizio live](docs/POLE_POSITION_IMMOBILIARE.md). Metodi e configurazioni di pagamento esistenti invariati.
