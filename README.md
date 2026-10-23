@@ -138,3 +138,8 @@ See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) where available.
 - Demo con dossier e calendario; **nessuna** prenotazione multiutente, messaggistica server, DBRELAY live o visita a pagamento reale. Tariffe solo simulative e `paymentStatus=NOT_PROCESSED`.
 - Backend reale: da sviluppare con autorizzazione proprietario, RBAC, database privato e booking atomico, conversazioni autenticate, audit e verifica transazioni lato server. Non aggiungere endpoint DBRELAY non definito; la sua integrazione richiede contratto API/autenticazione/scopi dei dati espliciti.
 - **Invariante:** nessuna variazione a Stripe, metodi di pagamento, IBAN, checkout, split, webhook o abbonamenti esistenti.
+
+
+### Pole Position · private staging API (source-ready)
+
+The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-only backend for authorized dossier publishing, atomic visit holds/transitions, private visit messaging and optional Stripe TEST Checkout sessions for visit services or owner subscriptions. They do **not** activate production real estate bookings, live payments or third-party DBRELAY. No existing Stripe payment methods, products, links, bank beneficiaries, subscriptions or webhook configuration are changed. The local-first Web and mobile demo remains separate from the authenticated API. See [staging & release runbook](docs/POLE_POSITION_STAGING_RELEASE.md) and [full-stack acceptance gates](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/48).
