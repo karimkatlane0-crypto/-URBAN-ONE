@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>URBAN ONE | Workspace unificato · piano v10</title>
+<meta name="description" content="Accesso unificato alle funzioni URBAN ONE esistenti. Piano v10 in revisione; il runtime certificabile rimane v7.">
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}*{box-sizing:border-box}
+body{margin:0;background:#090f19;color:#eff4fd;font-size:16px;line-height:1.55}
+main{max-width:1180px;margin:auto;padding:18px 18px 64px}
+a{color:#a9d8ff}nav{display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin:10px 0 35px}
+nav a{min-height:44px;display:inline-flex;align-items:center}
+.eyebrow{color:#c4e78c;text-transform:uppercase;letter-spacing:.11em;font-size:.8rem}
+h1{font-size:clamp(2.1rem,6vw,4.5rem);max-width:800px;line-height:1.05;margin:16px 0}h2{font-size:1.3rem}
+p{margin:.6em 0}.lead{font-size:1.1rem;color:#d0dcef;max-width:750px}
+.notice{border-left:4px solid #c3e88c;padding:15px;background:#15231f;margin:20px 0;border-radius:0 12px 12px 0}
+.controls{display:grid;grid-template-columns:minmax(220px,2fr) minmax(180px,1fr);gap:12px;margin:26px 0}
+label{font-weight:650;display:block;margin-bottom:6px}input,select{width:100%;padding:13px;color:white;background:#152334;border:1px solid #6c8099;border-radius:11px;font:inherit;min-height:48px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+article{display:flex;flex-direction:column;border:1px solid #304159;background:#131e2c;border-radius:15px;padding:20px;min-height:245px}
+article h2{margin:.2rem 0}.tag{display:inline-block;color:#b6cbe0;font-size:.79rem;margin-bottom:10px}
+article p{flex:1;color:#cad6e6}.open{display:inline-block;text-align:center;border-radius:9px;background:#d0edaa;color:#11210e;padding:11px 14px;text-decoration:none;font-weight:750;min-height:44px}
+.open:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #95cffd;outline-offset:3px}
+section.status{margin-top:32px;border-top:1px solid #344358;padding-top:18px}table{width:100%;border-collapse:collapse}th,td{padding:10px;text-align:left;border-bottom:1px solid #314056}th{color:#d6e3f5}
+small,.muted{color:#acbcd2}footer{padding-top:30px}.empty{padding:18px;border:1px dashed #65728c;border-radius:10px}
+@media(max-width:640px){.controls{grid-template-columns:1fr}table{font-size:.9rem}th,td{padding:8px 5px}}
+</style>
+</head>
+<body><main>
+<nav aria-label="Navigazione"><a href="./index.html">← Home URBAN ONE</a><a href="#moduli">Moduli</a><a href="#stato">Stato reale</a></nav>
+<div class="eyebrow">URBAN ONE · Unified Enterprise Workspace</div>
+<h1>Una sola console. Funzioni verificabili.</h1>
+<p class="lead">Accesso ai moduli Web e mobile già presenti nel progetto: immobiliare, hospitality, travel, intelligence e servizi europei.</p>
+<p class="notice"><strong>Consolidamento v10 in revisione; non è una release v10 certificata.</strong> Il repository indica attualmente v7.0.0. Questa pagina è un indice navigabile locale: non collega automaticamente Gmail, Drive, Stripe, provider AI o database e non attiva abbonamenti o pagamenti.</p>
+<section id="moduli" aria-label="Catalogo funzioni">
+<div class="controls">
+<div><label for="q">Cerca funzione</label><input id="q" type="search" placeholder="es. immobili, visite, AI, turismo" autocomplete="off"></div>
+<div><label for="category">Area</label><select id="category"><option value="all">Tutte</option><option value="property">Immobiliare</option><option value="hospitality">Hospitality</option><option value="travel">Travel</option><option value="business">Business e intelligence</option></select></div>
+</div><p id="count" class="muted" role="status" aria-live="polite">7 moduli disponibili nella workspace.</p>
+<div class="grid" id="cards">
+<article data-category="property" data-search="immobili europei civici indirizzi vendita affitto"><span class="tag">IMMOBILIARE · DATI DEMO</span><h2>Civici e immobili UE</h2><p>Ricerca locale, filtri territoriali e stati degli immobili su esempi sintetici. Nessun inventario paneuropeo verificato.</p><a class="open" href="./europe-immobili.html">Apri catalogo</a></article>
+<article data-category="property" data-search="pole position dossier proprietario prenotazioni calendario visite messaggi"><span class="tag">IMMOBILIARE · DEMO LOCALE</span><h2>Pole Position</h2><p>Dossier, disponibilità, richieste di visita e messaggi nella demo. La sincronizzazione multiutente di produzione non è confermata.</p><a class="open" href="./pole-position.html">Apri visite</a></article>
+<article data-category="business" data-search="premium intelligence machine learning gps lex agenti AI"><span class="tag">INTELLIGENCE · LAB</span><h2>ML, LEX e GPS</h2><p>Scoring sintetico, schede per revisione professionale e GPS locale consensuale; nessun provider AI o alert premium live.</p><a class="open" href="./pole-premium.html">Apri LAB</a></article>
+<article data-category="hospitality" data-search="bnb hotel hospitality check-in check-out concierge"><span class="tag">HOSPITALITY · PROPOSTA B2B</span><h2>Check-in e check-out</h2><p>Presentazione commerciale e flussi dimostrativi per strutture ricettive. Nessuna prenotazione OTA attiva.</p><a class="open" href="./hospitality-it.html">Apri hospitality</a></article>
+<article data-category="travel" data-search="travel booking early access voli viaggi 24 ore"><span class="tag">TRAVEL · PROPOSTA</span><h2>Anteprima 24 ore</h2><p>Concept opt-in di accesso informativo anticipato; nessun inventario voli o Booking.com live.</p><a class="open" href="./travel-preview.html">Apri travel</a></article>
+<article data-category="business" data-search="servizi Europa B2B software consulenza progetto contratti"><span class="tag">BUSINESS · RICHIESTA PREVENTIVO</span><h2>Servizi europei</h2><p>Offerta e contatto commerciale per incarichi concordati. Nessun addebito automatico.</p><a class="open" href="./europe-it.html">Apri servizi</a></article>
+<article data-category="business" data-search="press associazioni stampa comunicazione Europa"><span class="tag">COMUNICAZIONE · KIT PUBBLICO</span><h2>Press e partnership</h2><p>Materiali editoriali e inviti alla valutazione, senza sostenere endorsement o accordi con terze parti.</p><a class="open" href="./press.html">Apri press kit</a></article>
+</div><p id="empty" class="empty" hidden>Nessun modulo trovato. Modifica la ricerca o seleziona «Tutte».</p>
+</section>
+<section id="stato" class="status"><h2>Gate del rilascio</h2>
+<table><thead><tr><th>Area</th><th>Stato verificabile</th></tr></thead><tbody>
+<tr><td>Codice Web / UI locale</td><td>Presente nel repository v7</td></tr>
+<tr><td>Registro AI</td><td>Capacità dichiarata: 100.000 definizioni; esecuzione provider disabilitata</td></tr>
+<tr><td>Pole backend / DB</td><td>Codice staging; ambiente produttivo non verificato</td></tr>
+<tr><td>Stripe / AIS-PIS / OTA</td><td>Nessuna nuova attivazione tramite questa pagina</td></tr>
+<tr><td>Android / iOS</td><td>Firma di produzione, test dispositivi e store da verificare</td></tr>
+<tr><td>Versione v10</td><td>Candidata alla consolidazione, non certificata</td></tr>
+</tbody></table>
+<p class="muted">Lo stato operativo deve essere confermato da CI, artefatti firmati, API, store e provider. Non inserire dati personali nei moduli demo.</p>
+</section>
+<footer><small>URBAN ONE · Workspace informativa senza tracking, credenziali, checkout o chiamate automatiche a terzi. <a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/48" rel="noopener noreferrer">Roadmap backend e rilascio</a>.</small></footer>
+</main><script>
+'use strict';
+(()=>{
+ const q=document.getElementById('q'),cat=document.getElementById('category'),cards=[...document.querySelectorAll('#cards article')];
+ const count=document.getElementById('count'),empty=document.getElementById('empty');
+ function refresh(){
+  const term=q.value.trim().toLocaleLowerCase('it'),group=cat.value;
+  let visible=0;
+  for(const item of cards){
+   const search=(item.dataset.search+' '+item.innerText).toLocaleLowerCase('it');
+   const match=(group==='all'||item.dataset.category===group)&&search.includes(term);
+   item.hidden=!match;if(match)visible++;
+  }
+  count.textContent=visible+' moduli visualizzati su '+cards.length+'.';empty.hidden=visible!==0;
+ }
+ q.addEventListener('input',refresh);cat.addEventListener('change',refresh);refresh();
+})();
+</script></body></html>
