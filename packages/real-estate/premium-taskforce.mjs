@@ -91,3 +91,25 @@ export function scoreSyntheticMatch(model,record){
   return {score:Number(sigmoid(model.bias+model.weights.reduce((s,w,i)=>s+w*x[i],0)).toFixed(4)),
     type:'RANKING_DEMO_ONLY',noLegalOrFinancialDecision:true,trainingData:'SYNTHETIC_ONLY'};
 }
+
+export function previewContractOutline({type,country}={}){
+  const plan=planAdvisoryWorkflow({type,country});
+  if(!['listing_sale','rental'].includes(type))throw new Error('CONTRACT_OUTLINE_NOT_AVAILABLE_FOR_PROCEDURE');
+  const sections=type==='listing_sale'?
+    ['Parti e poteri di rappresentanza [DA VERIFICARE]','Descrizione univoca dell’immobile e identificativi [DA VERIFICARE]',
+     'Titolarità, vincoli, conformità e documenti [DA VERIFICARE]','Prezzo, modalità di pagamento, imposte e oneri [DA NEGOZIARE]',
+     'Condizioni sospensive, caparra e termini [DA NEGOZIARE]','Consegna, registrazione e forma dell’atto richiesto dalla legge locale',
+     'Garanzie, responsabilità e controversie [PROFESSIONISTA ABILITATO]']:
+    ['Parti, poteri del locatore e identificazione [DA VERIFICARE]','Descrizione e destinazione dell’immobile [DA VERIFICARE]',
+     'Durata, canone, deposito, adeguamenti e fiscalità [DA NEGOZIARE]','Spese, manutenzione, consegna e verbale [DA NEGOZIARE]',
+     'Recesso, rinnovo, inadempimento e restituzione [SECONDO LEGGE LOCALE]',
+     'Informativa privacy, registrazione e autorizzazioni [DA VERIFICARE]'];
+  return {
+    type,country:plan.country,kind:'SCHEMA_CONTRATTUALE_NON_FIRMABILE',
+    legallyBinding:false,certified:false,readyToSign:false,
+    text:['SCHEMA PRELIMINARE PER REVISIONE PROFESSIONALE — NON È UN CONTRATTO',
+      'Paese: '+plan.country,'Nessuna clausola è valida automaticamente in tutte le giurisdizioni.',
+      ...sections.map((s,i)=>(i+1)+'. '+s),
+      'DA SOTTOPORRE A NOTAIO/LEGALE/PROFESSIONISTA LOCALE PRIMA DI FIRME O PAGAMENTI.'].join('\n')
+  };
+}
