@@ -5,6 +5,7 @@ let storePath=null;
 const endpoints=Object.freeze({
   '/api/pole/dossier/create':'dossier.create',
   '/api/pole/dossier/read':'dossier.read',
+  '/api/pole/listing/update':'listing.update',
   '/api/pole/slot/create':'slot.create',
   '/api/pole/visit/request':'visit.request',
   '/api/pole/visit/read':'visit.read',
