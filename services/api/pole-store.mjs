@@ -1,3 +1,4 @@
+import {initialPropertyStatus,allowedPropertyStatusTransition,normalizeAddress} from '../../packages/real-estate/property.mjs';
 // Pole Position multi-user STAGING API: private SQLite, never bundled into GitHub Pages.
 // Production requires an independently certified identity/consent provider and external DB deployment.
 import {DatabaseSync} from 'node:sqlite';
@@ -61,7 +62,8 @@ export class PoleStore {
       'CREATE INDEX IF NOT EXISTS pole_visits_actor ON visits(dossier_id,visitor_id);'+
       'CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, dossier_id TEXT NOT NULL REFERENCES dossiers(id), visit_id TEXT NOT NULL REFERENCES visits(id), sender_id TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL);'+
       'CREATE INDEX IF NOT EXISTS pole_messages_visit ON messages(visit_id,created_at);'+
-      'CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, kind TEXT NOT NULL, actor_id TEXT NOT NULL, object_id TEXT NOT NULL, created_at TEXT NOT NULL);'
+      'CREATE TABLE IF NOT EXISTS audit (id TEXT PRIMARY KEY, kind TEXT NOT NULL, actor_id TEXT NOT NULL, object_id TEXT NOT NULL, created_at TEXT NOT NULL);'+
+      'CREATE TABLE IF NOT EXISTS listing_profiles (dossier_id TEXT PRIMARY KEY REFERENCES dossiers(id), status TEXT NOT NULL, address_json TEXT, status_source TEXT NOT NULL, updated_at TEXT NOT NULL);'
     );
   }
   close(){this.db.close();}
@@ -78,6 +80,7 @@ export class PoleStore {
       return tx(db,()=>{
         const id=randomUUID();
         db.prepare('INSERT INTO dossiers VALUES(?,?,?,?,?,?,?)').run(id,actor.id,title,body.purpose,description,publishedMs,new Date(now).toISOString());
+        db.prepare('INSERT INTO listing_profiles VALUES(?,?,?,?,?)').run(id,initialPropertyStatus(body.purpose),null,'OWNER_DECLARED_UNVERIFIED',new Date(now).toISOString());
         insertAudit(db,'dossier.created',actor,id);
         return {id,title,purpose:body.purpose,publishedAt:new Date(publishedMs).toISOString(),state:'STAGING_ONLY'};
       });
@@ -85,14 +88,46 @@ export class PoleStore {
     if(op==='dossier.read'){
       const d=get(db,'dossiers',requiredString(body.dossierId,90));
       if(d.owner_id!==actor.id&&now<d.published_ms)throw new PoleError('NOT_AVAILABLE',403);
+      const listing=db.prepare('SELECT status,address_json,status_source FROM listing_profiles WHERE dossier_id=?').get(d.id);
       const slots=db.prepare('SELECT id,start_ms,end_ms,fee_cents,terms,visit_id FROM slots WHERE dossier_id=? AND start_ms>? ORDER BY start_ms LIMIT 100').all(d.id,now);
       return {id:d.id,title:d.title,purpose:d.purpose,description:d.description,
+        listingStatus:listing?.status||initialPropertyStatus(d.purpose),statusSource:listing?.status_source||'OWNER_DECLARED_UNVERIFIED',
+        address:listing?.address_json?JSON.parse(listing.address_json):null,
         early24h:now>=d.published_ms&&now<d.published_ms+86400000,
         slots:slots.map(s=>({id:s.id,start:new Date(s.start_ms).toISOString(),end:new Date(s.end_ms).toISOString(),feeCents:s.fee_cents,terms:s.terms,available:s.visit_id===null})),
         stagingOnly:true};
     }
+    if(op==='listing.update'){
+      const d=get(db,'dossiers',requiredString(body.dossierId,90));mustOwner(d,actor);
+      if(actor.ownerVerified!==true)throw new PoleError('OWNER_AUTHORITY_REQUIRED',403);
+      const existing=db.prepare('SELECT status,address_json FROM listing_profiles WHERE dossier_id=?').get(d.id);
+      if(!existing)throw new PoleError('LISTING_NOT_FOUND',404);
+      const next=body.status===undefined?existing.status:requiredString(body.status,30);
+      if(!allowedPropertyStatusTransition(d.purpose,existing.status,next))throw new PoleError('INVALID_PROPERTY_TRANSITION',409);
+      if((next==='sold'||next==='rented')&&body.ownerDeclaration!==true)throw new PoleError('OWNER_DECLARATION_REQUIRED',403);
+      let address=existing.address_json;
+      if(body.address!==undefined){
+        const a=body.address;
+        if(!a||typeof a!=='object'||Array.isArray(a))throw new PoleError('INVALID_ADDRESS');
+        const country=requiredString(a.country,2).toUpperCase();
+        if(!/^[A-Z]{2}$/.test(country))throw new PoleError('INVALID_COUNTRY');
+        const city=requiredString(a.city,140),street=requiredString(a.street,160),number=requiredString(a.number,50);
+        const postalCode=a.postalCode==null?'':String(a.postalCode).trim().slice(0,32);
+        address=JSON.stringify(normalizeAddress({country,city,street,number,postalCode}));
+      }
+      return tx(db,()=>{
+        const updated=db.prepare('UPDATE listing_profiles SET status=?,address_json=?,status_source=?,updated_at=? WHERE dossier_id=? AND status=?')
+          .run(next,address,'OWNER_DECLARED_UNVERIFIED',new Date(now).toISOString(),d.id,existing.status);
+        if(updated.changes!==1)throw new PoleError('STATE_CONFLICT',409);
+        insertAudit(db,'listing.status.'+next,actor,d.id);
+        return {dossierId:d.id,status:next,address:address?JSON.parse(address):null,
+          statusSource:'OWNER_DECLARED_UNVERIFIED',transactionVerified:false,stagingOnly:true};
+      });
+    }
     if(op==='slot.create'){
       const d=get(db,'dossiers',requiredString(body.dossierId,90));mustOwner(d,actor);
+      const listing=db.prepare('SELECT status FROM listing_profiles WHERE dossier_id=?').get(d.id);
+      if(!['sale','rent','reserved'].includes(listing?.status))throw new PoleError('LISTING_NOT_OPEN',409);
       const start=isoMs(body.start),minutes=body.minutes;
       if(!Number.isInteger(minutes)||minutes<15||minutes>180||start<=now)throw new PoleError('INVALID_SLOT');
       const end=start+minutes*60000;
@@ -110,6 +145,8 @@ export class PoleStore {
     if(op==='visit.request'){
       if(actor.role!=='visitor')throw new PoleError('VISITOR_REQUIRED',403);
       const s=get(db,'slots',requiredString(body.slotId,90)),d=get(db,'dossiers',s.dossier_id);
+      const listing=db.prepare('SELECT status FROM listing_profiles WHERE dossier_id=?').get(d.id);
+      if(!['sale','rent','reserved'].includes(listing?.status))throw new PoleError('LISTING_NOT_OPEN',409);
       if(now<d.published_ms)throw new PoleError('NOT_AVAILABLE',403);
       if(s.start_ms<=now)throw new PoleError('SLOT_EXPIRED',409);
       return tx(db,()=>{
