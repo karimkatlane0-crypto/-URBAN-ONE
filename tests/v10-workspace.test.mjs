@@ -1,18 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
-const web=readFileSync(new URL('../apps/web/v10-workspace.html',import.meta.url),'utf8');
-const mobile=readFileSync(new URL('../apps/mobile/www/v10-workspace.html',import.meta.url),'utf8');
-test('workspace Web and mobile sources are identical and links resolve locally',()=>{
- assert.equal(web,mobile);
- for(const path of ['index.html','europe-immobili.html','pole-position.html','pole-premium.html','hospitality-it.html','travel-preview.html','europe-it.html','press.html']){
-  assert.match(web,new RegExp('href="\\./'+path.replace('.','\\.')+'"'));
-  assert.ok(existsSync(new URL('../apps/web/'+path,import.meta.url)));
-  assert.ok(existsSync(new URL('../apps/mobile/www/'+path,import.meta.url)));
- }
+const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
+const web=read('apps/web/v10-workspace.html');
+const mobile=read('apps/mobile/www/v10-workspace.html');
+test('unified workspace Web/mobile parity and local link integrity',()=>{
+  assert.equal(web,mobile);
+  for(const file of ['index.html','europe-immobili.html','pole-position.html','pole-premium.html']){
+    assert.ok(web.includes('href="./'+file+'"'),file);
+    assert.ok(existsSync(new URL('../apps/web/'+file,import.meta.url)),file);
+    assert.ok(existsSync(new URL('../apps/mobile/www/'+file,import.meta.url)),file);
+  }
+  for(const anchor of ['hospitality-eu','travel-24h','eu-b2b','eu-press']){
+    assert.ok(web.includes('href="./index.html#'+anchor+'"'),anchor);
+    assert.ok(read('apps/web/index.html').includes('id="'+anchor+'"'),anchor);
+    assert.ok(read('apps/mobile/www/index.html').includes('id="'+anchor+'"'),anchor);
+  }
 });
-test('workspace discloses release limits and exposes only static navigation',()=>{
- for(const phrase of ['v7.0.0','non è una release v10 certificata','esecuzione provider disabilitata','Nessun addebito automatico']) assert.ok(web.includes(phrase),phrase);
- assert.doesNotMatch(web,/<form|fetch\(|XMLHttpRequest|https:\/\/api\.stripe\.com/i);
- assert.match(web,/role="status"/);
+test('honest release gates and no automatic billing or third-party access',()=>{
+  for(const phrase of ['v7.0.0','non è una release v10 certificata','esecuzione provider disabilitata','Nessun addebito automatico']) assert.ok(web.includes(phrase),phrase);
+  assert.match(web,/article\[hidden\]\{display:none\}/);
+  assert.doesNotMatch(web,/<form|fetch\(|XMLHttpRequest|https:\/\/api\.stripe\.com/i);
+  assert.match(web,/role="status"/);
 });
