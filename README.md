@@ -143,3 +143,8 @@ See [`PARTNERSHIPS.md`](PARTNERSHIPS.md) where available.
 ### Pole Position · private staging API (source-ready)
 
 The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-only backend for authorized dossier publishing, atomic visit holds/transitions, private visit messaging and optional Stripe TEST Checkout sessions for visit services or owner subscriptions. They do **not** activate production real estate bookings, live payments or third-party DBRELAY. No existing Stripe payment methods, products, links, bank beneficiaries, subscriptions or webhook configuration are changed. The local-first Web and mobile demo remains separate from the authenticated API. See [staging & release runbook](docs/POLE_POSITION_STAGING_RELEASE.md) and [full-stack acceptance gates](https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/48).
+
+
+### Pole Position · Immobili d'Europa, Web + Android + iOS
+
+[Catalogo local-first degli immobili europei](apps/web/europe-immobili.html): ricerca per civico con suffissi nazionali conservativi, filtri **in vendita / in affitto / venduto / affittato / in trattativa**, e checklist **Task Force · Advisory Intelligence**. I record sono sintetici; gli stati dichiarati non provano vendita, locazione o titolarità. La UI è replicata nel bundle Capacitor e nella home. Backend di staging: `/api/pole/listing/update` con controllo del proprietario e audit, **non produzione**. [Specifiche e limiti](docs/EUROPE_REAL_ESTATE_CIVICI.md). Nessuna modifica alle configurazioni Stripe LIVE.
