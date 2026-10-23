@@ -148,3 +148,11 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 ### Pole Position · Immobili d'Europa, Web + Android + iOS
 
 [Catalogo local-first degli immobili europei](apps/web/europe-immobili.html): ricerca per civico con suffissi nazionali conservativi, filtri **in vendita / in affitto / venduto / affittato / in trattativa**, e checklist **Task Force · Advisory Intelligence**. I record sono sintetici; gli stati dichiarati non provano vendita, locazione o titolarità. La UI è replicata nel bundle Capacitor e nella home. Backend di staging: `/api/pole/listing/update` con controllo del proprietario e audit, **non produzione**. [Specifiche e limiti](docs/EUROPE_REAL_ESTATE_CIVICI.md). Nessuna modifica alle configurazioni Stripe LIVE.
+
+
+### Pole Position Intelligence LAB · ML / LEX / GPS / Premium
+
+- [Web demo](apps/web/pole-premium.html) · [Source and policy](docs/POLE_PREMIUM_AI_LEX_GPS.md): a hybrid Web/Android/iOS local-first UI with supervised **synthetic-only** ML matching, non-binding sale/rental contract outlines for professional review, country-scoped sale/rental/succession/judicial-auction checklists, coordinator-taskforce checklists and user-started **foreground-only GPS**.
+- Premium GPS alerts are **not active**: they require a verified lawful listing with trusted geocode, notification opt-in and server-verified entitlement. No background location, active push notifications, registered paid plugin, connection to Google DeepMind, provider-backed LLM training, or automatic legal actions are claimed.
+- Existing Stripe accounts, bank recipients, payment links, methods and subscriptions are **untouched**. Digital subscriptions inside iOS/Android require per-store policy review; no new price or payment has been created.
+- Source-level readiness: `GET /api/public/pole/intelligence` returns explicit offline/no-production model and premium gates; it does not provide LLM execution or subscription access.
