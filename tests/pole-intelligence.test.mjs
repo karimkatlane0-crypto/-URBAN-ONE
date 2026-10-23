@@ -1,8 +1,9 @@
+import {route} from '../services/api/router.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {Script} from 'node:vm';
-import {planAdvisoryWorkflow,previewDossierMemo,featureDecision,trainSyntheticRanker,
+import {planAdvisoryWorkflow,previewDossierMemo,previewContractOutline,featureDecision,trainSyntheticRanker,
   scoreSyntheticMatch,workflowTypes,modelRegistry} from '../packages/real-estate/premium-taskforce.mjs';
 import {distanceMeters,evaluateWalkAlerts} from '../packages/geo/pole-walk.mjs';
 
@@ -87,4 +88,26 @@ test('identical premium UI in Web, iOS and Android source, syntax-valid script, 
       assert.match(readFileSync(new URL('../'+root+name,import.meta.url),'utf8'),/pole-premium\.html/);
     }
   }
+});
+
+
+test('contract drafting produces review-only outlines, never executable legal documents',()=>{
+  for(const type of ['listing_sale','rental']){
+    const outline=previewContractOutline({type,country:'IT'});
+    assert.equal(outline.legallyBinding,false);
+    assert.equal(outline.readyToSign,false);
+    assert.equal(outline.certified,false);
+    assert.match(outline.text,/NON È UN CONTRATTO/);
+    assert.match(outline.text,/PROFESSIONISTA/);
+  }
+  assert.throws(()=>previewContractOutline({type:'succession',country:'IT'}),/CONTRACT_OUTLINE_NOT_AVAILABLE_FOR_PROCEDURE/);
+});
+test('public capabilities endpoint makes all provider, legal, GPS and pay boundaries explicit',()=>{
+  const r=route({method:'GET',path:'/api/public/pole/intelligence'});
+  assert.equal(r.status,200);
+  assert.equal(r.body.providerExecution,false);
+  assert.equal(r.body.trainingOnCustomerData,false);
+  assert.equal(r.body.realContractGeneration,false);
+  assert.equal(r.body.paidEntitlementsActive,false);
+  assert.equal(r.body.backgroundTracking,false);
 });
