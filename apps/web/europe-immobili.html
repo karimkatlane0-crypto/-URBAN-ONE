@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>URBAN ONE · Immobili e civici d'Europa</title>
+<meta name="description" content="Catalogo dimostrativo URBAN ONE per vendite, locazioni, stati immobile e civici europei, disponibile in Web e pacchetti mobili.">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{font:16px/1.5 system-ui,sans-serif;color:#eaf2ff;background:#0b111b;margin:0}main{max-width:1120px;margin:auto;padding:18px 18px 64px}header{padding:18px 0 28px}h1{font-size:clamp(2rem,5vw,3.9rem);line-height:1.1;max-width:790px;margin:.35em 0}.eyebrow{letter-spacing:.12em;color:#b3e48d;font-size:.82rem;text-transform:uppercase}h2{font-size:1.28rem}h3{font-size:1.05rem}p{margin:.6em 0 1em}a{color:#add9ff}.muted,small{color:#b7c1d2}.notice{padding:16px;border-left:4px solid #b1df8d;background:#16261e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:18px}.panel{padding:20px;margin:18px 0;border-radius:17px;background:#131e2d;border:1px solid #34445b}label{display:block;font-size:.92rem;margin:12px 0 5px}input,select,textarea,button{font:inherit;width:100%;padding:11px;min-height:44px;border:1px solid #54647c;border-radius:9px;background:#0a1522;color:#f5faff}button{background:#d4f0a4;color:#1b2811;font-weight:700;cursor:pointer}button.secondary{background:#26384f;color:#fff}a.jump{display:inline-block;padding:10px 14px;background:#d4f0a4;color:#12200a;border-radius:9px;text-decoration:none;font-weight:700}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #7fc8ff;outline-offset:3px}.result{padding:16px 0;border-top:1px solid #33445b}.tag{display:inline-block;padding:3px 9px;margin:2px 0;background:#2b3d53;border-radius:99px;font-size:.86rem}.cardactions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cardactions>*{align-self:end}@media(max-width:740px){.layout{display:block}.cardactions{grid-template-columns:1fr}}#feedback{min-height:26px}
+</style></head><body><main>
+<header><a href="./index.html">← URBAN ONE</a> · <a href="./pole-position.html">Pole Position / Visite 24h</a><div class="eyebrow">EUROPE · REAL ESTATE · LOCAL-FIRST</div><h1>Civici europei. Vendita e locazione in un solo spazio.</h1><p class="muted">Filtra immobili per Paese, città, strada, civico e stato. Gestisci un dossier fittizio e verifica il percorso prima dell'attivazione reale su Web, Android e iOS.</p></header>
+<p class="notice"><strong>Demo con immobili e indirizzi inventati.</strong> Nessuna ricerca live su annunci, registro civici ufficiale, catasto, titolarità, transazioni o geocoding certificati. I dati restano nella sessione e non sono condivisi. Stati “venduto” e “affittato” sono dichiarazioni dimostrative, non atti o verifiche notarili.</p>
+<div class="layout"><div>
+<section class="panel"><h2>Cerca immobili</h2><form id="filters"><div class="grid">
+<div><label for="country">Paese (codice ISO)</label><input id="country" list="countryList" maxlength="2" placeholder="IT, DE, FR, GB…"><datalist id="countryList"></datalist></div>
+<div><label for="city">Città</label><input id="city" maxlength="140" placeholder="Trieste"></div>
+<div><label for="street">Via / strada</label><input id="street" maxlength="160" placeholder="Musterstraße"></div>
+<div><label for="civic">Civico, suffisso o intervallo</label><input id="civic" maxlength="50" placeholder="12/A · 8 bis · 12-14"></div>
+<div><label for="postal">CAP / codice postale</label><input id="postal" maxlength="32" placeholder="34121 / SW1A 1AA"></div>
+<div><label for="statusFilter">Stato</label><select id="statusFilter"></select></div>
+</div><p class="muted">Civico esatto: <strong>12A = 12/A</strong> per il suffisso semplice; <strong>12/1, 12 bis, 12-14</strong> restano diversi. Il risultato dipende dai dati importati o autorizzati.</p><button type="submit">Filtra i dossier dimostrativi</button></form></section>
+<section class="panel"><h2 id="resultTitle">Dossier dimostrativi</h2><div id="listings" aria-live="polite"></div><p id="feedback" role="status" aria-live="polite"></p></section>
+</div><aside>
+<section class="panel"><h2>Crea un dossier demo</h2><form id="create"><label for="demoTitle">Titolo</label><input id="demoTitle" maxlength="100" required placeholder="Appartamento demo">
+<div class="grid"><div><label for="demoCountry">Paese</label><input id="demoCountry" maxlength="2" value="IT" required></div><div><label for="demoCity">Città</label><input id="demoCity" maxlength="140" required></div></div>
+<label for="demoStreet">Via / strada</label><input id="demoStreet" maxlength="160" required>
+<div class="grid"><div><label for="demoCivic">Civico</label><input id="demoCivic" maxlength="50" required></div><div><label for="demoPostal">Codice postale</label><input id="demoPostal" maxlength="32"></div></div>
+<label for="demoPurpose">Operazione</label><select id="demoPurpose"><option value="Vendita">Vendita</option><option value="Locazione">Locazione</option></select>
+<label><input type="checkbox" id="fiction" required style="width:auto;min-height:0"> Confermo dati inventati e demo senza vendita reale</label>
+<button type="submit">Aggiungi dossier locale</button></form><small>Per un dossier privato reale servono identità, deleghe, titoli, consenso e backend autorizzato.</small></section>
+<section class="panel"><h2>Task Force · Advisory Intelligence</h2><p class="muted">Percorso di consulenza progettuale assistita, non team professionale già incaricato o valutazione certificata.</p>
+<label for="advisoryArea">Area di lavoro</label><select id="advisoryArea">
+<option value="address">Geodati e civici</option><option value="legal">Titolarità e contratti</option><option value="valuation">Valutazione immobiliare</option><option value="operations">Visite, check-in e messaggi</option><option value="finance">Pagamenti, abbonamenti e fiscalità</option>
+</select><p id="advisorOutput" role="status"></p><a href="mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20-%20Pilot%20immobiliare%20Europa">Richiedi consulenza o progetto pilota</a></section>
+<section class="panel"><h2>Dati ufficiali</h2><p><a href="https://knowledge-base.inspire.ec.europa.eu/addresses_en" target="_blank" rel="noopener noreferrer">INSPIRE · Addresses (Commissione europea)</a></p><small>Metadati e servizi disponibili variano per Paese e licenza. Nessuna copertura completa è certificata qui.</small></section>
+</aside></div>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+const countries='AL AD AT BE BA BG HR CY CZ DK EE FI FR DE GR HU IS IE IT XK LV LI LT LU MT MD MC ME NL MK NO PL PT RO SM RS SK SI ES SE CH TR UA GB VA BY RU'.split(' ');
+const labels={sale:'In vendita',rent:'In affitto',reserved:'In trattativa',sold:'Venduto · dichiarato',rented:'Affittato · dichiarato',unavailable:'Non disponibile',off_market:'Ritirato'};
+function normalCivic(raw){const v=String(raw||'').normalize('NFKC').trim().toUpperCase().replace(/\s+/g,' ').replace(/[–—]/g,'-');const m=v.match(/^(\d+)\s*(?:[-/]\s*)?([A-Z])$/);return m?m[1]+'/'+m[2]:v;}
+const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const listing=[
+{id:1,title:'Esempio fittizio · Trieste',country:'IT',city:'Trieste',street:'Via Esempio',civic:'12A',postal:'34100',purpose:'Vendita',status:'sale'},
+{id:2,title:'Beispielwohnung · Berlin',country:'DE',city:'Berlin',street:'Musterstraße',civic:'12 a',postal:'10115',purpose:'Locazione',status:'rent'},
+{id:3,title:'Appartement fictif · Paris',country:'FR',city:'Paris',street:'Rue Exemple',civic:'8 bis',postal:'75001',purpose:'Vendita',status:'sold'},
+{id:4,title:'Vivienda ficticia · Madrid',country:'ES',city:'Madrid',street:'Calle Ejemplo',civic:'12-14',postal:'28001',purpose:'Locazione',status:'rented'},
+{id:5,title:'Voorbeeldwoning · Amsterdam',country:'NL',city:'Amsterdam',street:'Voorbeeldstraat',civic:'12/1',postal:'1011',purpose:'Vendita',status:'reserved'}
+];
+function options(select,all){if(all)select.add(new Option('Tutti gli stati','all'));for(const [key,value] of Object.entries(labels))select.add(new Option(value,key));}
+for(const c of countries){const item=document.createElement('option');item.value=c;$('countryList').append(item);}
+options($('statusFilter'),true);
+function allowed(row,newState){
+ const start=row.purpose==='Vendita'?'sale':'rent',done=row.purpose==='Vendita'?'sold':'rented';
+ if(row.status===done)return newState===done;
+ if(row.status===start)return [start,'reserved',done,'unavailable','off_market'].includes(newState);
+ if(row.status==='reserved')return ['reserved',start,done,'unavailable','off_market'].includes(newState);
+ if(row.status==='unavailable')return ['unavailable',start,'off_market'].includes(newState);
+ if(row.status==='off_market')return ['off_market',start].includes(newState);
+ return false;
+}
+function make(tag,parent,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=value;if(cls)e.className=cls;parent.append(e);return e;}
+function render(){
+ const filters={country:$('country').value.trim().toUpperCase(),city:fold($('city').value),street:fold($('street').value),civic:normalCivic($('civic').value),postal:$('postal').value.toUpperCase().replace(/\s+/g,''),status:$('statusFilter').value};
+ const match=listing.filter(r=>(!filters.country||r.country===filters.country)&&(!filters.city||fold(r.city)===filters.city)&&(!filters.street||fold(r.street)===filters.street)&&(!filters.civic||normalCivic(r.civic)===filters.civic)&&(!filters.postal||r.postal.replace(/\s+/g,'')===filters.postal)&&(!filters.status||filters.status==='all'||r.status===filters.status));
+ const results=$('listings');results.replaceChildren();$('resultTitle').textContent='Dossier dimostrativi · '+match.length;
+ if(!match.length)make('p',results,'Nessun dossier corrispondente nella demo. Non è una ricerca sul mercato immobiliare reale.');
+ for(const row of match){
+  const card=make('article',results,undefined,'result');
+  make('h3',card,row.title);make('span',card,labels[row.status],'tag');
+  make('p',card,[row.street,row.civic,row.postal,row.city,row.country].filter(Boolean).join(', '));
+  make('small',card,'Stato dichiarato nella demo · non verificato');
+  const buttons=make('div',card,undefined,'cardactions');
+  const map=make('a',buttons,'Apri posizione in Maps','jump');
+  map.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([row.street,row.civic,row.postal,row.city,row.country].join(', '));
+  map.target='_blank';map.rel='noopener noreferrer';
+  const selection=make('select',buttons);selection.setAttribute('aria-label','Cambia stato dimostrativo '+row.title);
+  for(const [key,label] of Object.entries(labels))if(allowed(row,key))selection.add(new Option(label,key));
+  selection.value=row.status;
+  const change=make('button',buttons,'Aggiorna stato demo','secondary');change.type='button';
+  change.onclick=()=>{if(!allowed(row,selection.value))return;const target=selection.value;
+    if(['sold','rented'].includes(target)&&!window.confirm('Confermi una dichiarazione SOLO dimostrativa? Non prova vendita o locazione.'))return;
+    row.status=target;render();$('feedback').textContent='Stato locale aggiornato. Nessuna transazione reale effettuata.';};
+ }
+}
+$('filters').onsubmit=e=>{e.preventDefault();render();};
+$('create').onsubmit=e=>{e.preventDefault();if(!$('fiction').checked)return;const data={title:$('demoTitle').value.trim(),country:$('demoCountry').value.trim().toUpperCase(),city:$('demoCity').value.trim(),street:$('demoStreet').value.trim(),civic:$('demoCivic').value.trim(),postal:$('demoPostal').value.trim(),purpose:$('demoPurpose').value};
+ if(!/^[A-Z]{2}$/.test(data.country)||!countries.includes(data.country)){ $('feedback').textContent='Seleziona un codice paese del catalogo Europa.';return;}
+ data.id=listing.length+1;data.status=data.purpose==='Vendita'?'sale':'rent';listing.unshift(data);$('create').reset();$('demoCountry').value='IT';$('filters').reset();render();$('feedback').textContent='Aggiunto un immobile fittizio alla sessione locale.';};
+const notes={address:'Confrontare le fonti ufficiali per Paese, licenza, qualità del civico e varianti linguistiche. Il catalogo INSPIRE non verifica una singola proprietà.',legal:'Raccogliere tramite canale privato i poteri del proprietario, l’identificazione, la documentazione urbanistica e le condizioni contrattuali. Validazione da professionista autorizzato.',valuation:'Preparare comparabili, metri quadrati, stato dell’immobile, condizioni di mercato e intervalli di stima. Non sostituisce una perizia certificata.',operations:'Verificare calendario atomico, deleghe, privacy delle visite, messaggistica autenticata, cancellazioni e registrazione degli accessi.',finance:'Verificare soggetto che fattura, contratti, fiscalità, rimborsi, gestione degli incassi e regole degli store per abbonamenti digitali. Nessun addebito dalla demo.'};
+$('advisoryArea').onchange=()=>{$('advisorOutput').textContent=notes[$('advisoryArea').value];};$('advisoryArea').onchange();
+render();
+</script></body></html>
