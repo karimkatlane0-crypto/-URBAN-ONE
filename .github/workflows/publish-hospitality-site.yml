@@ -27,6 +27,8 @@ jobs:
           npm run security:secrets
           npm test
           test -f apps/web/index.html
+          test -f apps/web/financial-insights.html
+          test -f apps/web/finance-demo.html
           test -f apps/web/press.html
           test -f apps/web/hospitality-it.html
           test -f apps/web/hospitality-en.html
@@ -111,6 +113,14 @@ jobs:
           grep -q 'Adobe Styles' "$RUNNER_TEMP/pole-premium.html"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/v10-workspace.html" "${PAGE_URL%/}/apps/web/v10-workspace.html"
           grep -q 'non è una release v10 certificata' "$RUNNER_TEMP/v10-workspace.html"
+          # Verify the published 29-euro offer and free local demo, not only the generic site.
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/financial-insights.html" "${PAGE_URL%/}/apps/web/financial-insights.html"
+          grep -q '29 euro per cliente' "$RUNNER_TEMP/financial-insights.html"
+          grep -q 'href="./finance-demo.html"' "$RUNNER_TEMP/financial-insights.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/finance-demo.html" "${PAGE_URL%/}/apps/web/finance-demo.html"
+          grep -q 'Calcola report locale' "$RUNNER_TEMP/finance-demo.html"
+          grep -q 'non una chiamata a un modello AI' "$RUNNER_TEMP/finance-demo.html"
+          echo "Financial Insights and free local demo verified: ${PAGE_URL%/}/apps/web/finance-demo.html" >> "$GITHUB_STEP_SUMMARY"
           echo "Public static site, Pole Position and EU property catalogue verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
           echo "Pole Position demo URL: ${PAGE_URL%/}/apps/web/pole-position.html" >> "$GITHUB_STEP_SUMMARY"
           echo 'This verifies web publication only. CJ publisher acceptance, Booking.com advertiser approval, authorized tracking links and commissions require separate provider evidence.' >> "$GITHUB_STEP_SUMMARY"
