@@ -20,15 +20,19 @@ test('five separate EU localizations have correct language, titles and styles',(
   }
   assert.match(css,/@media\(max-width:740px\)/);
 });
-test('client action is opt-in and has no secret, paid checkout or third-party tracking',()=>{
+test('client action is opt-in and only the verified agreed-service Stripe checkout is linked',()=>{
+  const approvedCheckout='https://buy.stripe.com/7sYbJ351fghgei7auSb7y05';
   for(const html of Object.values(pages)){
     assert.match(html,/mailto:karimkatlane0@gmail\.com/);
     assert.match(html,/issues\/new/);
     assert.doesNotMatch(html,/<form[\s>]/i);
-    assert.doesNotMatch(html,/google-analytics|googletagmanager|fbq\(|gtag\(|<script|stripe\.com\/[^ "]+/i);
+    assert.ok(html.includes(approvedCheckout));
+    assert.ok(html.includes('target="_blank" rel="noopener noreferrer"'));
+    assert.doesNotMatch(html.replaceAll(approvedCheckout,''),/google-analytics|googletagmanager|fbq\(|gtag\(|<script|stripe\.com\/[^ "]+/i);
     assert.doesNotMatch(html,/IT\d{2}[A-Z]\d{22}|sk_(?:live|test)_|whsec_/i);
   }
 });
+
 test('public home and README advertise localized service source with compliance text',()=>{
   for(const lang of langs){
     assert.match(index,new RegExp('europe-'+lang+'\\.html'));
