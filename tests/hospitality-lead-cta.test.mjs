@@ -12,9 +12,10 @@ test('public B&B pilot issue is linked from all 5 localized offers',()=>{
  for(const p of ['README.md','apps/web/index.html','press/TRAVEL_24H_SOCIAL_POSTS_2026.md'])
    assert.ok(read(p).includes(target),p);
 });
-test('CJ application brief never invents partner membership or service activation',()=>{
+test('CJ publisher activation stays separate from Booking advertiser and commissions',()=>{
  const brief=read('docs/BOOKING_CJ_PUBLISHER_APPLICATION_2026.md');
- assert.match(brief,/APPLICATION_NOT_SUBMITTED/);
+ assert.match(brief,/CJ_PUBLISHER_ACTIVE_BY_PROVIDER_EMAIL_2026_10_23/);
+ assert.match(brief,/BOOKING_ADVERTISER_APPLICATION_STATUS_UNKNOWN/);
  assert.match(brief,/NO_AFFILIATE_ID_VERIFIED/);
  assert.match(brief,/completed booking/);
  assert.match(brief,/https:\/\/www\.booking\.com\/affiliate-program\/v2\/index\.it\.html/);
