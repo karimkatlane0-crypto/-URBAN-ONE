@@ -16,7 +16,7 @@ test('turnover guide is linked from the public hospitality and home pages',()=>{
 test('turnover guide is truthful about external and human verification',()=>{
   assert.match(page,/Non attivo:/);
   assert.match(page,/Alloggiati Web/);
-  assert.match(page,/CSV autorizzato/);
+  assert.match(page,/prenotazioni autorizzate/);
   assert.match(page,/BOOK-001,PROPERTY-01/);
   assert.doesNotMatch(page,/<form[\s>]|<input[\s>]|<script[\s>]|google-analytics|googletagmanager|fbq\(/i);
   assert.doesNotMatch(page,/\bIT[0-9]{2}[A-Z][0-9]{22}\b|sk_(?:live|test)_|whsec_/i);
