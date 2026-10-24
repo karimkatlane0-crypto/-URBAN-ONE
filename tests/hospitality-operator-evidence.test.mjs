@@ -108,12 +108,12 @@ test('reject forged URL/camera/document evidence and arbitrary actions',()=>{
 });
 test('pseudonymous journal never contains guest PII supplied in extraneous fields',()=>{
   const supplied=cmd(OPERATOR_EVENTS.VISUAL_ID_AT_ENTRANCE,'EVENT-1',{
-    guestEmail:'guest-private@example.com',passport:'GUEST-PASSPORT',accessCode:'12345'
+    guestEmail:'guest-private@example.com',passport:'GUEST-PASSPORT',accessCode:'SECRET_DOOR_TOKEN_9'
   });
   const next=recordGuestStayAttestation(base(),supplied,{trustedAuth:auth});
   assert.equal(JSON.stringify(next).includes('guest-private'),false);
   assert.equal(JSON.stringify(next).includes('GUEST-PASSPORT'),false);
-  assert.equal(JSON.stringify(next).includes('12345'),true); // evidence ID, not the supplied access code
+  assert.equal(JSON.stringify(next).includes('SECRET_DOOR_TOKEN_9'),false);
   assert.equal(Object.hasOwn(next.journal[0],'passport'),false);
   assert.equal(Object.hasOwn(next.journal[0],'accessCode'),false);
 });
