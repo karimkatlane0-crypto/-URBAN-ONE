@@ -19,5 +19,5 @@ test('CJ publisher activation stays separate from Booking advertiser and commiss
  assert.match(brief,/NO_AFFILIATE_ID_VERIFIED/);
  assert.match(brief,/completed booking/);
  assert.match(brief,/https:\/\/www\.booking\.com\/affiliate-program\/v2\/index\.it\.html/);
- assert.doesNotMatch(brief,/sk_live_|whsec_|IT28R0100502200000000003986/);
+ assert.doesNotMatch(brief,/sk_live_|whsec_|\bIT\d{2}[A-Z]\d{22}\b/);
 });
