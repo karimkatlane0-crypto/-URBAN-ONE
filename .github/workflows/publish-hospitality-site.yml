@@ -120,6 +120,13 @@ jobs:
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/finance-demo.html" "${PAGE_URL%/}/apps/web/finance-demo.html"
           grep -q 'Calcola report locale' "$RUNNER_TEMP/finance-demo.html"
           grep -q 'non una chiamata a un modello AI' "$RUNNER_TEMP/finance-demo.html"
+          # Ensure the new affordable PSD2 X A.I. non-banking commercial page is deployed and accurate.
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/psd2-x-ai.html" "${PAGE_URL%/}/apps/web/psd2-x-ai.html"
+          grep -q 'PSD2 X A.I.' "$RUNNER_TEMP/psd2-x-ai.html"
+          grep -q '29,00 €' "$RUNNER_TEMP/psd2-x-ai.html"
+          grep -q 'Non è ancora un abbonamento con addebito automatico' "$RUNNER_TEMP/psd2-x-ai.html"
+          grep -q '7sYbJ351fghgei7auSb7y05' "$RUNNER_TEMP/psd2-x-ai.html"
+          echo "PSD2 X A.I. public storefront verified: ${PAGE_URL%/}/apps/web/psd2-x-ai.html" >> "$GITHUB_STEP_SUMMARY"
           echo "Financial Insights and free local demo verified: ${PAGE_URL%/}/apps/web/finance-demo.html" >> "$GITHUB_STEP_SUMMARY"
           echo "Public static site, Pole Position and EU property catalogue verified: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
           echo "Pole Position demo URL: ${PAGE_URL%/}/apps/web/pole-position.html" >> "$GITHUB_STEP_SUMMARY"
