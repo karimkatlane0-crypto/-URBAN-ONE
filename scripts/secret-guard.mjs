@@ -8,6 +8,8 @@ const files = execFileSync('git', ['ls-files', '-z'], {encoding: 'utf8'})
 const patterns = [
   {name: 'openai_project_key', regex: /sk-proj-[A-Za-z0-9_-]{20,}/g},
   {name: 'openai_legacy_key', regex: /sk-[A-Za-z0-9]{32,}/g},
+  // Reject complete contiguous Italian IBANs in code, docs and tests.
+  {name: 'italian_iban', regex: /\bIT[0-9]{2}[A-Z][0-9]{22}\b/gi},
 ];
 
 const findings = [];
