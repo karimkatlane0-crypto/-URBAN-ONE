@@ -116,6 +116,7 @@ jobs:
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/checkin-checkout.html" "${PAGE_URL%/}/apps/web/checkin-checkout.html"
           grep -q 'Check-in e check-out: calendario operativo da file' "$RUNNER_TEMP/checkin-checkout.html"
           grep -q 'HOSPITALITY_TURNOVER_IMPORT_2026.md' "$RUNNER_TEMP/checkin-checkout.html"
+          grep -q 'HOSPITALITY_OPERATOR_EVIDENCE_2026.md' "$RUNNER_TEMP/checkin-checkout.html"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/hospitality-it.html" "${PAGE_URL%/}/apps/web/hospitality-it.html"
           grep -q 'href="./checkin-checkout.html"' "$RUNNER_TEMP/hospitality-it.html"
           echo "Private check-in/out operator guide verified: ${PAGE_URL%/}/apps/web/checkin-checkout.html" >> "$GITHUB_STEP_SUMMARY"
