@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check-in e check-out: importazioni e attività | URBAN ONE</title>
+<meta name="description" content="URBAN ONE: flusso privato di importazione CSV per generare le attività operative di check-in e check-out delle strutture ricettive, con limiti e verifiche.">
+<link rel="stylesheet" href="./europe.css"></head>
+<body><header><a class="brand" href="./index.html">URBAN ONE</a><nav class="langs" aria-label="Navigazione"><a href="./hospitality-it.html">Hospitality</a><a href="./index.html">Home</a></nav></header>
+<main><section class="hero">
+<div class="eyebrow">Hospitality · Modulo software disponibile nel repository</div>
+<h1>Check-in e check-out: calendario operativo da file</h1>
+<p class="lead">Importa privatamente un elenco di prenotazioni autorizzate in formato CSV per produrre in modo automatico attività previste di arrivo e partenza. Il programma funziona da una copia locale di URBAN ONE: non è un servizio di registrazione degli ospiti già collegato a Booking o Alloggiati Web.</p>
+<div class="button-row">
+<a class="btn" href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/blob/main-@URBAN-ONE/docs/HOSPITALITY_TURNOVER_IMPORT_2026.md" target="_blank" rel="noopener noreferrer">Istruzioni operative e formato CSV</a>
+<a class="btn secondary" href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/blob/main-@URBAN-ONE/scripts/hospitality-turnover.mjs" target="_blank" rel="noopener noreferrer">Programma di importazione</a>
+</div></section>
+<section class="section"><h2>Input minimo — senza dati identificativi</h2>
+<p>Il file esportato dal gestionale autorizzato deve contenere soltanto i seguenti campi. Non inviare né caricare dati reali degli ospiti sul repository pubblico.</p>
+<pre><code>reservation_id,property_id,arrival_date,departure_date
+BOOK-001,PROPERTY-01,2026-10-24,2026-10-27</code></pre>
+<p>Il record mostrato è inventato. Date in formato YYYY-MM-DD e riferimenti tecnici senza nomi, documenti, telefoni o credenziali.</p></section>
+<section class="section"><div class="cards">
+<article class="card"><div class="tag">01 · File autorizzato</div><h3>Importazione privata</h3><p>Il gestore esporta le prenotazioni dal proprio PMS o calendario: il file rimane nella sua area riservata.</p></article>
+<article class="card"><div class="tag">02 · Automatizzato</div><h3>Lista giornaliera</h3><p>Il programma genera scadenze arrivi e partenze: in programma, oggi o da verificare perché scadute.</p></article>
+<article class="card"><div class="tag">03 · Operatore</div><h3>Conferma reale</h3><p>L'effettivo ingresso, l'identificazione, la consegna chiavi e la partenza richiedono riscontri dell'operatore autorizzato.</p></article>
+<article class="card"><div class="tag">04 · Servizi esterni</div><h3>Integrazioni separate</h3><p>Booking/PMS, smartlock, notifiche e Alloggiati Web richiedono connettori ufficiali e collaudi indipendenti.</p></article>
+</div></section>
+<section class="section"><h2>Stato verificato e limiti</h2><div class="notice">
+<p><strong>Disponibile:</strong> codice sorgente importazione CSV, generazione task con identificativi stabili, CLI per computer autorizzato e test automatici GitHub.</p>
+<p><strong>Non attivo:</strong> sincronizzazione continuativa con provider, check-in fisico automatico, riconoscimento identità, accessi alle camere, pagamento o comunicazioni alla Pubblica Sicurezza.</p>
+<p>Il semplice possesso di un link Gemini non costituisce un file prenotazioni, una connessione PMS o un'autorizzazione a operare su ospiti reali.</p></div></section>
+<section class="contact"><h2>Attivazione per una struttura</h2>
+<p>Per collegare un gestionale reale servono accesso autorizzato, esportazione di esempio anonima, procedure privacy e backend privato con audit. Non inviare dati degli ospiti via GitHub, email pubblica o questa pagina.</p>
+<a class="btn" href="mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20-%20Integrazione%20check-in%20check-out">Richiedi configurazione per la struttura</a>
+</section></main><footer><p>URBAN ONE · Flusso software di pianificazione. Nessuna operazione automatica su prenotazioni o persone reali senza autorizzazione e verifica. © 2026</p></footer></body></html>
