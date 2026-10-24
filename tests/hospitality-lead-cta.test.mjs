@@ -17,7 +17,10 @@ test('CJ publisher activation stays separate from Booking advertiser and commiss
  assert.match(brief,/CJ_PUBLISHER_ACTIVE_BY_PROVIDER_EMAIL_2026_10_23/);
  assert.match(brief,/BOOKING_ADVERTISER_APPLICATION_STATUS_UNKNOWN/);
  assert.match(brief,/NO_AFFILIATE_ID_VERIFIED/);
+ assert.match(brief,/CJ_PAYOUT_CONFIGURATION_NOT_VERIFIED/);
+ assert.match(brief,/Demand API Managed Affiliate needs a separate Booking partner contract/);
+ assert.match(brief,/Connectivity Partner enrollment is separately paused/);
  assert.match(brief,/completed booking/);
  assert.match(brief,/https:\/\/www\.booking\.com\/affiliate-program\/v2\/index\.it\.html/);
- assert.doesNotMatch(brief,/sk_live_|whsec_|IT28R0100502200000000003986/);
+ assert.doesNotMatch(brief, /sk_live_|whsec_|\bIT\d{2}[A-Z]\d{10}[A-Z0-9]{12}\b/i);
 });
