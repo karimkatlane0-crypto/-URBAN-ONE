@@ -2,6 +2,7 @@ import { createHmac, createHash, timingSafeEqual, randomUUID, randomBytes, scryp
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
+import {installDBRelay} from './dbrelay.mjs';
 
 export const priceId = 'price_1UUWSlRzfcoKq6cnfB1elOxQ';
 export const productId = 'prod_VVXXVGhdpIodLC';
@@ -51,6 +52,7 @@ export function createStore(filename=':memory:'){
  CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,user_id TEXT,action TEXT NOT NULL,detail TEXT,created INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS campaign_drafts(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,quote_json TEXT NOT NULL,terms_json TEXT NOT NULL,snapshot_sha256 TEXT NOT NULL,status TEXT NOT NULL,created INTEGER NOT NULL);
  CREATE INDEX IF NOT EXISTS campaign_owner ON campaign_drafts(user_id,created);`);
+ installDBRelay(db);
  const at=()=>Math.floor(Date.now()/1000), uid=()=>randomUUID();
  const audit=(user,action,detail='')=>db.prepare('INSERT INTO audit VALUES (?,?,?,?,?)').run(uid(),user,action,String(detail).slice(0,500),at());
  function register(email,password){email=String(email).trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(email)||email.length>254)throw Error('Invalid email');
@@ -106,5 +108,5 @@ export function createStore(filename=':memory:'){
  function recordReward(user,sourceEvent,kind,amount){if(!Number.isInteger(amount)||amount<0||amount>100000000)throw Error('Invalid reward amount');
  // Reward records are pending only; transfers require separate authorized program and verified payout provider.
  db.prepare('INSERT OR IGNORE INTO rewards VALUES(?,?,?,?,?,?,?)').run(uid(),user,sourceEvent,String(kind),amount,'pending',at());audit(user,'reward_pending',sourceEvent);}
- return {db,register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
+ return {db,persistent:filename!==':memory:',register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
 }
