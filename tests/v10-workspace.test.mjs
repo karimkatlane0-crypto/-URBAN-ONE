@@ -6,7 +6,9 @@ const web=read('apps/web/v10-workspace.html');
 const mobile=read('apps/mobile/www/v10-workspace.html');
 test('unified workspace Web/mobile parity and local link integrity',()=>{
   assert.equal(web,mobile);
-  for(const file of ['index.html','europe-immobili.html','pole-position.html','pole-premium.html']){
+  assert.equal(read('apps/web/discovery.html'),read('apps/mobile/www/discovery.html'));
+  for(const file of ['apps/web/index.html','apps/mobile/www/index.html']) assert.ok(read(file).includes('href="./discovery.html"'));
+  for(const file of ['index.html','discovery.html','europe-immobili.html','pole-position.html','pole-premium.html']){
     assert.ok(web.includes('href="./'+file+'"'),file);
     assert.ok(existsSync(new URL('../apps/web/'+file,import.meta.url)),file);
     assert.ok(existsSync(new URL('../apps/mobile/www/'+file,import.meta.url)),file);
