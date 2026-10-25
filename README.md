@@ -170,3 +170,7 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 ### Hospitality AI focus
 
 [AI for B&B and small hotels](https://urban-one-science.karimkatlane0.chatgpt.site/): guided guest replies, stay offers, translations and cost scenarios. [Publication evidence and current source](docs/HOSPITALITY_AI_LAUNCH.md).
+
+### Second vertical: real-estate work
+
+[Open the property AI workspace](https://urban-one-science.karimkatlane0.chatgpt.site/immobiliare) for listing drafts, inquiry replies, cost comparisons and visit checklists. Same EUR29 plan and 50-analysis allowance shared with B&B. [Publication record and complete source](docs/AI_SECOND_VERTICAL_PROPERTY.md).
