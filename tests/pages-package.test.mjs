@@ -12,7 +12,10 @@ test('Pages package resolves its entry and every relative page/asset link withou
     const entry=readFileSync(join(output,'index.html'),'utf8');
     const redirect=entry.match(/http-equiv="refresh" content="0; url=([^"]+)"/)[1];
     assert.ok(existsSync(join(output,redirect)));
-    assert.match(readFileSync(join(output,redirect),'utf8'),/checkIntegrations/);
+    const landing=readFileSync(join(output,redirect),'utf8');
+    assert.match(landing,/UNICORN WORKSPACE/);
+    assert.match(landing,/href="\.\/index\.html"/);
+    assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
     let checked=0;
     function walk(path){
       for(const file of readdirSync(path,{withFileTypes:true})){
