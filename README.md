@@ -162,3 +162,7 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 ## AI Science Computer
 
 [Open the public research workspace](https://urban-one-science.karimkatlane0.chatgpt.site/) · [Publication evidence and complete hosted source](docs/AI_SCIENCE_PUBLICATION.md). Inference requires owner sign-in; provider credentials remain private.
+
+### AI Science Pro — Stripe
+
+[Subscription offer: EUR 29/month, 50 analyses](https://urban-one-science.karimkatlane0.chatgpt.site/#piano). [Billing implementation and verified limits](docs/AI_SCIENCE_PRO_BILLING.md). Start checkout from the signed-in app to bind paid access to the correct user.
