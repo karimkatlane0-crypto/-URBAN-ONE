@@ -1,3 +1,4 @@
+import {handleScienceApi} from './science.mjs';
 import http from 'node:http';
 import {route} from './router.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
@@ -21,6 +22,12 @@ const server=http.createServer(async(req,res)=>{
     const rawBody=Buffer.concat(chunks);
     if(await serveWeb(req,res,path))return;
 
+    if(path.startsWith('/api/science/')){
+      let body={};
+      if(rawBody.length){try{body=JSON.parse(rawBody.toString('utf8'));}catch{res.writeHead(400,headers);res.end(JSON.stringify({error:'INVALID_JSON'}));return;}}
+      const result=await handleScienceApi({method:req.method,path,headers:req.headers,body,env:process.env});
+      res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
+    }
     if(path.startsWith('/api/pole/')){
       let body={};
       if(rawBody.length){
