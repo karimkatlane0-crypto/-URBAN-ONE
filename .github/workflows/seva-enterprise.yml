@@ -1,0 +1,30 @@
+name: SEVA Enterprise Phases II-III
+on:
+  pull_request:
+    paths:
+      - 'apps/seva-enterprise/**'
+      - '.github/workflows/seva-enterprise.yml'
+  push:
+    branches:
+      - 'seva-enterprise-phase2-phase3-*'
+      - 'main-@URBAN-ONE'
+    paths:
+      - 'apps/seva-enterprise/**'
+      - '.github/workflows/seva-enterprise.yml'
+permissions:
+  contents: read
+jobs:
+  verify-seva:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Check JavaScript
+        working-directory: apps/seva-enterprise
+        run: npm run check
+      - name: Run isolated SEVA test suite
+        working-directory: apps/seva-enterprise
+        run: npm test
