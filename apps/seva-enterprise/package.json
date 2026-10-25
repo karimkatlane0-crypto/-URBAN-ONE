@@ -3,13 +3,13 @@
   "version": "2.3.0",
   "private": true,
   "type": "module",
-  "description": "SEVA AI secure goal planning and contract-gated commercial pricing simulator",
+  "description": "SEVA AI goal planning, contractual commerce, and local persisted DBRELAY sync",
   "engines": {
     "node": ">=22.13.0"
   },
   "scripts": {
     "start": "node --experimental-sqlite server.mjs",
     "test": "node --experimental-sqlite --test test/*.test.mjs",
-    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js"
+    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check annual-billing.mjs && node --check dbrelay.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js"
   }
 }

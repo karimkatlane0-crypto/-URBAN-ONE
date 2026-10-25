@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createStore,verifyStripeSignature} from './core.mjs';
 import {validateMonthlyPlan} from './billing.mjs';
 import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
+import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
@@ -75,6 +76,9 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/auth/login'&&method==='POST'){rate(req,'login',10);const body=JSON.parse(await rawBody(req));const u=store.login(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,200,{user:u});}
  if(path==='/api/auth/logout'&&method==='POST'){const token=cookies(req).seva_session;if(token)store.db.prepare('DELETE FROM sessions WHERE token=?').run(token);res.setHeader('Set-Cookie',`seva_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secureCookie(req)}`);return json(res,200,{ok:true});}
  if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id)});}
+ if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=auth(req);return json(res,200,dbrelayStatus(store,u.id));}
+ if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
+ if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
  if(path==='/api/goals'&&method==='GET'){const u=auth(req);return json(res,200,{goals:store.listGoals(u.id)});}
  if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));return json(res,201,{id:store.saveGoal(u.id,body)});}
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const b=JSON.parse(await rawBody(req));return json(res,200,{id:store.saveGoal(u.id,b,id)});}

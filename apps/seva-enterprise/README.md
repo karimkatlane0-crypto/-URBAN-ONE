@@ -8,6 +8,10 @@ This is a standalone application under `apps/seva-enterprise/`, separate from th
 
 Buyer €50/year and e-commerce merchant €500/year are separate from commercial formula A=€50/month. Their code path is fail-closed by default. No annual Stripe Checkout can be opened until provider prices/products are ACTIVE, private environment is configured, test webhook-to-entitlement cycle is proven and explicit owner release controls are approved. See [STRIPE-ANNUAL-INTEGRATION.md](STRIPE-ANNUAL-INTEGRATION.md).
 
+## Phase II DBRELAY — secure data synchronization
+
+Goal edits and consented campaign drafts are logged atomically in SQLite by `dbrelay_changes`. Authenticated `/api/dbrelay/status`, `/api/dbrelay/snapshot` and `/api/dbrelay/changes` support source-of-truth snapshots and owner-scoped incremental sync; the dedicated **DBRELAY** UI tab refreshes saved goals from the backend. No external cloud relay, Stripe execution or auto-upload of photos. See [DBRELAY-PHASE-II.md](DBRELAY-PHASE-II.md).
+
 ## What works in the verified local package
 
 - Enterprise Phase II: account sessions, isolated customer goals and subgoals, acceptance criteria, evidence, status and audit, JSON/CSV/TXT export, pricing quote at **EUR 50/month** with consent-bounded marketing and verified-savings logic, ownership-scoped saved commercial drafts with a SHA-256 snapshot, and quorum/deadline marketing-redemption **preview** (no transfer).

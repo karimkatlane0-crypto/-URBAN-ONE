@@ -2,7 +2,7 @@ const $=id=>document.getElementById(id);let user=null,goals=[],editing=null,regi
 function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 async function api(path,method='GET',data){const res=await fetch(path,{method,headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined,credentials:'same-origin'});const body=await res.json();if(!res.ok)throw Error(body.error||'Errore di connessione');return body;}
-function showLogin(){user=null;$('workspace').hidden=true;$('loginScreen').hidden=false;$('logout').hidden=true;}
+function showLogin(){dbrelayCursor=null;user=null;$('workspace').hidden=true;$('loginScreen').hidden=false;$('logout').hidden=true;}
 function showWorkspace(){ $('loginScreen').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('welcome').textContent=`Accesso verificato · ${user.email}`;}
 async function sync(){try{publicStatus=await api('/api/public/status');$('system').textContent=publicStatus.aiConfigured?'OpenAI configurato':'OpenAI da collegare';$('buy').disabled=!publicStatus.salesEnabled;$('buyBuyer').disabled=!publicStatus.annualCheckoutEnabled;$('buyEcommerce').disabled=!publicStatus.annualCheckoutEnabled;$('billingStatus').textContent=`${access?'Accesso attivo':'Accesso non attivo'} · ${publicStatus.salesEnabled?'Vendite disponibili':'Vendite sospese fino a collaudo'} · ${publicStatus.stripeConfigured?'Stripe backend configurato':'Stripe backend non configurato'}`;}catch{$('system').textContent='Backend non verificato';}}
 async function refresh(){const me=await api('/api/me');user=me.user;access=me.access;showWorkspace();const data=await api('/api/goals');goals=data.goals;renderGoals();await sync();}
@@ -22,12 +22,35 @@ function resetGoal(){editing=null;$('formTitle').textContent='Nuovo obiettivo';$
 $('newGoal').onclick=resetGoal;$('resetGoal').onclick=resetGoal;
 $('goalForm').onsubmit=async(e)=>{e.preventDefault();const data={title:$('gTitle').value,parent_id:$('gParent').value||null,description:$('gDescription').value,criteria:$('gCriteria').value,evidence:$('gEvidence').value,status:$('gStatus').value};try{await api(editing?'/api/goals/'+editing:'/api/goals',editing?'PUT':'POST',data);const r=await api('/api/goals');goals=r.goals;resetGoal();toast('Obiettivo salvato con successo');}catch(err){toast(err.message)}};
 $('deleteGoal').onclick=async()=>{if(!editing||!confirm('Eliminare questo obiettivo e tutti i sotto-obiettivi?'))return;try{await api('/api/goals/'+editing,'DELETE');goals=(await api('/api/goals')).goals;resetGoal();toast('Obiettivo eliminato');}catch(e){toast(e.message)}};
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('.section').forEach(s=>s.hidden=s.id!==b.dataset.tab);if(b.dataset.tab==='rewards')try{const r=await api('/api/rewards');$('rewardList').innerHTML=r.rewards.length?r.rewards.map(x=>`<p>${escapeHTML(x.kind)} · €${(x.amount_cents/100).toFixed(2)} · ${escapeHTML(x.approval)}</p>`).join(''):'Nessuna ricompensa registrata. Nessun accredito dichiarato.';}catch(e){toast(e.message)}if(b.dataset.tab==='billing')await sync();});
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('selected',x===b));document.querySelectorAll('.section').forEach(s=>s.hidden=s.id!==b.dataset.tab);if(b.dataset.tab==='rewards')try{const r=await api('/api/rewards');$('rewardList').innerHTML=r.rewards.length?r.rewards.map(x=>`<p>${escapeHTML(x.kind)} · €${(x.amount_cents/100).toFixed(2)} · ${escapeHTML(x.approval)}</p>`).join(''):'Nessuna ricompensa registrata. Nessun accredito dichiarato.';}catch(e){toast(e.message)}if(b.dataset.tab==='billing')await sync();if(b.dataset.tab==='dbrelay')await refreshDBRelay();});
 $('generate').onclick=async()=>{$('generate').disabled=true;$('aiResult').textContent='Richiesta autenticata in corso…';try{const r=await api('/api/ai/generate','POST',{prompt:$('aiPrompt').value});$('aiResult').textContent=r.text+`\n\n✓ Risposta autentica · ${r.provider} · ${r.model} · ${r.id}`;}catch(e){$('aiResult').textContent='Risposta AI non disponibile: '+e.message;}finally{$('generate').disabled=false}};
 $('buy').onclick=async()=>{try{const r=await api('/api/billing/checkout','POST',{});if(!r.url?.startsWith('https://checkout.stripe.com/'))throw Error('Checkout URL non valido');location.href=r.url;}catch(e){toast(e.message)}};
 async function annualCheckout(plan){try{const r=await api('/api/billing/checkout/annual','POST',{plan});if(!r.url?.startsWith('https://checkout.stripe.com/'))throw Error('Checkout URL non valido');location.href=r.url;}catch(e){toast(e.message);}}
 $('buyBuyer').onclick=()=>annualCheckout('buyer');
 $('buyEcommerce').onclick=()=>annualCheckout('ecommerce');
+let dbrelayCursor=null;
+async function refreshDBRelay(){
+ const button=$('dbrelayRefresh');button.disabled=true;
+ try{
+  const status=await api('/api/dbrelay/status');
+  let changes=0;let newSnapshot=false;
+  if(dbrelayCursor===null){
+   const snapshot=await api('/api/dbrelay/snapshot');dbrelayCursor=snapshot.cursor;
+   goals=snapshot.goals;renderGoals();newSnapshot=true;
+  } else {
+   let pageCount=0,more=true;
+   while(more&&pageCount++<30) {
+    const page=await api('/api/dbrelay/changes?after='+encodeURIComponent(dbrelayCursor)+'&limit=100');
+    changes+=page.changes.length;dbrelayCursor=page.nextCursor;more=page.hasMore;
+   }
+   if(changes){const snapshot=await api('/api/dbrelay/snapshot');goals=snapshot.goals;renderGoals();dbrelayCursor=snapshot.cursor;}
+   if(more)throw Error('Molte modifiche presenti: esegui nuovamente la sincronizzazione');
+  }
+  $('dbrelayStatus').textContent='Database '+status.database+' · '+(status.persistent?'persistente':'in memoria (test)')+' · '+status.goals+' obiettivi · '+status.campaigns+' proposte';
+  $('dbrelayDetails').textContent='Cursor '+dbrelayCursor+' · '+(newSnapshot?'Snapshot iniziale verificato':changes+' eventi sincronizzati')+' · Relay esterni non connessi · Pagamenti non avviati';
+ }catch(e){$('dbrelayStatus').textContent='DBRELAY non disponibile: '+e.message;}finally{button.disabled=false;}
+}
+$('dbrelayRefresh').onclick=refreshDBRelay;
 function csvEscape(t){return '"'+String(t??'').replace(/"/g,'""')+'"';}
 function exportData(kind){let content='',mime='text/plain';if(kind==='json'){content=JSON.stringify({app:'SEVA',version:1,exportedAt:new Date().toISOString(),goals},null,2);mime='application/json';}else if(kind==='csv'){content=[['id','parent_id','title','description','criteria','evidence','status'].join(','),...goals.map(g=>['id','parent_id','title','description','criteria','evidence','status'].map(k=>csvEscape(g[k])).join(','))].join('\n');mime='text/csv';}else{content=goals.map(g=>`${'  '.repeat(treeDepth(g.id))}• ${g.title} [${g.status}]\n  Criteri: ${g.criteria||'Da definire'}\n  Evidenze: ${g.evidence||'Da verificare'}`).join('\n\n');}const blob=new Blob([content],{type:mime+';charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`SEVA-goals-${new Date().toISOString().slice(0,10)}.${kind}`;a.click();URL.revokeObjectURL(url);}
 document.querySelectorAll('[data-export]').forEach(el=>el.onclick=()=>exportData(el.dataset.export));
