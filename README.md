@@ -166,3 +166,7 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 ### AI Science Pro — Stripe
 
 [Subscription offer: EUR 29/month, 50 analyses](https://urban-one-science.karimkatlane0.chatgpt.site/#piano). [Billing implementation and verified limits](docs/AI_SCIENCE_PRO_BILLING.md). Start checkout from the signed-in app to bind paid access to the correct user.
+
+### Hospitality AI focus
+
+[AI for B&B and small hotels](https://urban-one-science.karimkatlane0.chatgpt.site/): guided guest replies, stay offers, translations and cost scenarios. [Publication evidence and current source](docs/HOSPITALITY_AI_LAUNCH.md).
