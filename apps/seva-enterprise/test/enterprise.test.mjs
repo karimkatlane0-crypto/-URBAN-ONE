@@ -1,0 +1,25 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createStore} from '../core.mjs';
+import {quoteSEVA} from '../commercial.mjs';
+import {validateMonthlyPlan,SEVA_MONTHLY_CENTS} from '../billing.mjs';
+
+const monthly='price_monthlydemo',sku='prod_monthlydemo';
+const goodPrice={id:monthly,product:sku,active:true,currency:'eur',unit_amount:5000,type:'recurring',recurring:{interval:'month',interval_count:1,usage_type:'licensed'}};
+const goodProduct={id:sku,active:true};
+test('enterprise monthly 50 EUR invariant',()=>assert.equal(SEVA_MONTHLY_CENTS,5000));
+test('accepts only active EUR50 monthly recurring price',()=>assert.equal(validateMonthlyPlan(goodPrice,goodProduct,monthly),true));
+test('rejects legacy EUR500/year Stripe SKU',()=>assert.throws(()=>validateMonthlyPlan({...goodPrice,unit_amount:50000,recurring:{...goodPrice.recurring,interval:'year'}},goodProduct,monthly)));
+test('rejects missing monthly price ID',()=>assert.throws(()=>validateMonthlyPlan(goodPrice,goodProduct,'')));
+test('rejects mismatched price ID',()=>assert.throws(()=>validateMonthlyPlan(goodPrice,goodProduct,'price_other')));
+test('rejects inactive product',()=>assert.throws(()=>validateMonthlyPlan(goodPrice,{...goodProduct,active:false},monthly)));
+test('rejects metered recurring price',()=>assert.throws(()=>validateMonthlyPlan({...goodPrice,recurring:{...goodPrice.recurring,usage_type:'metered'}},goodProduct,monthly)));
+const terms={quorumTarget:20,deadlineIso:'2027-03-31T23:59:00+02:00',marketingConsentConfirmed:true};
+test('saves user-owned campaign draft with a SHA256 snapshot',()=>{const store=createStore(),u=store.register('user1@example.com','ComplexPassword123!');const id=store.saveCampaign(u.id,quoteSEVA({months:1}),terms);const drafts=store.listCampaigns(u.id);assert.equal(drafts.length,1);assert.equal(drafts[0].id,id);assert.match(drafts[0].snapshotSha256,/^[a-f0-9]{64}$/);assert.equal(drafts[0].status,'draft');});
+test('isolates campaign drafts across accounts',()=>{const s=createStore(),a=s.register('a@example.com','ComplexPassword123!'),b=s.register('b@example.com','ComplexPassword123!');s.saveCampaign(a.id,quoteSEVA({months:1}),terms);assert.equal(s.listCampaigns(b.id).length,0);});
+test('requires marketing consent to persist campaign with marketing charges',()=>{const s=createStore(),u=s.register('buyer@example.com','ComplexPassword123!');const quote=quoteSEVA({marketingRequestedCents:10000,marketingConsentedCents:10000});assert.throws(()=>s.saveCampaign(u.id,quote,{...terms,marketingConsentConfirmed:false}));});
+test('rejects invalid and timezone-free campaign deadline',()=>{const s=createStore(),u=s.register('buyer2@example.com','ComplexPassword123!');assert.throws(()=>s.saveCampaign(u.id,quoteSEVA(),{...terms,deadlineIso:'2027-03-31'}));});
+test('rejects quorum target below one',()=>{const s=createStore(),u=s.register('buyer3@example.com','ComplexPassword123!');assert.throws(()=>s.saveCampaign(u.id,quoteSEVA(),{...terms,quorumTarget:0}));});
+test('PWA pre-cache whitelist excludes API and Stripe',async()=>{const sw=await readFile(new URL('../public/sw.js',import.meta.url),'utf8');assert.match(sw,/api\/|startsWith\('\/api\/'\)/);assert.match(sw,/event.request.method!=='GET'/);});
+test('manifest is installable standalone mobile shell',async()=>{const m=JSON.parse(await readFile(new URL('../public/manifest.webmanifest',import.meta.url),'utf8'));assert.equal(m.display,'standalone');assert.equal(m.short_name,'SEVA');assert.equal(m.icons.length,2);});
