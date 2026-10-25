@@ -8,6 +8,7 @@ import {buildDataEuropaSpatialSearch,INSPIRE_THEMES,publicSpatialPolicy} from '.
 import {buildCopernicusStacSearch,COPERNICUS_COLLECTIONS,copernicusSatellitePolicy} from '../../packages/geo/copernicus.mjs';
 import {networkPassPolicy,quoteNetworkPass} from '../../packages/bnb/network-pass.mjs';
 import {integrationReadiness} from './readiness.mjs';
+import {discoveryResponse} from './discovery.mjs';
 import {workflowTypes,modelRegistry,premiumFeatures} from '../../packages/real-estate/premium-taskforce.mjs';
 
 function hasScope(req,scope){
@@ -31,6 +32,7 @@ function safe(fn){
 
 export function route(req, env={}){
   const {method='GET',path='/',body={}}=req;
+  if(method==='POST'&&path==='/api/public/discovery/search') return discoveryResponse(body,env);
   if(method==='GET'&&path==='/health') return {status:200,body:{ok:true,version:'7.0.0'}};
   if(method==='GET'&&path==='/api/integrations/readiness') return {status:200,body:integrationReadiness(env)};
   if(method==='GET'&&path==='/api/public/pole/intelligence') return {status:200,body:{mode:'LAB_ONLY',jurisdictionPolicy:'HUMAN_LEGAL_REVIEW_REQUIRED',modelRegistry,workflowTypes,premiumFeatures,providerExecution:false,trainingOnCustomerData:false,realContractGeneration:false,paidEntitlementsActive:false,gpsForegroundOnly:true,backgroundTracking:false,notificationsLive:false}};

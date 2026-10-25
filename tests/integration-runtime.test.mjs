@@ -28,6 +28,9 @@ test('same-origin runtime serves the app and assets while withholding repository
   assert.equal(home.status,200);assert.match(home.headers.get('content-type'),/text\/html/);
   assert.match(await home.text(),/checkIntegrations/);
   assert.equal((await fetch(base+'/europe.css')).status,200);
+  const discovery=await fetch(base+'/discovery.html');
+  assert.equal(discovery.status,200);
+  assert.match(await discovery.text(),/api\/public\/discovery\/search/);
   const head=await fetch(base+'/index.html',{method:'HEAD'});assert.equal(await head.text(),'');
   for(const path of ['/.env','/package.json','/services/api/server.mjs','/assets/../../README.md','/missing.html']){
     assert.equal((await fetch(base+path)).status,404,path);
