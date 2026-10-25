@@ -4,6 +4,10 @@
 
 This is a standalone application under `apps/seva-enterprise/`, separate from the URBAN ONE and KKUBERA applications. The current package was derived from the previous SEVA 1.1 implementation after 68 unit/HTTP tests. It does **not** overwrite or replace the existing, separately hosted `seva.karimkatlane0.chatgpt.site` project.
 
+## Annual Stripe subscriptions (integration candidate)
+
+Buyer €50/year and e-commerce merchant €500/year are separate from commercial formula A=€50/month. Their code path is fail-closed by default. No annual Stripe Checkout can be opened until provider prices/products are ACTIVE, private environment is configured, test webhook-to-entitlement cycle is proven and explicit owner release controls are approved. See [STRIPE-ANNUAL-INTEGRATION.md](STRIPE-ANNUAL-INTEGRATION.md).
+
 ## What works in the verified local package
 
 - Enterprise Phase II: account sessions, isolated customer goals and subgoals, acceptance criteria, evidence, status and audit, JSON/CSV/TXT export, pricing quote at **EUR 50/month** with consent-bounded marketing and verified-savings logic, ownership-scoped saved commercial drafts with a SHA-256 snapshot, and quorum/deadline marketing-redemption **preview** (no transfer).
