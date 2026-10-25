@@ -16,4 +16,8 @@
 
 Annual buyer (€50/year) and merchant (€500/year) Stripe products have been verified as created, but not active for checkout. Source implementation and fail-closed tests are committed on a review branch. This does **not** establish an actual purchase, settlement, authorized entitlement or production deployment. The Stripe account is Katlane Karim. Distinguish this from the commercial A=€50/month simulation and previous monthly Checkout code. Live sale remains blocked pending the separate gates in `STRIPE-ANNUAL-INTEGRATION.md`.
 
+### DBRELAY Phase II source integration (25 October 2026)
+
+A separate SEVA SQLite change feed and owner-scoped snapshot/cursor APIs were added on a dedicated review branch. Test suite includes durability after close/reopen and authenticated HTTP checks. This is not a claim of production DB persistence, public HTTPS deployment or cloud multi-device synchronization. See `DBRELAY-PHASE-II.md`.
+
 No keys, live card data or identity documents are included. No Stripe products, prices, payouts, checkout links or payment methods were modified during this release preparation.
