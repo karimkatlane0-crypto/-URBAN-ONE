@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {getAnnualPlan, validateAnnualPlan} from '../annual-billing.mjs';
+
+const buyerProduct={id:'prod_buyer',active:true,metadata:{app:'SEVA',audience:'buyer'}};
+const sellerProduct={id:'prod_seller',active:true,metadata:{app:'SEVA'}};
+const makePrice=(id,product,amount)=>({id,product,active:true,currency:'eur',unit_amount:amount,type:'recurring',recurring:{interval:'year',interval_count:1,usage_type:'licensed'}});
+const buyerPrice=makePrice('price_buyer','prod_buyer',5000);
+const sellerPrice=makePrice('price_seller','prod_seller',50000);
+test('buyer annual is EUR 50 per year',()=>assert.equal(getAnnualPlan('buyer').amountCents,5000));
+test('ecommerce annual is EUR 500 per year',()=>assert.equal(getAnnualPlan('ecommerce').amountCents,50000));
+test('rejects unrecognized annual plan',()=>assert.throws(()=>getAnnualPlan('agent')));
+test('validates active buyer annual contract',()=>assert.equal(validateAnnualPlan('buyer',buyerPrice,buyerProduct,'price_buyer','prod_buyer'),true));
+test('validates active ecommerce annual contract',()=>assert.equal(validateAnnualPlan('ecommerce',sellerPrice,sellerProduct,'price_seller','prod_seller'),true));
+test('rejects monthly EUR 50 as annual buyer plan',()=>assert.throws(()=>validateAnnualPlan('buyer',{...buyerPrice,recurring:{...buyerPrice.recurring,interval:'month'}},buyerProduct,'price_buyer','prod_buyer')));
+test('rejects wrong amount and currency',()=>{assert.throws(()=>validateAnnualPlan('buyer',{...buyerPrice,unit_amount:2900},buyerProduct,'price_buyer','prod_buyer'));assert.throws(()=>validateAnnualPlan('buyer',{...buyerPrice,currency:'usd'},buyerProduct,'price_buyer','prod_buyer'));});
+test('rejects swapped price and product',()=>assert.throws(()=>validateAnnualPlan('buyer',sellerPrice,sellerProduct,'price_buyer','prod_buyer')));
+test('rejects inactive price and product',()=>{assert.throws(()=>validateAnnualPlan('buyer',{...buyerPrice,active:false},buyerProduct,'price_buyer','prod_buyer'));assert.throws(()=>validateAnnualPlan('buyer',buyerPrice,{...buyerProduct,active:false},'price_buyer','prod_buyer'));});
+test('rejects incorrect buyer audience',()=>assert.throws(()=>validateAnnualPlan('buyer',buyerPrice,{...buyerProduct,metadata:{app:'SEVA'}},'price_buyer','prod_buyer')));
+test('rejects missing configuration',()=>assert.throws(()=>validateAnnualPlan('ecommerce',sellerPrice,sellerProduct,'','prod_seller')));
+test('rejects unrelated or metered product',()=>{assert.throws(()=>validateAnnualPlan('ecommerce',sellerPrice,{...sellerProduct,metadata:{app:'OTHER'}},'price_seller','prod_seller'));assert.throws(()=>validateAnnualPlan('buyer',{...buyerPrice,recurring:{...buyerPrice.recurring,usage_type:'metered'}},buyerProduct,'price_buyer','prod_buyer'));});

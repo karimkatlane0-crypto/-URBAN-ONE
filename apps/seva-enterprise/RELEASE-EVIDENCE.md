@@ -12,4 +12,8 @@
 | Android APK and device test | OPEN | PWA installation available on supported HTTPS mobile browsers; no native build verified |
 | `seva.karimkatlane0.chatgpt.site` replacement | NOT ATTEMPTED | Preserve original. Independent site deployment access required |
 
+### Stripe annual contract update (25 October 2026)
+
+Annual buyer (€50/year) and merchant (€500/year) Stripe products have been verified as created, but not active for checkout. Source implementation and fail-closed tests are committed on a review branch. This does **not** establish an actual purchase, settlement, authorized entitlement or production deployment. The Stripe account is Katlane Karim. Distinguish this from the commercial A=€50/month simulation and previous monthly Checkout code. Live sale remains blocked pending the separate gates in `STRIPE-ANNUAL-INTEGRATION.md`.
+
 No keys, live card data or identity documents are included. No Stripe products, prices, payouts, checkout links or payment methods were modified during this release preparation.
