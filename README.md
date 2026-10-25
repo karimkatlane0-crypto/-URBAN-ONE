@@ -174,3 +174,7 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 ### Second vertical: real-estate work
 
 [Open the property AI workspace](https://urban-one-science.karimkatlane0.chatgpt.site/immobiliare) for listing drafts, inquiry replies, cost comparisons and visit checklists. Same EUR29 plan and 50-analysis allowance shared with B&B. [Publication record and complete source](docs/AI_SECOND_VERTICAL_PROPERTY.md).
+
+### Third vertical: research and development
+
+[Open Research AI](https://urban-one-science.karimkatlane0.chatgpt.site/ricerca) for hypotheses, draft protocols, static code review and supplied-source analysis. The EUR29 plan and 50-analysis allowance are shared across all three verticals. [Publication record and real local API check](docs/AI_THIRD_VERTICAL_RESEARCH.md).
