@@ -29,3 +29,24 @@ test('51 backend lists monthly sales plan and gates by configuration',async()=>{
 test('52 annual buyer checkout stays disabled without deployment gate',async()=>{const r=await call('/api/billing/checkout/annual',{method:'POST',body:{plan:'buyer'}});assert.equal(r.status,503);});
 test('53 annual ecommerce checkout stays disabled without deployment gate',async()=>{const r=await call('/api/billing/checkout/annual',{method:'POST',body:{plan:'ecommerce'}});assert.equal(r.status,503);});
 test('54 public status distinguishes annual tiers without claiming verified checkout',async()=>{const r=await call('/api/public/status');assert.equal(r.data.annualCheckoutEnabled,false);assert.deepEqual(r.data.annualPlans.map(x=>x.price),['€50/anno','€500/anno']);assert.equal(r.data.checkoutVerified,false);});
+
+test('55 DBRELAY endpoint blocks unauthenticated requests',async()=>{
+ const r=await fetch(base+'/api/dbrelay/snapshot');assert.equal(r.status,401);
+});
+test('56 DBRELAY status exposes only own persisted dataset metadata',async()=>{
+ const r=await call('/api/dbrelay/status');assert.equal(r.status,200);
+ assert.equal(r.data.service,'SEVA-DBRELAY');assert.equal(r.data.externalDataTransfer,false);
+ assert.equal(r.data.paymentsExecuted,false);
+});
+test('57 DBRELAY initial snapshot contains current goal with no private cache',async()=>{
+ const r=await call('/api/dbrelay/snapshot');assert.equal(r.status,200);
+ assert.equal(r.data.goals.length,1);assert.equal(r.data.goals[0].title,'Audit payment webhook');
+});
+test('58 DBRELAY change feed emits IDs not private goal payload',async()=>{
+ const r=await call('/api/dbrelay/changes?after=0&limit=10');assert.equal(r.status,200);
+ assert.ok(r.data.changes.length>0);assert.equal(r.data.dataIncluded,false);
+ assert.equal(JSON.stringify(r.data).includes('Audit payment webhook'),false);
+});
+test('59 DBRELAY malformed cursor returns 400',async()=>{
+ const r=await call('/api/dbrelay/changes?after=-1&limit=10');assert.equal(r.status,400);
+});
