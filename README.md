@@ -158,3 +158,7 @@ The `services/api/pole-*.mjs` modules implement a gated Node 22/SQLite staging-o
 - Premium GPS alerts are **not active**: they require a verified lawful listing with trusted geocode, notification opt-in and server-verified entitlement. No background location, active push notifications, registered paid plugin, connection to Google DeepMind, provider-backed LLM training, or automatic legal actions are claimed.
 - Existing Stripe accounts, bank recipients, payment links, methods and subscriptions are **untouched**. Digital subscriptions inside iOS/Android require per-store policy review; no new price or payment has been created.
 - Source-level readiness: `GET /api/public/pole/intelligence` returns explicit offline/no-production model and premium gates; it does not provide LLM execution or subscription access.
+
+## AI Science Computer
+
+[Open the public research workspace](https://urban-one-science.karimkatlane0.chatgpt.site/) · [Publication evidence and complete hosted source](docs/AI_SCIENCE_PUBLICATION.md). Inference requires owner sign-in; provider credentials remain private.
