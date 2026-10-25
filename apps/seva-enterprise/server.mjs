@@ -4,6 +4,7 @@ import {resolve, extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createStore,verifyStripeSignature} from './core.mjs';
 import {validateMonthlyPlan} from './billing.mjs';
+import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
@@ -18,7 +19,7 @@ async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const c
 function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
-function status(){return {name:'SEVA',version:'2.3.0',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
+function status(){return {name:'SEVA',version:'2.3.0',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
 async function stripe(method,path,data){const key=process.env.STRIPE_SECRET_KEY;if(!key)throw Object.assign(Error('Stripe server credentials unavailable'),{status:503});const resp=await fetch('https://api.stripe.com/v1/'+path,{method,headers:{Authorization:`Bearer ${key}`,...(data?{'Content-Type':'application/x-www-form-urlencoded'}:{})},body:data?new URLSearchParams(data):undefined,signal:AbortSignal.timeout(15000)});
  const body=await resp.json();if(!resp.ok)throw Object.assign(Error(body.error?.message||'Stripe unavailable'),{status:resp.status===401?503:502});return body;}
 async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
@@ -29,6 +30,30 @@ async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')t
  const url=process.env.SEVA_PUBLIC_URL;if(!url||!url.startsWith('https://'))throw Object.assign(Error('Verified HTTPS public URL required'),{status:503});
  const s=await stripe('POST','checkout/sessions',{'mode':'subscription','line_items[0][price]':p.id,'line_items[0][quantity]':'1','customer_email':user.email,'client_reference_id':user.id,'metadata[seva_user_id]':user.id,'success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,'cancel_url':`${url}/?checkout=cancel`});
  if(!s.id||!s.url)throw Object.assign(Error('Checkout response invalid'),{status:502});store.recordCheckout(user.id,s.id);return {url:s.url};}
+async function createAnnualCheckout(user,planName){
+ // Annual subscriptions are separate from the A=EUR50/month commercial quote and monthly SKU.
+ if(process.env.SEVA_SALES_ENABLED!=='true'||process.env.SEVA_ANNUAL_SALES_ENABLED!=='true')
+   throw Object.assign(Error('Annual SEVA sales are closed pending end-to-end verification'),{status:503});
+ const cfg=getAnnualPlan(planName);
+ const expectedPriceId=process.env[cfg.priceEnv],expectedProductId=process.env[cfg.productEnv];
+ if(!expectedPriceId||!expectedProductId)throw Object.assign(Error('Annual Stripe plan not configured'),{status:503});
+ const price=await stripe('GET','prices/'+encodeURIComponent(expectedPriceId));
+ const product=await stripe('GET','products/'+encodeURIComponent(expectedProductId));
+ validateAnnualPlan(planName,price,product,expectedPriceId,expectedProductId);
+ const url=process.env.SEVA_PUBLIC_URL;
+ if(!url||!url.startsWith('https://'))throw Object.assign(Error('Verified HTTPS public URL required'),{status:503});
+ const checkout=await stripe('POST','checkout/sessions',{
+   'mode':'subscription','line_items[0][price]':price.id,'line_items[0][quantity]':'1',
+   'customer_email':user.email,'client_reference_id':user.id,
+   'metadata[seva_user_id]':user.id,'metadata[seva_plan]':planName,
+   'subscription_data[metadata][seva_plan]':planName,
+   'success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+   'cancel_url':`${url}/?checkout=cancel`
+ });
+ if(!checkout.id||!checkout.url)throw Object.assign(Error('Annual Checkout response invalid'),{status:502});
+ store.recordCheckout(user.id,checkout.id);
+ return {url:checkout.url,plan:planName};
+}
 async function aiPlan(user,prompt){if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});if(!store.hasAccess(user.id)&&!(process.env.SEVA_ADMIN_EMAIL&&user.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))throw Object.assign(Error('Active SEVA plan required'),{status:402});
  const data=store.listGoals(user.id).slice(0,80);let input='GOALS: '+JSON.stringify(data).slice(0,15000)+'\nUSER TASK: '+String(prompt||'Prepare a clear execution plan').slice(0,2000);
  const resp=await fetch(process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-5.1',instructions:'You are SEVA AI. Build an actionable goal-driven plan with numbered steps, acceptance criteria, evidence, responsible actor, realistic limitations and status. Never claim to have executed external actions. Answer in the user language. Do not reveal secrets.',input,store:false,max_output_tokens:1200}),signal:AbortSignal.timeout(40000)});
@@ -55,6 +80,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const b=JSON.parse(await rawBody(req));return json(res,200,{id:store.saveGoal(u.id,b,id)});}
  if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt));}
  if(path==='/api/billing/checkout'&&method==='POST'){rate(req,'checkout',6);const u=auth(req);return json(res,200,await createCheckout(u));}
+ if(path==='/api/billing/checkout/annual'&&method==='POST'){rate(req,'checkout-annual',6);const u=auth(req);const body=JSON.parse(await rawBody(req,2000));return json(res,200,await createAnnualCheckout(u,body.plan));}
  if(path==='/api/rewards'&&method==='GET'){const u=auth(req);return json(res,200,{rewards:store.rewards(u.id),payoutsEnabled:false});}
  if(path.startsWith('/api/'))return json(res,404,{error:'Not found'});
  if(method!=='GET'&&method!=='HEAD')return json(res,405,{error:'Method not allowed'});
