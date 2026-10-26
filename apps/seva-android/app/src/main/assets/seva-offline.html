@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="theme-color" content="#112544">
+<title>SEVA — Goal Intelligence locale</title>
+<style>
+:root{color-scheme:dark;--bg:#071528;--panel:#112845;--field:#0c213b;--stroke:#34516e;--ink:#f6f7fb;--gold:#f8d69c;--muted:#b9c9de;--green:#80dfc6}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Roboto,sans-serif;background:radial-gradient(circle at 20% 0,#1e3d5d,transparent 42%),var(--bg);color:var(--ink);min-height:100dvh}
+header{padding:25px max(18px,env(safe-area-inset-left));display:flex;align-items:center;gap:14px;border-bottom:1px solid #34516e60}
+.logo{display:grid;place-items:center;border-radius:18px;width:62px;height:62px;flex-shrink:0;border:2px solid #b4d0f0;background:#142947;color:var(--gold);font-size:44px;line-height:1;font-weight:800}
+header h1{margin:0;font-size:23px;letter-spacing:.12em}header small{color:var(--muted);font-size:11px}
+main{max-width:940px;margin:auto;padding:18px 14px 50px}.flag{border:1px solid #a2d3c95e;background:#0e3a3c;border-radius:14px;padding:11px 14px;font-size:12px;color:#d3fff5}
+.hero{margin:18px 0 22px;padding:24px;background:linear-gradient(115deg,#1a3655,#10223a);border:1px solid var(--stroke);border-radius:22px}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--green);font-weight:800}.hero h2{margin:8px 0;font-size:clamp(26px,7vw,39px);letter-spacing:-.04em;line-height:1.12}.hero p{color:var(--muted);margin-bottom:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.stat{background:var(--panel);padding:12px;border:1px solid var(--stroke);border-radius:15px;text-align:center}.stat b{display:block;font-size:23px;color:var(--gold)}.stat span{font-size:10px;color:var(--muted)}
+.section{margin-top:19px;padding:19px;border:1px solid var(--stroke);border-radius:18px;background:var(--panel)}
+.section h3{margin:0 0 14px;font-size:19px}p.note,.subnote{font-size:12px;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+button{font:inherit;border-radius:11px;padding:10px 12px;min-height:43px;border:1px solid #4d7295;background:#1a3b58;color:var(--ink);cursor:pointer}
+button.primary{background:var(--gold);color:#13253c;border-color:var(--gold);font-weight:800}
+button.danger{background:#542c39}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+label{display:block;margin:13px 0 6px;color:var(--muted);font-size:13px}input,select,textarea{width:100%;border:1px solid #4e718d;border-radius:10px;color:var(--ink);background:var(--field);font:inherit;padding:11px;min-height:44px}textarea{min-height:75px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.goal{border:1px solid #3f6078;background:#0d2138;border-radius:13px;padding:13px;margin:9px 0;border-left:4px solid #f8d69c}
+.goal strong{display:block;font-size:15px}.goal small{color:var(--muted);font-size:11px}.goal .detail{white-space:pre-wrap;margin-top:7px;font-size:12px;color:#d7e3f0;overflow-wrap:anywhere}
+.level1{margin-left:12px}.level2{margin-left:24px}.level3{margin-left:36px}.goal .actions{margin-bottom:0}
+.empty{border:1px dashed #70839a;border-radius:14px;padding:16px;color:var(--muted);font-size:13px}
+#editor[hidden],#status[hidden]{display:none}.status{font-size:12px;color:#d5efea;min-height:20px;white-space:pre-wrap}
+footer{padding:12px 14px 30px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:480px){.stats{gap:5px}.stat{padding:11px 4px}.stat span{font-size:10px}.grid{grid-template-columns:1fr}.section{padding:14px}.level3{margin-left:19px}}
+</style>
+</head>
+<body>
+<header><div class="logo" aria-label="Logo SEVA">S</div><div><h1>SEVA</h1><small>GOAL INTELLIGENCE · ANDROID</small></div></header>
+<main>
+<div class="flag"><strong>MODALITÀ LOCALE DISPONIBILE</strong> · Questa versione funziona senza sito web. I dati restano nella memoria dell'app su questo dispositivo: non sono sincronizzati con l'account SEVA online.</div>
+<section class="hero"><span class="eyebrow">PROBLEM SOLVING → DECISION MAKING</span><h2>Un obiettivo.<br>Un risultato verificabile.</h2><p>Definisci obiettivi, tre livelli di sotto-obiettivi, criteri e prove. Salva il tuo piano sul telefono ed esporta una copia di sicurezza.</p></section>
+<section class="stats" aria-label="Riepilogo obiettivi">
+<div class="stat"><b id="count-all">0</b><span>Totali</span></div><div class="stat"><b id="count-doing">0</b><span>In corso</span></div><div class="stat"><b id="count-blocked">0</b><span>Bloccati</span></div><div class="stat"><b id="count-done">0</b><span>Verificati</span></div>
+</section>
+<section class="section"><h3>Mission Control</h3><div class="actions"><button class="primary" id="new">+ Nuovo obiettivo</button><button id="export">Esporta JSON</button></div><div id="goal-list" aria-live="polite"></div></section>
+<section class="section" id="editor" hidden><h3 id="edit-heading">Nuovo obiettivo</h3><form id="goal-form"><div class="grid"><div><label for="title">Obiettivo</label><input id="title" required maxlength="160"></div><div><label for="parent">Obiettivo padre</label><select id="parent"><option value="">Nessuno (principale)</option></select></div></div>
+<label for="description">Descrizione</label><textarea id="description" maxlength="3000"></textarea>
+<div class="grid"><div><label for="criteria">Criteri di accettazione</label><textarea id="criteria" maxlength="1200"></textarea></div><div><label for="evidence">Evidenze verificabili</label><textarea id="evidence" maxlength="1200"></textarea></div></div>
+<label for="goal-status">Stato</label><select id="goal-status"><option value="todo">Da avviare</option><option value="doing">In corso</option><option value="blocked">Bloccato</option><option value="done">Verificato</option></select>
+<div class="actions"><button type="submit" class="primary">Salva obiettivo</button><button type="button" id="cancel">Annulla</button></div></form></section>
+<section class="section"><h3>Ripristina un backup</h3><p class="note">Incolla qui un precedente file JSON esportato da questa versione. L'importazione sostituisce gli obiettivi locali dopo conferma.</p>
+<label for="import-json">Dati JSON</label><textarea id="import-json" placeholder='{"schema":"seva-offline-v1","goals":[]}'></textarea><button id="import">Controlla e importa</button></section>
+<section class="section"><h3>Servizi online</h3><p class="note">OpenAI, login, verifica universitaria e checkout Stripe non sono attivi in questa versione locale. Non vengono effettuate chiamate API, pagamenti o trasferimenti dati.</p><p class="note">Quando il sito SEVA tornerà accessibile, l'attivazione dell'account online richiederà un collaudo separato. L'APK locale non certifica tale collegamento.</p></section>
+<p id="status" class="status" role="status" aria-live="polite"></p>
+</main><footer>SEVA AI · Local-first QA · v2.4.2 · GOAL → EXECUTE → VERIFY → REPORT</footer>
+<script>
+(function(){
+'use strict';
+var KEY='seva-offline-goals-v1', SCHEMA='seva-offline-v1', states=['todo','doing','blocked','done'], goals=[], editId=null;
+var el=function(id){return document.getElementById(id);};
+var status=function(s){el('status').textContent=String(s||'');};
+function safeText(x,n){return typeof x==='string'?x.trim().slice(0,n):'';}
+function validate(items){
+ if(!Array.isArray(items)||items.length>250)throw Error('Numero obiettivi non valido (max 250).');
+ var ids=new Set();
+ items.forEach(function(g){
+  if(!g||typeof g.id!=='string'||!g.id||ids.has(g.id))throw Error('ID duplicato o mancante.');
+  ids.add(g.id);
+  if(typeof g.title!=='string'||!g.title.trim()||g.title.length>160)throw Error('Titolo non valido.');
+  if(!states.includes(g.status)||!['description','criteria','evidence'].every(function(k){return typeof g[k]==='string'&&g[k].length<=(k==='description'?3000:1200);}))throw Error('Campi non validi.');
+ });
+ var index=new Map(items.map(function(g){return [g.id,g];}));
+ items.forEach(function(g){
+  var p=g.parent||'',seen=new Set([g.id]),depth=0;
+  while(p){if(seen.has(p)||!index.has(p))throw Error('Dipendenza circolare o inesistente.');seen.add(p);depth++;if(depth>3)throw Error('Massimo tre livelli di sotto-obiettivi.');p=index.get(p).parent||'';}
+ });
+ return items;
+}
+function load(){
+ try{var saved=localStorage.getItem(KEY);if(saved){var input=JSON.parse(saved);goals=validate(input.goals||[]);}}
+ catch(e){status('Impossibile leggere gli obiettivi locali: '+e.message);goals=[];}
+}
+function persist(next){
+ validate(next);
+ try{localStorage.setItem(KEY,JSON.stringify({schema:SCHEMA,goals:next}));goals=next;return true;}
+ catch(e){status('Salvataggio non riuscito: memoria del dispositivo non disponibile. Esporta una copia dei dati.');return false;}
+}
+function depthFor(g){var byId=new Map(goals.map(function(x){return [x.id,x];})),depth=0,p=g.parent;while(p&&byId.has(p)){depth++;p=byId.get(p).parent;}return Math.min(depth,3);}
+function dom(tag,cls,txt){var node=document.createElement(tag);if(cls)node.className=cls;if(txt!==undefined)node.textContent=txt;return node;}
+function render(){
+ var list=el('goal-list');list.replaceChildren();
+ ['all','doing','blocked','done'].forEach(function(x){
+  el('count-'+x).textContent=x==='all'?goals.length:goals.filter(function(g){return g.status===x;}).length;
+ });
+ if(!goals.length){list.appendChild(dom('div','empty','Nessun obiettivo. Tocca “Nuovo obiettivo” per iniziare.'));return;}
+ var children=function(parent){return goals.filter(function(g){return (g.parent||'')===parent;});};
+ var draw=function(parent,depth){
+  children(parent).forEach(function(g){
+   var card=dom('article','goal level'+depth);
+   card.appendChild(dom('strong','',g.title));
+   var labels={todo:'DA AVVIARE',doing:'IN CORSO',blocked:'BLOCCATO',done:'VERIFICATO'};
+   card.appendChild(dom('small','',labels[g.status]+' · livello '+depth));
+   [['description','Descrizione'],['criteria','Criteri'],['evidence','Evidenze']].forEach(function(pair){
+    if(g[pair[0]])card.appendChild(dom('div','detail',pair[1]+': '+g[pair[0]]));
+   });
+   var buttons=dom('div','actions');
+   var edit=dom('button','','Modifica');edit.type='button';edit.addEventListener('click',function(){openEditor(g.id);});
+   var remove=dom('button','danger','Elimina');remove.type='button';remove.addEventListener('click',function(){removeGoal(g.id);});
+   buttons.appendChild(edit);buttons.appendChild(remove);card.appendChild(buttons);list.appendChild(card);draw(g.id,depth+1);
+  });
+ };
+ draw('',0);
+}
+function openEditor(id){
+ editId=id||null;var g=goals.find(function(x){return x.id===editId;})||{title:'',parent:'',description:'',criteria:'',evidence:'',status:'todo'};
+ el('edit-heading').textContent=editId?'Modifica obiettivo':'Nuovo obiettivo';
+ ['title','description','criteria','evidence'].forEach(function(k){el(k).value=g[k];});
+ el('goal-status').value=g.status;
+ var sel=el('parent');sel.replaceChildren();var root=dom('option','','Nessuno (principale)');root.value='';sel.appendChild(root);
+ goals.forEach(function(x){if(x.id===editId)return;var opt=dom('option','',x.title.slice(0,60));opt.value=x.id;sel.appendChild(opt);});
+ sel.value=g.parent||'';el('editor').hidden=false;el('title').focus();
+}
+function removeGoal(id){
+ var count=function(parent){return goals.filter(function(x){return x.parent===parent;}).reduce(function(n,x){return n+1+count(x.id);},0);};
+ var descendants=count(id);
+ if(!confirm('Eliminare questo obiettivo e '+descendants+' sotto-obiettivi?'))return;
+ var erase=new Set([id]),more=true;while(more){more=false;goals.forEach(function(g){if(erase.has(g.parent)&&!erase.has(g.id)){erase.add(g.id);more=true;}});}
+ if(persist(goals.filter(function(g){return !erase.has(g.id);}))) {render();status('Obiettivo eliminato.');}
+}
+el('new').addEventListener('click',function(){openEditor(null);});
+el('cancel').addEventListener('click',function(){el('editor').hidden=true;editId=null;});
+el('goal-form').addEventListener('submit',function(ev){
+ ev.preventDefault();
+ var now=Date.now(),newRecord={id:editId||'g'+now.toString(36)+Math.random().toString(36).slice(2),parent:el('parent').value,title:safeText(el('title').value,160),description:safeText(el('description').value,3000),criteria:safeText(el('criteria').value,1200),evidence:safeText(el('evidence').value,1200),status:el('goal-status').value,updated:now};
+ if(!newRecord.title){status('Inserisci un titolo.');return;}
+ var changed=editId?goals.map(function(g){return g.id===editId?newRecord:g;}):goals.concat([newRecord]);
+ try{if(persist(changed)){el('editor').hidden=true;editId=null;render();status('Salvato soltanto su questo dispositivo.');}}
+ catch(e){status(e.message);}
+});
+el('export').addEventListener('click',function(){
+ var output=JSON.stringify({schema:SCHEMA,exportedAt:new Date().toISOString(),goals:goals},null,2);
+ if(window.SevaAndroid&&typeof window.SevaAndroid.exportJson==='function'){
+  window.SevaAndroid.exportJson(output);status('Seleziona dove salvare il backup JSON.');
+ }else{
+  var link=document.createElement('a');var url=URL.createObjectURL(new Blob([output],{type:'application/json'}));
+  link.href=url;link.download='SEVA-backup.json';link.click();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  status('Backup pronto.');}
+});
+el('import').addEventListener('click',function(){
+ try{
+  var input=el('import-json').value;if(input.length>1000000)throw Error('Backup troppo grande.');
+  var parsed=JSON.parse(input);
+  if(parsed.schema!==SCHEMA)throw Error('Formato del backup non riconosciuto.');
+  var items=validate(parsed.goals);
+  if(!confirm('Sostituire '+goals.length+' obiettivi locali con '+items.length+' dal backup?'))return;
+  if(persist(items)){render();el('import-json').value='';status('Backup importato: '+items.length+' obiettivi.');}
+ }catch(e){status('Importazione annullata: '+e.message);}
+});
+load();render();
+})();
+</script>
+</body></html>
