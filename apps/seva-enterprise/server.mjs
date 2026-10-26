@@ -13,6 +13,7 @@ import {previewFundedMarketingPurchase} from './marketing-flywheel.mjs';
 import {createCommerce} from './commerce.mjs';
 import {createAffiliateLedger} from './affiliate-ledger.mjs';
 import {createNotificationCenter} from './notification-center.mjs';
+import {validateCommercialDraft,produceDraft} from './communications.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 
 validateRuntime();
@@ -79,6 +80,20 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+ if(path==='/api/communications/draft'&&method==='POST'){
+  rate(req,'ai-communications',5);
+  const u=auth(req);
+  const data=validateCommercialDraft(JSON.parse(await rawBody(req,2200)));
+  if(!store.hasAccess(u.id)&&!(process.env.SEVA_ADMIN_EMAIL&&u.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))
+   throw Object.assign(Error('Active SEVA plan required'),{status:402});
+  const result=await produceDraft(data,{
+   apiKey:process.env.OPENAI_API_KEY,
+   model:process.env.OPENAI_MODEL||'gpt-5.1',
+   baseUrl:process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses'
+  });
+  store.audit(u.id,'communications_draft',result.id||'draft');
+  return json(res,200,{...result,requiresHumanApproval:true,pricingVerified:false});
+ }
  if(path==='/api/notifications/preferences'&&method==='GET'){
   const u=auth(req);return json(res,200,{preferences:notifications.prefs(u.id)});
  }
