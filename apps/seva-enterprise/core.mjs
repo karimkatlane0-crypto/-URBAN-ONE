@@ -46,6 +46,9 @@ export function createStore(filename=':memory:'){
  CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,expires INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS goals(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,parent_id TEXT REFERENCES goals(id) ON DELETE CASCADE,title TEXT NOT NULL,description TEXT,criteria TEXT,evidence TEXT,status TEXT NOT NULL,updated INTEGER NOT NULL);
  CREATE INDEX IF NOT EXISTS goal_user ON goals(user_id);
+ CREATE TABLE IF NOT EXISTS checkout_bindings(session_id TEXT PRIMARY KEY REFERENCES checkout_sessions(session_id) ON DELETE CASCADE,user_id TEXT NOT NULL REFERENCES users(id),plan TEXT NOT NULL CHECK(plan IN ('enterprise_monthly','buyer_annual','ecommerce_annual')),price_id TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS plan_entitlements(user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,plan TEXT NOT NULL CHECK(plan IN ('enterprise_monthly','buyer_annual','ecommerce_annual')),customer TEXT,subscription TEXT UNIQUE,active INTEGER NOT NULL DEFAULT 0,updated INTEGER NOT NULL,PRIMARY KEY(user_id,plan));
+ CREATE INDEX IF NOT EXISTS plan_entitlements_owner ON plan_entitlements(user_id,active);
  CREATE TABLE IF NOT EXISTS entitlements(user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,customer TEXT,subscription TEXT,active INTEGER NOT NULL DEFAULT 0,updated INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS checkout_sessions(session_id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id),created INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS webhook_events(event_id TEXT PRIMARY KEY,kind TEXT NOT NULL,processed INTEGER NOT NULL);
@@ -74,8 +77,25 @@ export function createStore(filename=':memory:'){
  else db.prepare('INSERT INTO goals VALUES (?,?,?,?,?,?,?,?,?)').run(gid,user,parent,g.title,g.description,g.criteria,g.evidence,g.status,at());
  audit(user,id?'goal_updated':'goal_created',gid);return gid;}
  function deleteGoal(user,id){const result=db.prepare('DELETE FROM goals WHERE id=? AND user_id=?').run(id,user);if(!result.changes)throw Error('Goal not found');audit(user,'goal_deleted',id);}
- function hasAccess(user){return db.prepare('SELECT active FROM entitlements WHERE user_id=?').get(user)?.active===1;}
- function recordCheckout(user,session){db.prepare('INSERT OR IGNORE INTO checkout_sessions VALUES (?,?,?)').run(session,user,at());audit(user,'checkout_created',session);}
+ function activePlans(user){return db.prepare('SELECT plan FROM plan_entitlements WHERE user_id=? AND active=1 ORDER BY plan').all(user).map(x=>x.plan);}
+ function hasPlanAccess(user,plan){return db.prepare('SELECT active FROM plan_entitlements WHERE user_id=? AND plan=?').get(user,plan)?.active===1;}
+ function hasAccess(user){return db.prepare('SELECT active FROM entitlements WHERE user_id=?').get(user)?.active===1||activePlans(user).length>0;}
+ function recordCheckout(user,session,plan=null,priceId=null){
+  if(plan!==null&&(!['enterprise_monthly','buyer_annual','ecommerce_annual'].includes(plan)||!/^price_[a-zA-Z0-9]+$/.test(priceId||'')))throw Error('Checkout plan/price binding invalid');
+  db.exec('BEGIN IMMEDIATE');
+  try{
+   const found=db.prepare('SELECT user_id FROM checkout_sessions WHERE session_id=?').get(session);
+   if(found&&found.user_id!==user)throw Error('Checkout session already belongs to another owner');
+   db.prepare('INSERT OR IGNORE INTO checkout_sessions VALUES (?,?,?)').run(session,user,at());
+   if(plan!==null){
+    const binding=db.prepare('SELECT user_id,plan,price_id FROM checkout_bindings WHERE session_id=?').get(session);
+    if(binding&&(binding.user_id!==user||binding.plan!==plan||binding.price_id!==priceId))throw Error('Checkout binding mismatch');
+    db.prepare('INSERT OR IGNORE INTO checkout_bindings VALUES (?,?,?,?)').run(session,user,plan,priceId);
+   }
+   db.exec('COMMIT');
+  }catch(e){db.exec('ROLLBACK');throw e;}
+  audit(user,'checkout_created',session);
+ }
  function getCheckoutOwner(session){return db.prepare('SELECT user_id FROM checkout_sessions WHERE session_id=?').get(session)?.user_id;}
  function processStripeEvent(event){
   if(!event?.id||typeof event.id!=='string'||!event?.type)throw Error('Bad webhook event');
@@ -85,13 +105,23 @@ export function createStore(filename=':memory:'){
   // Stripe invoice schema varies across API versions. New invoices attach the
   // subscription under parent.subscription_details rather than subscription.
   const invoiceSubscription=obj.subscription||obj.parent?.subscription_details?.subscription||null;
-  let userId=null,active=null,subscription=null,customer=null;
+  let userId=null,active=null,subscription=null,customer=null,scopedPlan=null;
+  const binding=checkoutSuccess?db.prepare('SELECT * FROM checkout_bindings WHERE session_id=?').get(obj.id):null;
   if(checkoutSuccess&&obj.mode==='subscription'&&obj.payment_status==='paid'){
     userId=getCheckoutOwner(obj.id);
     if(!userId||(obj.client_reference_id&&userId!==obj.client_reference_id))
       throw Error('Checkout owner mismatch');
     if(!obj.subscription||typeof obj.subscription!=='string')
       throw Error('Paid checkout requires subscription ID');
+    if(binding){
+      // Stripe signs the Checkout event. Metadata must match the exact locally
+      // validated plan/price binding; never infer a plan from amount or client input.
+      if(binding.user_id!==userId||obj.client_reference_id!==userId||
+         obj.metadata?.seva_user_id!==userId||obj.metadata?.seva_plan!==binding.plan||
+         obj.metadata?.seva_price_id!==binding.price_id)
+        throw Error('Checkout plan/price/owner mismatch');
+      scopedPlan=binding.plan;
+    }
     subscription=obj.subscription;customer=obj.customer||null;active=true;
   }else if([
     'invoice.paid','invoice.payment_failed',
@@ -99,9 +129,10 @@ export function createStore(filename=':memory:'){
   ].includes(event.type)){
     subscription=event.type.startsWith('customer.subscription.')?obj.id:invoiceSubscription;
     if(subscription){
-      const entitlement=db.prepare('SELECT user_id,active FROM entitlements WHERE subscription=?').get(subscription);
+      const entitlement=db.prepare('SELECT user_id,plan,active FROM plan_entitlements WHERE subscription=?').get(subscription)||
+        db.prepare('SELECT user_id,active FROM entitlements WHERE subscription=?').get(subscription);
       if(entitlement){
-        userId=entitlement.user_id;customer=obj.customer||null;
+        userId=entitlement.user_id;scopedPlan=entitlement.plan||null;customer=obj.customer||null;
         if(event.type==='invoice.paid')active=true;
         if(event.type==='invoice.payment_failed'||event.type==='customer.subscription.deleted')active=false;
         // An "active" subscription status does NOT prove the invoice was paid.
@@ -115,11 +146,19 @@ export function createStore(filename=':memory:'){
   db.exec('BEGIN IMMEDIATE');
   try{
     if(userId!==null&&active!==null){
-      if(checkoutSuccess){
+      if(checkoutSuccess&&scopedPlan){
+        const other=db.prepare('SELECT user_id,plan FROM plan_entitlements WHERE subscription=?').get(subscription);
+        if(other&&(other.user_id!==userId||other.plan!==scopedPlan))throw Error('Subscription belongs to another account/plan');
+        db.prepare('INSERT INTO plan_entitlements(user_id,plan,customer,subscription,active,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(user_id,plan) DO UPDATE SET customer=COALESCE(excluded.customer,plan_entitlements.customer),subscription=excluded.subscription,active=excluded.active,updated=excluded.updated').run(userId,scopedPlan,customer,subscription,Number(active),at());
+      }else if(scopedPlan){
+        // Update only this exact subscription: delayed cancellation cannot revoke
+        // a different plan or a later subscription for the same plan.
+        db.prepare('UPDATE plan_entitlements SET customer=COALESCE(?,customer),active=?,updated=? WHERE user_id=? AND plan=? AND subscription=?').run(customer,Number(active),at(),userId,scopedPlan,subscription);
+      }else if(checkoutSuccess){
+        // Legacy synthetic fixtures remain compatible. New SEVA Checkouts MUST
+        // pass plan/price binding and use the scoped path above.
         db.prepare('INSERT INTO entitlements(user_id,customer,subscription,active,updated) VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET customer=COALESCE(excluded.customer,entitlements.customer),subscription=excluded.subscription,active=excluded.active,updated=excluded.updated').run(userId,customer,subscription,Number(active),at());
       }else{
-        // A delayed event for a canceled OLD subscription must not modify a
-        // newer subscription belonging to the same user.
         db.prepare('UPDATE entitlements SET customer=COALESCE(?,customer),active=?,updated=? WHERE user_id=? AND subscription=?').run(customer,Number(active),at(),userId,subscription);
       }
       audit(userId,active?'access_enabled':'access_disabled',event.type);
@@ -143,5 +182,5 @@ export function createStore(filename=':memory:'){
  function recordReward(user,sourceEvent,kind,amount){if(!Number.isInteger(amount)||amount<0||amount>100000000)throw Error('Invalid reward amount');
  // Reward records are pending only; transfers require separate authorized program and verified payout provider.
  db.prepare('INSERT OR IGNORE INTO rewards VALUES(?,?,?,?,?,?,?)').run(uid(),user,sourceEvent,String(kind),amount,'pending',at());audit(user,'reward_pending',sourceEvent);}
- return {db,persistent:filename!==':memory:',register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
+ return {db,persistent:filename!==':memory:',register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,hasPlanAccess,activePlans,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
 }
