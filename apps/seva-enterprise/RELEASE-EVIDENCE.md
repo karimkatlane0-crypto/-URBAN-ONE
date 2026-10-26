@@ -20,4 +20,8 @@ Annual buyer (€50/year) and merchant (€500/year) Stripe products have been v
 
 A separate SEVA SQLite change feed and owner-scoped snapshot/cursor APIs were added on a dedicated review branch. Test suite includes durability after close/reopen and authenticated HTTP checks. This is not a claim of production DB persistence, public HTTPS deployment or cloud multi-device synchronization. See `DBRELAY-PHASE-II.md`.
 
+### Original analytics + Lastre AI and database resiliency (26 October 2026)
+
+KPI/KPMI account dashboard, voluntary CRM drafts, image analysis behind explicit provider consent, and online-consistent SQLite backup/restore were added to an isolated PR candidate. No public OpenAI vision result, live customer sale, cloud backup, or production HTTPS validation is claimed by source tests. See `KPI-LASTRE-AI-RELEASE.md`.
+
 No keys, live card data or identity documents are included. No Stripe products, prices, payouts, checkout links or payment methods were modified during this release preparation.
