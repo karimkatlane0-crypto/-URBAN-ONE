@@ -19,6 +19,9 @@ export function validateAnnualPlan(name, price, product, expectedPriceId, expect
       price.type !== 'recurring' || price.recurring?.interval !== 'year' ||
       price.recurring?.interval_count !== 1 || price.recurring?.usage_type !== 'licensed' ||
       product.metadata?.app !== 'SEVA' ||
-      (name === 'buyer' && product.metadata?.audience !== 'buyer')) throw unavailable();
+      // Real sandbox catalog identifies plans by metadata.plan rather than audience.
+      // Keep the original LIVE buyer audience contract for backwards compatibility.
+      (name === 'buyer' && product.metadata?.audience !== 'buyer' && product.metadata?.plan !== 'buyer_annual') ||
+      (name === 'ecommerce' && product.metadata?.plan && product.metadata?.plan !== 'ecommerce_annual')) throw unavailable();
   return true;
 }
