@@ -8,6 +8,10 @@ This is a standalone application under `apps/seva-enterprise/`, separate from th
 
 Buyer €50/year and e-commerce merchant €500/year are separate from commercial formula A=€50/month. Their code path is fail-closed by default. No annual Stripe Checkout can be opened until provider prices/products are ACTIVE, private environment is configured, test webhook-to-entitlement cycle is proven and explicit owner release controls are approved. See [STRIPE-ANNUAL-INTEGRATION.md](STRIPE-ANNUAL-INTEGRATION.md).
 
+## Original SEVA intelligence — KPI/KPMI + Lastre AI
+
+The enterprise app now includes owner-scoped KPI analytics, voluntary purchase/rent/lease/credit intent CRM and an explicit-consent **optional** OpenAI photo description flow. Original annual buyer €50 / seller €500 subscriptions and monthly commercial A = €50 are preserved and not activated. Local JPEG transformation removes original EXIF before the optional AI request; no photo is stored by SEVA. A safe SQLite backup/restore CLI is also provided. See [KPI-LASTRE-AI-RELEASE.md](KPI-LASTRE-AI-RELEASE.md) for limitations and go-live gates.
+
 ## Phase II DBRELAY — secure data synchronization
 
 Goal edits and consented campaign drafts are logged atomically in SQLite by `dbrelay_changes`. Authenticated `/api/dbrelay/status`, `/api/dbrelay/snapshot` and `/api/dbrelay/changes` support source-of-truth snapshots and owner-scoped incremental sync; the dedicated **DBRELAY** UI tab refreshes saved goals from the backend. No external cloud relay, Stripe execution or auto-upload of photos. See [DBRELAY-PHASE-II.md](DBRELAY-PHASE-II.md).
