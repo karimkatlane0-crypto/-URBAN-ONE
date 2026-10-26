@@ -1,6 +1,7 @@
 import {studentPanelHTML,bindStudentPanel} from './students.js';
 import {initializeNotifications} from './notifications-ui.js';
 import {initializeCommunications} from './communications-ui.js';
+import {initializeOriginalIntelligence} from './original-intelligence-ui.js';
 const $=id=>document.getElementById(id);let user=null,goals=[],editing=null,registerMode=false,access=false,publicStatus=null;
 function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
@@ -67,3 +68,4 @@ $('install').onclick=async()=>{if(!deferredInstall)return;const event=deferredIn
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 initializeNotifications({api,toast});
 initializeCommunications({api,toast});
+initializeOriginalIntelligence({api,toast});

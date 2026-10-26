@@ -1,0 +1,8 @@
+.seva-meter{width:100%;height:12px;background:rgba(130,145,169,.2);border-radius:999px;overflow:hidden;margin:12px 0 24px}
+.seva-meter span{height:100%;width:0;display:block;background:linear-gradient(90deg,#2faac9,#66e3c1);transition:width .35s ease}
+#analytics .metric strong{overflow-wrap:anywhere}
+#lastre .photos{display:flex;gap:10px;overflow-x:auto;margin:10px 0;min-height:50px}
+#lastre .photos img{height:115px;width:115px;object-fit:cover;border-radius:10px}
+#lastre .goal{margin:10px 0;padding:12px;border:1px solid rgba(130,145,169,.24);border-radius:12px}
+#lastre .goal p{overflow-wrap:anywhere}
+#lastre .goal button{margin-top:8px}
