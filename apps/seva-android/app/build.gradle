@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'ai.seva.enterprise'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'ai.seva.enterprise'
+        minSdk 24
+        targetSdk 36
+        versionCode 2401
+        versionName '2.4.1'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

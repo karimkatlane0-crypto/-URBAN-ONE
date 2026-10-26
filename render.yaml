@@ -1,0 +1,33 @@
+# SEVA Enterprise Node staging blueprint; manual setup only. No automatic deployment.
+# Render persistent disk and paid plan are required for SQLite.
+services:
+  - type: web
+    name: seva-enterprise-stage
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main-@URBAN-ONE
+    rootDir: apps/seva-enterprise
+    buildCommand: npm run check && npm test
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    numInstances: 1
+    disk:
+      name: seva-sqlite-stage
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: SEVA_DB_PATH
+        value: /var/data/seva.sqlite
+      - key: SEVA_SALES_ENABLED
+        value: 'false'
+      - key: SEVA_ANNUAL_SALES_ENABLED
+        value: 'false'
+      # Add OPENAI_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET,
+      # SEVA_MONTHLY_PRICE_ID and SEVA_PUBLIC_URL through a private secret manager
+      # only after the separate purchase/AI acceptance tests.
