@@ -95,3 +95,62 @@ test('Double Flywheel UI is served with explicit non-guaranteed benefit language
  assert.match(html,/Double Flywheel/);
  assert.match(html,/Non attesta|non prova un acquisto gratuito/i);
 });
+
+
+test('OMNICHANNEL: notifications require authenticated account',async()=>{
+ const r=await fetch(base+'/api/notifications');
+ assert.equal(r.status,401);
+ const p=await fetch(base+'/api/notifications/preferences');
+ assert.equal(p.status,401);
+});
+test('OMNICHANNEL: default is opt-out and no remote push',async()=>{
+ const r=await call('/api/notifications/preferences');
+ assert.equal(r.status,200);
+ assert.equal(r.data.preferences.inApp,false);
+ assert.equal(r.data.preferences.backgroundPush,false);
+ assert.equal(r.data.preferences.whatsAppAutomatic,false);
+});
+test('OMNICHANNEL: explicit opt-in receives a generic verified-goal alert',async()=>{
+ let r=await call('/api/notifications/preferences',{method:'PUT',body:{inApp:true,browser:false}});
+ assert.equal(r.status,200);
+ const goal=await call('/api/goals',{method:'POST',body:{title:'Synthetic-private-mission',status:'done'}});
+ assert.equal(goal.status,201);
+ r=await call('/api/notifications');
+ assert.equal(r.status,200);
+ assert.ok(r.data.notifications.length>=1);
+ assert.equal(r.data.notifications[0].kind,'goal_done');
+ assert.equal(JSON.stringify(r.data).includes('Synthetic-private-mission'),false);
+});
+test('OMNICHANNEL: account B cannot read notifications for account A',async()=>{
+ const res=await fetch(base+'/api/auth/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'other-notify@example.invalid',password:'LongSyntheticPassword-12345'})});
+ assert.equal(res.status,201);
+ const bCookie=res.headers.get('set-cookie').split(';')[0];
+ const other=await fetch(base+'/api/notifications',{headers:{Cookie:bCookie}});
+ assert.equal(other.status,200);
+ assert.deepEqual((await other.json()).notifications,[]);
+});
+test('OMNICHANNEL: notice IDs cannot be acknowledged by another account',async()=>{
+ const a=await call('/api/notifications');
+ const id=a.data.notifications[0].id;
+ const other=await fetch(base+'/api/auth/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'other-notify@example.invalid',password:'LongSyntheticPassword-12345'})});
+ const otherCookie=other.headers.get('set-cookie').split(';')[0];
+ const r=await fetch(base+'/api/notifications/read',{method:'POST',headers:{Cookie:otherCookie,'content-type':'application/json'},body:JSON.stringify({id})});
+ assert.equal(r.status,404);
+ const mine=await call('/api/notifications/read',{method:'POST',body:{id}});
+ assert.equal(mine.status,200);
+});
+test('OMNICHANNEL: opt-out erases only own alerts',async()=>{
+ const r=await call('/api/notifications',{method:'DELETE'});
+ assert.equal(r.status,200);
+ const p=await call('/api/notifications/preferences');
+ assert.equal(p.data.preferences.inApp,false);
+ assert.equal((await call('/api/notifications')).data.notifications.length,0);
+});
+test('OMNICHANNEL: mobile page and cached module exist',async()=>{
+ const html=await (await fetch(base+'/')).text();
+ assert.match(html,/Canali e avvisi/);
+ assert.match(html,/WhatsApp/);
+ const script=await fetch(base+'/notifications-ui.js');
+ assert.equal(script.status,200);
+ assert.match(await script.text(),/initializeNotifications/);
+});
