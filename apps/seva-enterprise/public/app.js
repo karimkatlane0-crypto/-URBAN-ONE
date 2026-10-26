@@ -1,12 +1,13 @@
 import {studentPanelHTML,bindStudentPanel} from './students.js';
 import {initializeNotifications} from './notifications-ui.js';
+import {initializeCommunications} from './communications-ui.js';
 const $=id=>document.getElementById(id);let user=null,goals=[],editing=null,registerMode=false,access=false,publicStatus=null;
 function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 async function api(path,method='GET',data){const res=await fetch(path,{method,headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined,credentials:'same-origin'});const body=await res.json();if(!res.ok)throw Error(body.error||'Errore di connessione');return body;}
 function showLogin(){ $('students').textContent='';dbrelayCursor=null;user=null;$('workspace').hidden=true;$('loginScreen').hidden=false;$('logout').hidden=true;}
 function showWorkspace(){ $('loginScreen').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('welcome').textContent=`Accesso verificato · ${user.email}`;}
-async function sync(){try{publicStatus=await api('/api/public/status');$('system').textContent=publicStatus.aiConfigured?'OpenAI configurato':'OpenAI da collegare';$('buy').disabled=!publicStatus.salesEnabled;$('buyBuyer').disabled=!publicStatus.annualCheckoutEnabled;$('buyEcommerce').disabled=!publicStatus.annualCheckoutEnabled;$('billingStatus').textContent=`${access?'Accesso attivo':'Accesso non attivo'} · ${publicStatus.salesEnabled?'Vendite disponibili':'Vendite sospese fino a collaudo'} · ${publicStatus.stripeConfigured?'Stripe backend configurato':'Stripe backend non configurato'}`;}catch{$('system').textContent='Backend non verificato';}}
+async function sync(){try{publicStatus=await api('/api/public/status');const readiness=document.getElementById('commandReadiness');if(readiness)readiness.textContent='API raggiungibile · checkout '+(publicStatus.checkoutVerified?'convalidato':'da validare');$('system').textContent=publicStatus.aiConfigured?'OpenAI configurato':'OpenAI da collegare';$('buy').disabled=!publicStatus.salesEnabled;$('buyBuyer').disabled=!publicStatus.annualCheckoutEnabled;$('buyEcommerce').disabled=!publicStatus.annualCheckoutEnabled;$('billingStatus').textContent=`${access?'Accesso attivo':'Accesso non attivo'} · ${publicStatus.salesEnabled?'Vendite disponibili':'Vendite sospese fino a collaudo'} · ${publicStatus.stripeConfigured?'Stripe backend configurato':'Stripe backend non configurato'}`;}catch{$('system').textContent='Backend non verificato';}}
 async function refresh(){const me=await api('/api/me');user=me.user;access=me.access;showWorkspace();const data=await api('/api/goals');goals=data.goals;renderGoals();await sync();}
 $('authBtn').onclick=async()=>{try{const b={email:$('email').value,password:$('password').value};await api(registerMode?'/api/auth/register':'/api/auth/login','POST',b);await refresh();toast('Accesso SEVA riuscito');}catch(e){toast(e.message)}};
 $('switchAuth').onclick=()=>{registerMode=!registerMode;$('authTitle').textContent=registerMode?'Crea account SEVA':'Accedi a SEVA';$('authBtn').textContent=registerMode?'Registrati':'Accedi';$('switchAuth').textContent=registerMode?'Hai già un account? Accedi':'Crea un account SEVA';};
@@ -65,3 +66,4 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredIns
 $('install').onclick=async()=>{if(!deferredInstall)return;const event=deferredInstall;deferredInstall=null;await event.prompt();$('install').hidden=true;};
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 initializeNotifications({api,toast});
+initializeCommunications({api,toast});
