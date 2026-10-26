@@ -34,8 +34,8 @@ async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')t
  const p=await stripe('GET','prices/'+encodeURIComponent(monthlyPriceId));const prod=await stripe('GET','products/'+encodeURIComponent(p.product));
  validateMonthlyPlan(p,prod,monthlyPriceId);
  const url=process.env.SEVA_PUBLIC_URL;if(!url||!url.startsWith('https://'))throw Object.assign(Error('Verified HTTPS public URL required'),{status:503});
- const s=await stripe('POST','checkout/sessions',{'mode':'subscription','line_items[0][price]':p.id,'line_items[0][quantity]':'1','customer_email':user.email,'client_reference_id':user.id,'metadata[seva_user_id]':user.id,'success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,'cancel_url':`${url}/?checkout=cancel`});
- if(!s.id||!s.url)throw Object.assign(Error('Checkout response invalid'),{status:502});store.recordCheckout(user.id,s.id);return {url:s.url};}
+ const s=await stripe('POST','checkout/sessions',{'mode':'subscription','line_items[0][price]':p.id,'line_items[0][quantity]':'1','customer_email':user.email,'client_reference_id':user.id,'metadata[seva_user_id]':user.id,'metadata[seva_plan]':'enterprise_monthly','metadata[seva_price_id]':p.id,'subscription_data[metadata][seva_plan]':'enterprise_monthly','success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,'cancel_url':`${url}/?checkout=cancel`});
+ if(!s.id||!s.url)throw Object.assign(Error('Checkout response invalid'),{status:502});store.recordCheckout(user.id,s.id,'enterprise_monthly',p.id);return {url:s.url};}
 async function createAnnualCheckout(user,planName){
  // Annual subscriptions are separate from the A=EUR50/month commercial quote and monthly SKU.
  if(process.env.SEVA_SALES_ENABLED!=='true'||process.env.SEVA_ANNUAL_SALES_ENABLED!=='true')
@@ -51,13 +51,14 @@ async function createAnnualCheckout(user,planName){
  const checkout=await stripe('POST','checkout/sessions',{
    'mode':'subscription','line_items[0][price]':price.id,'line_items[0][quantity]':'1',
    'customer_email':user.email,'client_reference_id':user.id,
-   'metadata[seva_user_id]':user.id,'metadata[seva_plan]':planName,
-   'subscription_data[metadata][seva_plan]':planName,
+   'metadata[seva_user_id]':user.id,'metadata[seva_plan]':planName+'_annual',
+   'metadata[seva_price_id]':price.id,
+   'subscription_data[metadata][seva_plan]':planName+'_annual',
    'success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
    'cancel_url':`${url}/?checkout=cancel`
  });
  if(!checkout.id||!checkout.url)throw Object.assign(Error('Annual Checkout response invalid'),{status:502});
- store.recordCheckout(user.id,checkout.id);
+ store.recordCheckout(user.id,checkout.id,planName+'_annual',price.id);
  return {url:checkout.url,plan:planName};
 }
 async function aiPlan(user,prompt){if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});if(!store.hasAccess(user.id)&&!(process.env.SEVA_ADMIN_EMAIL&&user.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))throw Object.assign(Error('Active SEVA plan required'),{status:402});
@@ -106,7 +107,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   if(method==='PUT')return json(res,200,{profile:await saveStudent(db,u.id,b)});
   return json(res,200,await deleteStudent(db,u.id,b?.version));
  }
- if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id)});}
+ if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id),activePlans:store.activePlans(u.id)});}
  if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=auth(req);return json(res,200,dbrelayStatus(store,u.id));}
  if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
  if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
