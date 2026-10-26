@@ -50,3 +50,6 @@ Local test suite PASS is a code quality gate only. Production `GO` requires sepa
 ## Enterprise commerce & students — 2.4
 
 See [International Store and Student Access](README-COMMERCE-I18N.md). `/shop.html` provides six languages, a student verification request, optional customer profile, owner-scoped cart, free/recurring/quote models and non-paying quote creation. No new Stripe product or student discount has been activated. The public SEVA site is not automatically updated by this repository commit.
+
+## Student ID profiles — 26 October 2026
+Account-scoped student ID, academic-year data, explicit notice/declaration, JSON export, version conflict checks and deletion. See STUDENT-BACKEND.md. This profile does not approve the separate commerce student-verification application or unlock a student price.
