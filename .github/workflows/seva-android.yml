@@ -32,6 +32,22 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.13'
+      - name: Validate bundled SEVA goal workspace JavaScript
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path('apps/seva-android/app/src/main/assets/seva-offline.html').read_text(encoding='utf-8')
+          match = re.search(r'<script>(.*?)</script>', html, re.S)
+          assert match, 'Missing offline logic'
+          assert all(x in html for x in ('localStorage.setItem', 'function validate(items)', 'Massimo tre livelli', 'SevaAndroid.exportJson', "connect-src 'none'"))
+          Path('/tmp/seva-offline.js').write_text(match.group(1), encoding='utf-8')
+          manifest = Path('apps/seva-android/app/src/main/AndroidManifest.xml').read_text()
+          assert 'android.permission.INTERNET' not in manifest, 'Offline release must not request Internet'
+          print('Source assertions PASS: offline persistence, depth enforcement, backup, CSP, no Internet')
+          PY
+          node --check /tmp/seva-offline.js
       - name: Build SEVA app
         run: gradle -p apps/seva-android --no-daemon assembleDebug
       - name: Verify APK package and targets
@@ -39,8 +55,13 @@ jobs:
           set -eu
           APK=apps/seva-android/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
+          unzip -l "$APK" | grep -F 'assets/seva-offline.html'
+          if "${ANDROID_HOME}/build-tools/36.0.0/aapt" dump permissions "$APK" | grep -F 'android.permission.INTERNET'; then
+            echo "ERROR: offline APK requests INTERNET permission" >&2
+            exit 1
+          fi
           "${ANDROID_HOME}/build-tools/36.0.0/aapt" dump badging "$APK" | tee seva-android-package.txt
-          grep -F "package: name='ai.seva.enterprise'" seva-android-package.txt
+          grep -F "package: name='ai.seva.enterprise.local'" seva-android-package.txt
           grep -F "targetSdkVersion:'36'" seva-android-package.txt
           sha256sum "$APK" | tee SEVA-debug-sha256.txt
       - uses: actions/upload-artifact@v4
@@ -73,17 +94,17 @@ jobs:
           APK=$(find downloaded -type f -name 'app-debug.apk' -print -quit)
           test -n "$APK"
           test -s "$APK"
-          cp "$APK" "SEVA-Enterprise-2.4.1-debug.apk"
-          sha256sum SEVA-Enterprise-2.4.1-debug.apk | tee SEVA-Enterprise-2.4.1-debug.sha256
+          cp "$APK" "SEVA-Enterprise-2.4.2-offline-debug.apk"
+          sha256sum SEVA-Enterprise-2.4.2-offline-debug.apk | tee SEVA-Enterprise-2.4.2-offline-debug.sha256
       - name: Publish direct downloadable GitHub prerelease asset
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          TAG="seva-android-v2.4.1-debug"
-          APK="SEVA-Enterprise-2.4.1-debug.apk"
-          SHA="SEVA-Enterprise-2.4.1-debug.sha256"
+          TAG="seva-android-v2.4.2-offline-debug"
+          APK="SEVA-Enterprise-2.4.2-offline-debug.apk"
+          SHA="SEVA-Enterprise-2.4.2-offline-debug.sha256"
           if gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
             echo "Existing $TAG release found; updating same-version APK and hash."
             gh release upload "$TAG" "$APK" "$SHA" --repo "$GH_REPO" --clobber
@@ -91,8 +112,8 @@ jobs:
             gh release create "$TAG" "$APK" "$SHA" \
               --repo "$GH_REPO" \
               --target "$GITHUB_SHA" \
-              --title "SEVA Enterprise 2.4.1 — APK Android DEBUG" \
-              --notes "**APK DI PROVA, non Google Play / produzione.** Versione 2.4.1, min Android API 24, target API 36. Contenitore WebView HTTPS del sito SEVA. Login reale, pagamenti Stripe e backend Enterprise non ancora collaudati. Scaricare l'APK soltanto se si riconosce il repository ufficiale; consentire l'installazione Android da origine esterna solo temporaneamente. Confrontare SHA-256 con il file .sha256 allegato." \
+              --title "SEVA Enterprise 2.4.2 — APK Android LOCALE DEBUG" \
+              --notes "**APK LOCALE DI PROVA, non Google Play / produzione.** Versione 2.4.2, min Android API 24, target API 36, identificativo ai.seva.enterprise.local. Contiene goal planner autonomo offline con massimo tre livelli di sotto-obiettivi, criteri ed evidenze, esportazione/importazione JSON. Nessun login online, Stripe, OpenAI, verifica universitaria o invio dati. Non richiede rete. L'APK e firmato con chiave DEBUG; mantenere backup del piano. Test installazione su dispositivo reale ancora da eseguire. Verificare SHA-256 allegato." \
               --prerelease
           fi
           gh release view "$TAG" --repo "$GH_REPO" --json url,assets,isPrerelease

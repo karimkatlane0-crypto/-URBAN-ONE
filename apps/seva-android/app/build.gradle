@@ -5,11 +5,12 @@ android {
     namespace 'ai.seva.enterprise'
     compileSdk 36
     defaultConfig {
-        applicationId 'ai.seva.enterprise'
+        // Separate package avoids debug keystore update conflicts with 2.4.1.
+        applicationId 'ai.seva.enterprise.local'
         minSdk 24
         targetSdk 36
-        versionCode 2401
-        versionName '2.4.1'
+        versionCode 2402
+        versionName '2.4.2'
     }
     buildTypes {
         release {
