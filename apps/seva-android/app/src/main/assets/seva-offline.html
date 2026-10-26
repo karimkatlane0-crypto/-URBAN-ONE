@@ -77,7 +77,7 @@ function validate(items){
  return items;
 }
 function load(){
- try{var saved=localStorage.getItem(KEY);if(saved){var input=JSON.parse(saved);if(input.schema!==SCHEMA)throw Error('Formato del backup non riconosciuto.');goals=validate(input.goals);}}
+ try{var saved=localStorage.getItem(KEY);if(saved){var input=JSON.parse(saved);if(input.schema!==SCHEMA)throw Error('Formato del backup non riconosciuto.');var repaired=false;var restored=input.goals;if(Array.isArray(restored))restored=restored.map(function(g){if(g&&g.status==='done'&&(!String(g.criteria||'').trim()||!String(g.evidence||'').trim())){repaired=true;return Object.assign({},g,{status:'doing'});}return g;});goals=validate(restored);if(repaired)status('Obiettivi precedenti conservati: quelli senza criteri o evidenze sono tornati In corso.');}}
  catch(e){status('Impossibile leggere gli obiettivi locali: '+e.message);goals=[];}
 }
 function persist(next){

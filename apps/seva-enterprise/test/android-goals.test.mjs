@@ -40,3 +40,10 @@ test('unknown persisted schema is reported instead of silently loading',()=>{
  const a=app(JSON.stringify({schema:'unknown',goals:[goal('bad')]}));
  assert.match(a.get('status').textContent,/Formato/);assert.equal(a.get('count-all').textContent,0);
 });
+
+test('legacy verified records without evidence remain visible as in progress',()=>{
+ const a=app(JSON.stringify({schema:'seva-offline-v1',goals:[goal('legacy','','done')]}));
+ assert.equal(a.get('count-all').textContent,1);
+ assert.equal(a.get('count-doing').textContent,1);
+ assert.match(a.get('status').textContent,/conservati/);
+});
