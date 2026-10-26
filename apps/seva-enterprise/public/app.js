@@ -1,4 +1,5 @@
 import {studentPanelHTML,bindStudentPanel} from './students.js';
+import {initializeNotifications} from './notifications-ui.js';
 const $=id=>document.getElementById(id);let user=null,goals=[],editing=null,registerMode=false,access=false,publicStatus=null;
 function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
@@ -63,3 +64,4 @@ let deferredInstall=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=$('install');b.hidden=false;});
 $('install').onclick=async()=>{if(!deferredInstall)return;const event=deferredInstall;deferredInstall=null;await event.prompt();$('install').hidden=true;};
 if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+initializeNotifications({api,toast});
