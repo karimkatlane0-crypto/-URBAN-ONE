@@ -65,3 +65,17 @@ test('62 student stale updates are rejected via HTTP',async()=>{const r=await ca
 test('63 student profile cannot be verified by client input',async()=>{const r=await call('/api/student',{method:'PUT',body:{...studentInput,version:1,verificationStatus:'verified'}});assert.equal(r.status,400);});
 test('64 student write CSRF is rejected',async()=>{const r=await call('/api/student',{method:'PUT',headers:{Origin:'https://attacker.invalid'},body:{...studentInput,version:1}});assert.equal(r.status,403);});
 test('65 signed-in student can delete their profile',async()=>{const r=await call('/api/student',{method:'DELETE',body:{version:1}});assert.equal(r.status,200);assert.equal((await call('/api/student')).data.profile,null);});
+
+test('BLACK BOX partner opportunities require session authentication',async()=>{
+ const r=await fetch(base+'/api/commerce/affiliate/opportunities');
+ assert.equal(r.status,401);
+});
+test('BLACK BOX partner opportunities are read-only and never advertise earned income',async()=>{
+ const r=await call('/api/commerce/affiliate/opportunities');
+ assert.equal(r.status,200);
+ assert.deepEqual(r.data.opportunities,[]);
+ assert.equal(r.data.incomePaidCents,0);
+ assert.equal(r.data.settlementExecuted,false);
+ const post=await call('/api/commerce/affiliate/opportunities',{method:'POST',body:{commissionCents:100}});
+ assert.equal(post.status,404);
+});
