@@ -9,6 +9,7 @@ import {validateMonthlyPlan} from './billing.mjs';
 import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
+import {previewFundedMarketingPurchase} from './marketing-flywheel.mjs';
 import {createCommerce} from './commerce.mjs';
 import {createAffiliateLedger} from './affiliate-ledger.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
@@ -93,6 +94,11 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    return json(res,200,await createCheckout(u));
  }
  if(path==='/api/commerce/assist'&&method==='POST'){rate(req,'commerce-assist',5);const u=auth(req);const b=JSON.parse(await rawBody(req,2500));const intent=String(b.intent||'').slice(0,900);return json(res,200,await aiPlan(u,'Present no purchase or verified inventory claims. Recommend a SEVA catalog offering for this user intent: '+intent+'; catalog SKUs: goal-free, enterprise-monthly, student-monthly (needs verification), goal-once, goal-success, marketing-consented, time-service. Any price except €50/month or free must be quoted separately.'));}
+ if(path==='/api/commercial/marketing-benefit-preview'&&method==='POST'){
+   rate(req,'marketing-benefit-preview',20);
+   const body=JSON.parse(await rawBody(req,12000));
+   return json(res,200,{preview:previewFundedMarketingPurchase(body),settlementExecuted:false,receiptVerifiedByServer:false});
+ }
  if(path==='/api/commercial/quote'&&method==='POST'){rate(req,'commercial',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{quote:quoteSEVA(body),checkoutEnabled:false});}
  if(path==='/api/commercial/redemption-preview'&&method==='POST'){rate(req,'redemption',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{redemption:evaluateMarketingRedemption(body),paymentExecuted:false});}
  if(path==='/api/commercial/campaigns'&&method==='GET'){const u=auth(req);return json(res,200,{campaigns:store.listCampaigns(u.id)});}
