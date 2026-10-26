@@ -7,9 +7,11 @@ import {validateMonthlyPlan} from './billing.mjs';
 import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
+import {createCommerce} from './commerce.mjs';
 
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
 const store=createStore(process.env.SEVA_DB_PATH||'./data/seva.sqlite');
+const commerce=createCommerce(store);
 const port=Number(process.env.PORT||3000);
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=>x.trim().split('=').map(decodeURIComponent)).filter(x=>x.length===2));
@@ -20,7 +22,7 @@ async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const c
 function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
-function status(){return {name:'SEVA',version:'2.3.0',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
+function status(){return {name:'SEVA',version:'2.4.0',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
 async function stripe(method,path,data){const key=process.env.STRIPE_SECRET_KEY;if(!key)throw Object.assign(Error('Stripe server credentials unavailable'),{status:503});const resp=await fetch('https://api.stripe.com/v1/'+path,{method,headers:{Authorization:`Bearer ${key}`,...(data?{'Content-Type':'application/x-www-form-urlencoded'}:{})},body:data?new URLSearchParams(data):undefined,signal:AbortSignal.timeout(15000)});
  const body=await resp.json();if(!resp.ok)throw Object.assign(Error(body.error?.message||'Stripe unavailable'),{status:resp.status===401?503:502});return body;}
 async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
@@ -68,6 +70,22 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+ if(path==='/api/commerce/catalog'&&method==='GET')return json(res,200,{products:commerce.catalog(),pricingVerified:false});
+ if(path==='/api/commerce/profile'&&method==='GET'){const u=auth(req);return json(res,200,{profile:commerce.profile(u.id)});}
+ if(path==='/api/commerce/profile'&&method==='PUT'){rate(req,'profile',20);const u=auth(req);return json(res,200,{profile:commerce.saveProfile(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/profile'&&method==='DELETE'){rate(req,'eraseprofile',10);const u=auth(req);return json(res,200,commerce.deleteProfile(u.id));}
+ if(path==='/api/commerce/student'&&method==='GET'){const u=auth(req);return json(res,200,{student:commerce.student(u.id)});}
+ if(path==='/api/commerce/student/apply'&&method==='POST'){rate(req,'student-apply',3);const u=auth(req);return json(res,202,{student:commerce.applyStudent(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/cart'&&method==='GET'){const u=auth(req);return json(res,200,{cart:commerce.getCart(u.id)});}
+ if(path==='/api/commerce/cart'&&method==='PUT'){rate(req,'cart',40);const u=auth(req);return json(res,200,{cart:commerce.saveCart(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/requests'&&method==='GET'){const u=auth(req);return json(res,200,{requests:commerce.quoteRequests(u.id)});}
+ if(path==='/api/commerce/requests'&&method==='POST'){rate(req,'quote-request',10);const u=auth(req);return json(res,201,{request:commerce.requestQuote(u.id,JSON.parse(await rawBody(req,4000)))});}
+ if(path==='/api/commerce/checkout'&&method==='POST'){
+   rate(req,'commerce-checkout',6);const u=auth(req);const cart=commerce.getCart(u.id);
+   if(cart.items.length!==1||cart.items[0]?.sku!=='enterprise-monthly')throw Object.assign(Error('Unpriced or student cart requires a quote and verification'),{status:409});
+   return json(res,200,await createCheckout(u));
+ }
+ if(path==='/api/commerce/assist'&&method==='POST'){rate(req,'commerce-assist',5);const u=auth(req);const b=JSON.parse(await rawBody(req,2500));const intent=String(b.intent||'').slice(0,900);return json(res,200,await aiPlan(u,'Present no purchase or verified inventory claims. Recommend a SEVA catalog offering for this user intent: '+intent+'; catalog SKUs: goal-free, enterprise-monthly, student-monthly (needs verification), goal-once, goal-success, marketing-consented, time-service. Any price except €50/month or free must be quoted separately.'));}
  if(path==='/api/commercial/quote'&&method==='POST'){rate(req,'commercial',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{quote:quoteSEVA(body),checkoutEnabled:false});}
  if(path==='/api/commercial/redemption-preview'&&method==='POST'){rate(req,'redemption',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{redemption:evaluateMarketingRedemption(body),paymentExecuted:false});}
  if(path==='/api/commercial/campaigns'&&method==='GET'){const u=auth(req);return json(res,200,{campaigns:store.listCampaigns(u.id)});}

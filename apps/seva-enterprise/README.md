@@ -46,3 +46,7 @@ SEVA is an independent application consuming OpenAI APIs if configured. **It is 
 ## Release acceptance
 
 Local test suite PASS is a code quality gate only. Production `GO` requires separate evidence for published origin, authentication, real first OpenAI response, billing and rights, customer support, backups and mobile device acceptance. Do not claim a completed public enterprise deployment merely because the code is present in GitHub.
+
+## Enterprise commerce & students — 2.4
+
+See [International Store and Student Access](README-COMMERCE-I18N.md). `/shop.html` provides six languages, a student verification request, optional customer profile, owner-scoped cart, free/recurring/quote models and non-paying quote creation. No new Stripe product or student discount has been activated. The public SEVA site is not automatically updated by this repository commit.
