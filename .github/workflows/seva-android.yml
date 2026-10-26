@@ -41,11 +41,11 @@ jobs:
           html = Path('apps/seva-android/app/src/main/assets/seva-offline.html').read_text(encoding='utf-8')
           match = re.search(r'<script>(.*?)</script>', html, re.S)
           assert match, 'Missing offline logic'
-          assert all(x in html for x in ('localStorage.setItem', 'function validate(items)', 'Massimo tre livelli', 'SevaAndroid.exportJson', "connect-src 'none'"))
+          assert all(x in html for x in ('localStorage.setItem', 'function validate(items)', 'Massimo tre livelli', 'SevaAndroid.exportJson', "connect-src 'none'", 'seva-local-intents-v25', 'kpi-completion', 'fly-output', 'whatsapp-open'))
           Path('/tmp/seva-offline.js').write_text(match.group(1), encoding='utf-8')
           manifest = Path('apps/seva-android/app/src/main/AndroidManifest.xml').read_text()
           assert 'android.permission.INTERNET' not in manifest, 'Offline release must not request Internet'
-          print('Source assertions PASS: offline persistence, depth enforcement, backup, CSP, no Internet')
+          print('Source assertions PASS: goals, KPI, Lastre CRM, marketing preview, WhatsApp manual, backups, CSP')
           PY
           node --check /tmp/seva-offline.js
       - name: Build SEVA app
@@ -61,7 +61,7 @@ jobs:
             exit 1
           fi
           "${ANDROID_HOME}/build-tools/36.0.0/aapt" dump badging "$APK" | tee seva-android-package.txt
-          grep -F "package: name='ai.seva.enterprise.local'" seva-android-package.txt
+          grep -F "package: name='ai.seva.enterprise.local.v25'" seva-android-package.txt
           grep -F "targetSdkVersion:'36'" seva-android-package.txt
           sha256sum "$APK" | tee SEVA-debug-sha256.txt
       - uses: actions/upload-artifact@v4
@@ -95,9 +95,9 @@ jobs:
           test -n "$APK"
           test -s "$APK"
           SHORT_SHA="${GITHUB_SHA:0:8}"
-          FILENAME="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.apk"
+          FILENAME="SEVA-Enterprise-2.5.0-offline-${SHORT_SHA}-debug.apk"
           cp "$APK" "$FILENAME"
-          sha256sum "$FILENAME" | tee "SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.sha256"
+          sha256sum "$FILENAME" | tee "SEVA-Enterprise-2.5.0-offline-${SHORT_SHA}-debug.sha256"
       - name: Publish direct downloadable GitHub prerelease asset
         env:
           GH_TOKEN: ${{ github.token }}
@@ -105,17 +105,17 @@ jobs:
         run: |
           set -euo pipefail
           SHORT_SHA="${GITHUB_SHA:0:8}"
-          TAG="seva-android-v2.4.2-offline-${SHORT_SHA}"
-          APK="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.apk"
-          SHA="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.sha256"
+          TAG="seva-android-v2.5.0-offline-${SHORT_SHA}"
+          APK="SEVA-Enterprise-2.5.0-offline-${SHORT_SHA}-debug.apk"
+          SHA="SEVA-Enterprise-2.5.0-offline-${SHORT_SHA}-debug.sha256"
           if gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
             echo "Immutable release $TAG already exists; preserved, no overwrite attempted."
           else
             gh release create "$TAG" "$APK" "$SHA" \
               --repo "$GH_REPO" \
               --target "$GITHUB_SHA" \
-              --title "SEVA Enterprise 2.4.2 — APK Android LOCALE DEBUG" \
-              --notes "**APK LOCALE CON CONTROLLI AGGIORNATI, non Google Play / produzione.** Versione 2.4.2, min Android API 24, target API 36, identificativo ai.seva.enterprise.local. Contiene goal planner autonomo offline con massimo tre livelli di sotto-obiettivi, criteri ed evidenze, esportazione/importazione JSON. Nessun login online, Stripe, OpenAI, verifica universitaria o invio dati. Non richiede rete. L'APK e firmato con chiave DEBUG; mantenere backup del piano. Test installazione su dispositivo reale ancora da eseguire. Verificare SHA-256 allegato." \
+              --title "SEVA 2.5.0 CONSOLIDATA — APK Android LOCALE DEBUG" \
+              --notes "**APK LOCALE CON CONTROLLI AGGIORNATI, non Google Play / produzione.** Versione 2.5.0, min Android API 24, target API 36, identificativo ai.seva.enterprise.local. Contiene goal planner autonomo offline con tre livelli di sotto-obiettivi, criteri e prove, KPI/KPMI locale, CRM Lastre intenzioni, simulazione marketing senza pagamenti, condivisione WhatsApp manuale, export JSON obiettivi e CRM. Nessun login online, Stripe, OpenAI, verifica universitaria o invio dati. Non richiede INTERNET nel manifest: WhatsApp si apre volontariamente tramite intent esterno. L'APK e firmato con chiave DEBUG; mantenere backup del piano. Test installazione su dispositivo reale ancora da eseguire. Verificare SHA-256 allegato." \
               --prerelease
           fi
           gh release view "$TAG" --repo "$GH_REPO" --json url,assets,isPrerelease

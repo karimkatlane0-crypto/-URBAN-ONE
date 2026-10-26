@@ -19,8 +19,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Offline-first SEVA Goal Intelligence QA APK. The HTML is bundled inside
- * this APK; no network, account sign-in, payment or real AI execution.
+ * Offline-first SEVA 2.5 Executive Consolidated QA APK. The HTML is bundled inside
+ * this APK; no automatic network, account sign-in, payment or real AI execution.
  * Data is isolated in app WebView localStorage and can be exported by SAF.
  */
 public final class MainActivity extends Activity {
@@ -31,20 +31,37 @@ public final class MainActivity extends Activity {
 
     private final class BackupActions {
         @JavascriptInterface public void exportJson(final String raw) {
-            if (raw == null || raw.length() > 1000000 || !raw.startsWith("{")) return;
-            try {
-                if (!"seva-offline-v1".equals(new JSONObject(raw).optString("schema"))) return;
-            } catch (Exception ignored) { return; }
+            exportSaf(raw,"seva-offline-v1","SEVA-obiettivi-backup.json");
+        }
+        @JavascriptInterface public void exportIntentJson(final String raw) {
+            exportSaf(raw,"seva-intents-v1","SEVA-intenzioni-locali.json");
+        }
+        @JavascriptInterface public void openWhatsApp(final String value) {
+            // Only bundled offline source can call this native bridge; it is not accessible to remote pages.
+            if (value == null || value.trim().isEmpty() || value.length() > 450) return;
+            final String safe = value.trim();
             runOnUiThread(() -> {
-                pendingBackup = raw;
-                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("application/json");
-                intent.putExtra(Intent.EXTRA_TITLE, "SEVA-obiettivi-backup.json");
-                try { startActivityForResult(intent, BACKUP_REQUEST); }
-                catch (Exception e) { pendingBackup = null; notifyUser("Impossibile aprire il salvataggio."); }
+                try {
+                    final Uri uri = Uri.parse("https://wa.me/?text=" + Uri.encode(safe));
+                    startActivity(new Intent(Intent.ACTION_VIEW,uri));
+                } catch (Exception e) { notifyUser("Nessuna app per aprire il messaggio."); }
             });
         }
+    }
+    private void exportSaf(final String raw,final String expectedSchema,final String filename) {
+        if (raw == null || raw.length() > 1000000 || !raw.startsWith("{")) return;
+        try {
+            if (!expectedSchema.equals(new JSONObject(raw).optString("schema"))) return;
+        } catch (Exception ignored) { return; }
+        runOnUiThread(() -> {
+            pendingBackup = raw;
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/json");
+            intent.putExtra(Intent.EXTRA_TITLE,filename);
+            try { startActivityForResult(intent,BACKUP_REQUEST); }
+            catch (Exception e) { pendingBackup = null; notifyUser("Impossibile aprire il salvataggio."); }
+        });
     }
 
     private void notifyUser(String message) {

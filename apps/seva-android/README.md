@@ -1,28 +1,24 @@
-# SEVA Android 2.4.2 — Offline Local-First QA
+# SEVA Android 2.5.0 — Consolidata Locale (DEBUG)
 
-## Root cause of previous "Not found"
+Date: 2026-10-26. This Android APK is **a working local-first consolidation, NOT a production Enterprise AI/Stripe app**. Source in repository `karimkatlane0-crypto/-URBAN-ONE`. Original SEVA 2.4.2 remains separate.
 
-The old 2.4.1 debug APK was a **10 KB WebView shell** opening a hosted SEVA Work URL, which may display `Not found` on the user's Android browser. It had no bundled UI.
+## Bundled functional Android app (no online API)
+- Root goals and up to 3 subgoal levels; acceptance criteria/evidence mandatory for verified goals; edit/delete; up to 250 goals; local WebView storage.
+- KPI/KPMI on-device: goal completion percentage, pending goals, voluntary CRM intent count. Verified actual payouts displayed as €0 (app does not track bank transactions).
+- Lastre CRM: local user-opt-in only; intention categories purchase/rent/lease/credit-information/other, description and budget. No photos or external AI are sent or stored by this CRM.
+- Marketing Double Flywheel: purely hypothetical budget-dependent finance-safe preview; zero cashbacks/reimbursements/charges executed.
+- Manual WhatsApp composer: only text entered by user; user taps and confirms, app opens external ACTION_VIEW. No automatic messages, bulk outreach or background push.
+- Two local JSON backups via Android Storage Access Framework: goals and CRM intents.
+- Credentials, banking data, Stripe secrets, API keys and online providers are NOT embedded. WebView blocks network and Android app does NOT request INTERNET permission. External WhatsApp viewer handles its own network.
+- Package `ai.seva.enterprise.local.v25`, min API 24, target API 36, version 2.5.0, debug-signed; installed **side by side** with SEVA Locale 2.4.2 to prevent debug-signature update conflicts. To transfer goals: export JSON in 2.4.2, copy its JSON text into 2.5.0 "Ripristina backup" and validate. No automatic cross-app data migration. CRM is new and local-only.
 
-## Fixed in 2.4.2
+## What is NOT included (still blocked)
+The authenticated SEVA Enterprise Node + SQLite host, synced DBRELAY, real OpenAI, real image/photo analysis, Stripe checkout/webhook, payouts or automatic WhatsApp. Full updated source for those features exists in `apps/seva-enterprise/` merged through PR #102; it has NOT been deployed to the first ChatGPT Sites page and cannot be represented as included in this offline APK.
 
-- Bundle a functional offline-first goal workspace at `app/src/main/assets/seva-offline.html`; the Android launcher opens it using a secure virtual HTTPS base origin.
-- No network requests are allowed or needed; manifest has no INTERNET permission.
-- Root goal and up to 3 subgoal levels, criteria, evidence, statuses, editing/deletion, 250 goal limit.
-- Data saved in local WebView storage **on this device only**, without accounts or synchronization. Data from previous SEVA hosted origin is not automatically migrated.
-- System file-picker export of JSON via Storage Access Framework and validated text-paste JSON import.
-- Logo from user's supplied SEVA brand icon. Separate Android ID `ai.seva.enterprise.local` prevents debug-signature update errors from old 2.4.1 APK. App appears as **SEVA Locale**.
+This debug APK is for manual device QA, and is not production-signed, Google Play reviewed or suitable for sensitive personal records. Export backups frequently.
 
-No OpenAI API key, backend, university verification, remote login, Stripe checkout or live payments are included. This build must never be represented as the final commercial app. This local prototype is not automatically encrypted and is unsuitable for high-sensitivity user data.
+## Direct download
+GitHub Actions `.github/workflows/seva-android.yml` builds on Android source change, validates package and SHA-256, and on push to default branch creates a `seva-android-v2.5.0-offline-<8-commit-chars>` **prerelease** with binary and checksum. Only publish/share a direct asset link once that run and its `gh release view` result confirm it was uploaded.
 
-## Verification
-
-JDK 17, Gradle 8.13, Android SDK 36:
-
-```sh
-gradle -p apps/seva-android --no-daemon assembleDebug
-```
-
-GitHub Action `SEVA Android Debug APK` verifies package, API levels, embedded offline HTML, absence of Android INTERNET permission, JS syntax and publishes a **debug pre-release** download with SHA-256. Run Android **device-based manual QA** for create/edit/delete, 3-level limit, offline startup, persistence across restart, JSON SAF export/re-import, icon, navigation and accessibility.
-
-Backend + Stripe + OpenAI production gates remain in `docs/SEVA_RELEASE_RUNBOOK_2026-10-26.md` and Issue #82.
+## Required QA after download
+Install on physical Android; check goal create/edit/delete, 3-level depth/cycle denial, reopened app persistence, both JSON exports, separate CRM consent, marketing preview €0 actual payout, WhatsApp tap & recipient selection and compatibility with the device. Verify checksum before installing. No actual purchases or mobile money. G1–G6 backend and legal acceptance remain open in issue #82.

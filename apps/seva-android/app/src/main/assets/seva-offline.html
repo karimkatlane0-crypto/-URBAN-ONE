@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="theme-color" content="#112544">
-<title>SEVA — Goal Intelligence locale</title>
+<title>SEVA 2.5 — Executive Mobile Consolidata Locale</title>
 <style>
 :root{color-scheme:dark;--bg:#071528;--panel:#112845;--field:#0c213b;--stroke:#34516e;--ink:#f6f7fb;--gold:#f8d69c;--muted:#b9c9de;--green:#80dfc6}
 *{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Roboto,sans-serif;background:radial-gradient(circle at 20% 0,#1e3d5d,transparent 42%),var(--bg);color:var(--ink);min-height:100dvh}
@@ -17,7 +17,16 @@ main{max-width:940px;margin:auto;padding:18px 14px 50px}.flag{border:1px solid #
 .eyebrow{font-size:11px;letter-spacing:.18em;color:var(--green);font-weight:800}.hero h2{margin:8px 0;font-size:clamp(26px,7vw,39px);letter-spacing:-.04em;line-height:1.12}.hero p{color:var(--muted);margin-bottom:0}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.stat{background:var(--panel);padding:12px;border:1px solid var(--stroke);border-radius:15px;text-align:center}.stat b{display:block;font-size:23px;color:var(--gold)}.stat span{font-size:10px;color:var(--muted)}
 .section{margin-top:19px;padding:19px;border:1px solid var(--stroke);border-radius:18px;background:var(--panel)}
-.section h3{margin:0 0 14px;font-size:19px}p.note,.subnote{font-size:12px;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.section h3{margin:0 0 14px;font-size:19px}
+.mobile-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:15px 0;position:sticky;top:0;z-index:6;background:#071528ef;padding:8px 0}
+.mobile-quick a{padding:12px 6px;text-align:center;border-radius:12px;border:1px solid #557a91;color:#eafffd;background:#153350;font-weight:650;font-size:12px;text-decoration:none}
+.mobile-quick a:focus-visible{outline:2px solid #80dfc6}
+.consent-row{display:flex;align-items:flex-start;gap:9px;line-height:1.4}
+.consent-row input{height:21px;width:21px;min-height:0;flex:none;margin:0}
+#fly-output{margin:12px 0;white-space:pre-wrap}
+#lastre-local .goal{border-left-color:#80dfc6}
+@media(max-width:450px){.mobile-quick a{font-size:10px;padding:11px 2px}.mobile-quick{gap:4px}}
+p.note,.subnote{font-size:12px;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
 button{font:inherit;border-radius:11px;padding:10px 12px;min-height:43px;border:1px solid #4d7295;background:#1a3b58;color:var(--ink);cursor:pointer}
 button.primary{background:var(--gold);color:#13253c;border-color:var(--gold);font-weight:800}
 button.danger{background:#542c39}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--green);outline-offset:2px}
@@ -33,14 +42,49 @@ footer{padding:12px 14px 30px;text-align:center;color:var(--muted);font-size:11p
 </style>
 </head>
 <body>
-<header><div class="logo" aria-label="Logo SEVA">S</div><div><h1>SEVA</h1><small>GOAL INTELLIGENCE · ANDROID</small></div></header>
+<header><div class="logo" aria-label="Logo SEVA">S</div><div><h1>SEVA</h1><small>EXECUTIVE 2.5 · ANDROID LOCALE</small></div></header>
 <main>
 <div class="flag"><strong>MODALITÀ LOCALE DISPONIBILE</strong> · Questa versione funziona senza sito web. I dati restano nella memoria dell'app su questo dispositivo: non sono sincronizzati con l'account SEVA online.</div>
 <section class="hero"><span class="eyebrow">PROBLEM SOLVING → DECISION MAKING</span><h2>Un obiettivo.<br>Un risultato verificabile.</h2><p>Definisci obiettivi, tre livelli di sotto-obiettivi, criteri e prove. Salva il tuo piano sul telefono ed esporta una copia di sicurezza.</p></section>
 <section class="stats" aria-label="Riepilogo obiettivi">
 <div class="stat"><b id="count-all">0</b><span>Totali</span></div><div class="stat"><b id="count-doing">0</b><span>In corso</span></div><div class="stat"><b id="count-blocked">0</b><span>Bloccati</span></div><div class="stat"><b id="count-done">0</b><span>Verificati</span></div>
 </section>
-<section class="section"><h3>Mission Control</h3><div class="actions"><button class="primary" id="new">+ Nuovo obiettivo</button><button id="export">Esporta JSON</button></div><div id="goal-list" aria-live="polite"></div></section>
+<nav class="mobile-quick" aria-label="SEVA sezioni"><a href="#mission">◎ Mission</a><a href="#lastre-local">▧ Lastre</a><a href="#marketing-local">◈ Flywheel</a><a href="#help-local">✉ Canali</a></nav>
+<section class="section" id="kpi-local" aria-label="Analisi KPI e KPMI">
+<p class="eyebrow">SEVA 2.5 · EXECUTIVE / KPI</p><h3>Risultati verificabili</h3>
+<div class="stats"><div class="stat"><b id="kpi-completion">0%</b><span>Avanzamento</span></div>
+<div class="stat"><b id="kpi-todo">0</b><span>Da avviare</span></div>
+<div class="stat"><b id="kpi-intents">0</b><span>Intenzioni CRM</span></div>
+<div class="stat"><b id="kpi-payout">€0</b><span>Incassi dimostrati</span></div></div>
+<p class="note">Avanzamento calcolato dai tuoi obiettivi locali. Nessun preventivo o beneficio marketing è una vendita, un incasso o una prova di accredito bancario.</p>
+</section>
+<section class="section" id="lastre-local" aria-labelledby="lastre-heading">
+<p class="eyebrow">LASTRE · INTENT-TO-BUY</p><h3 id="lastre-heading">CRM volontario · Beni e servizi</h3>
+<p class="note">Salva sul dispositivo soltanto ciò che scegli di descrivere. Questo APK non invia foto, contatti o intenzioni a OpenAI, Stripe o altri server.</p>
+<div class="grid"><div><label for="intent-category">Operazione</label><select id="intent-category">
+<option value="buy">Acquistare</option><option value="rent">Affittare</option><option value="lease">Leasing</option><option value="credit">Informazioni su credito</option><option value="other">Altro</option></select></div>
+<div><label for="intent-budget">Budget massimo (€)</label><input type="number" id="intent-budget" min="0" max="1000000" step="0.01" value="0"></div></div>
+<label for="intent-description">Bene, servizio o esigenza</label><textarea id="intent-description" maxlength="800" placeholder="Es. notebook per studiare, affitto di tre mesi..."></textarea>
+<label class="consent-row"><input type="checkbox" id="intent-consent"> Autorizzo volontariamente il salvataggio locale di questa intenzione sul mio dispositivo.</label>
+<div class="actions"><button class="primary" id="intent-save">Salva intenzione</button><button id="intent-export">Esporta CRM JSON</button></div>
+<div id="intent-list" aria-live="polite"></div><p class="note">L'analisi fotografica online non è disponibile: non caricare dati riservati. Gli importi qui sono intenzioni, non ordini né pagamenti.</p>
+</section>
+<section class="section" id="marketing-local">
+<p class="eyebrow">DOUBLE FLYWHEEL · BENESSERE ECONOMICO</p><h3>Simulatore marketing coperto</h3>
+<p class="note">Un possibile prezzo netto pari a zero richiede fondi reali riservati e accordi verificati. Questo calcolo non concede sconti, cashback o rimborsi.</p>
+<div class="grid"><div><label for="fly-purchase">Prezzo beni o servizi (€)</label><input id="fly-purchase" type="number" min="0" max="1000000" step="0.01" value="100"></div>
+<div><label for="fly-budget">Fondi partner esclusivamente riservati (€)</label><input id="fly-budget" type="number" min="0" max="1000000" step="0.01" value="0"></div></div>
+<label class="consent-row"><input type="checkbox" id="fly-agreement"> Simulo l'ipotesi che il partner abbia approvato l'accordo e che i fondi siano effettivamente disponibili; non è una prova reale.</label>
+<button id="fly-calc">Calcola scenario non vincolante</button>
+<p id="fly-output" class="flag" aria-live="polite">Nessun fondo partner verificato: il prezzo rimane interamente dovuto.</p>
+</section>
+<section class="section" id="help-local">
+<p class="eyebrow">OMNICHANNEL · TAP POINT VOLONTARIO</p><h3>Messaggi e canali</h3>
+<label for="share-text">Scrivi il messaggio che vuoi condividere</label><textarea id="share-text" maxlength="450" placeholder="Posso chiedere informazioni su questo bene o servizio?"></textarea>
+<div class="actions"><button id="whatsapp-open">Apri WhatsApp volontariamente</button></div>
+<p class="note">WhatsApp si apre soltanto dopo la tua conferma; scegli tu destinatario e invio. Nessun messaggio automatico e nessuna consegna garantita. In questa versione offline non sono inclusi OpenAI reale, account cloud o Stripe.</p>
+</section>
+<section class="section" id="mission"><h3>Mission Control</h3><div class="actions"><button class="primary" id="new">+ Nuovo obiettivo</button><button id="export">Esporta JSON</button></div><div id="goal-list" aria-live="polite"></div></section>
 <section class="section" id="editor" hidden><h3 id="edit-heading">Nuovo obiettivo</h3><form id="goal-form"><div class="grid"><div><label for="title">Obiettivo</label><input id="title" required maxlength="160"></div><div><label for="parent">Obiettivo padre</label><select id="parent"><option value="">Nessuno (principale)</option></select></div></div>
 <label for="description">Descrizione</label><textarea id="description" maxlength="3000"></textarea>
 <div class="grid"><div><label for="criteria">Criteri di accettazione</label><textarea id="criteria" maxlength="1200"></textarea></div><div><label for="evidence">Evidenze verificabili</label><textarea id="evidence" maxlength="1200"></textarea></div></div>
@@ -50,7 +94,7 @@ footer{padding:12px 14px 30px;text-align:center;color:var(--muted);font-size:11p
 <label for="import-json">Dati JSON</label><textarea id="import-json" placeholder='{"schema":"seva-offline-v1","goals":[]}'></textarea><button id="import">Controlla e importa</button></section>
 <section class="section"><h3>Servizi online</h3><p class="note">OpenAI, login, verifica universitaria e checkout Stripe non sono attivi in questa versione locale. Non vengono effettuate chiamate API, pagamenti o trasferimenti dati.</p><p class="note">Quando il sito SEVA tornerà accessibile, l'attivazione dell'account online richiederà un collaudo separato. L'APK locale non certifica tale collegamento.</p></section>
 <p id="status" class="status" role="status" aria-live="polite"></p>
-</main><footer>SEVA AI · Local-first QA · v2.4.2 · GOAL → EXECUTE → VERIFY → REPORT</footer>
+</main><footer>SEVA AI · Executive Consolidata Locale · v2.5.0 DEBUG · GOAL → EXECUTE → VERIFY → REPORT</footer>
 <script>
 (function(){
 'use strict';
@@ -82,7 +126,7 @@ function load(){
 }
 function persist(next){
  validate(next);
- try{localStorage.setItem(KEY,JSON.stringify({schema:SCHEMA,goals:next}));goals=next;return true;}
+ try{localStorage.setItem(KEY,JSON.stringify({schema:SCHEMA,goals:next}));goals=next;kpiRefresh();return true;}
  catch(e){status('Salvataggio non riuscito: memoria del dispositivo non disponibile. Esporta una copia dei dati.');return false;}
 }
 function depthFor(g){var byId=new Map(goals.map(function(x){return [x.id,x];})),depth=0,p=g.parent;while(p&&byId.has(p)){depth++;p=byId.get(p).parent;}return Math.min(depth,3);}
@@ -156,7 +200,94 @@ el('import').addEventListener('click',function(){
   if(persist(items)){el('editor').hidden=true;editId=null;render();el('import-json').value='';status('Backup importato: '+items.length+' obiettivi.');}
  }catch(e){status('Importazione annullata: '+e.message);}
 });
-load();render();
+
+// SEVA Executive 2.5 local-only analytics, voluntary CRM and finance-safe preview.
+var INTENT_KEY='seva-local-intents-v25', INTENT_SCHEMA='seva-intents-v1', intentions=[];
+function kpiRefresh(){
+ var total=goals.length, done=goals.filter(function(g){return g.status==='done';}).length;
+ el('kpi-completion').textContent=(total?Math.round(done*10000/total)/100:0)+'%';
+ el('kpi-todo').textContent=goals.filter(function(g){return g.status==='todo';}).length;
+ el('kpi-intents').textContent=intentions.length;
+ el('kpi-payout').textContent='€0';
+}
+function readIntents(){
+ try{
+  var raw=localStorage.getItem(INTENT_KEY);
+  if(!raw){intentions=[];return;}
+  var parsed=JSON.parse(raw);
+  if(parsed.schema!==INTENT_SCHEMA||!Array.isArray(parsed.intents)||parsed.intents.length>100)throw Error('Formato CRM non riconosciuto');
+  parsed.intents.forEach(function(x){if(!x||typeof x.id!=='string'||!['buy','rent','lease','credit','other'].includes(x.category)||
+    typeof x.description!=='string'||x.description.length>800||!Number.isSafeInteger(x.budgetCents)||x.budgetCents<0||
+    x.budgetCents>100000000)throw Error('Record CRM non valido');});
+  intentions=parsed.intents;
+ }catch(e){intentions=[];status('CRM locale non leggibile. I tuoi obiettivi sono conservati. '+e.message);}
+}
+function saveIntents(){
+ try{localStorage.setItem(INTENT_KEY,JSON.stringify({schema:INTENT_SCHEMA,intents:intentions}));return true;}
+ catch(e){status('Memoria locale CRM non disponibile: '+e.message);return false;}
+}
+function formatEuro(cents){return (cents/100).toLocaleString('it-IT',{style:'currency',currency:'EUR'});}
+function renderIntents(){
+ var list=el('intent-list');list.replaceChildren();kpiRefresh();
+ if(!intentions.length){list.appendChild(dom('p','empty','Nessuna intenzione salvata.'));return;}
+ intentions.forEach(function(item){
+  var card=dom('div','goal');
+  card.appendChild(dom('strong','',item.category.toUpperCase()+' · '+formatEuro(item.budgetCents)));
+  card.appendChild(dom('p','detail',item.description));
+  var del=dom('button','danger','Elimina dal mio dispositivo');
+  del.addEventListener('click',function(){
+   if(!confirm('Eliminare definitivamente questa intenzione locale?'))return;
+   var candidate=intentions.filter(function(x){return x.id!==item.id;});
+   var before=intentions;intentions=candidate;if(!saveIntents())intentions=before;
+   renderIntents();status('Intenzione locale eliminata.');
+  });card.appendChild(del);list.appendChild(card);
+ });
+}
+el('intent-save').addEventListener('click',function(){
+ if(!el('intent-consent').checked){status('Consenso volontario al CRM necessario.');return;}
+ var description=safeText(el('intent-description').value,800),v=Number(el('intent-budget').value);
+ var budget=Math.round(v*100), category=el('intent-category').value;
+ if(!description||!Number.isFinite(v)||v<0||!Number.isSafeInteger(budget)||budget>100000000||
+ !['buy','rent','lease','credit','other'].includes(category)){status('Descrizione o budget CRM non valido.');return;}
+ if(intentions.length>=100){status('Limite massimo 100 intenzioni locali.');return;}
+ var record={id:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2),
+ category,description,budgetCents:budget,consentAt:new Date().toISOString()};
+ intentions.push(record);
+ if(!saveIntents()){intentions.pop();return;}
+ el('intent-description').value='';el('intent-consent').checked=false;
+ renderIntents();status('Intenzione salvata sul tuo dispositivo, nessuna richiesta inviata.');
+});
+el('intent-export').addEventListener('click',function(){
+ var json=JSON.stringify({schema:INTENT_SCHEMA,exportedAt:new Date().toISOString(),intents:intentions},null,2);
+ if(window.SevaAndroid&&typeof window.SevaAndroid.exportJson==='function'){
+  // SAF bridge supports goal exports; use dedicated CRM bridge if available.
+  if(typeof window.SevaAndroid.exportIntentJson==='function'){window.SevaAndroid.exportIntentJson(json);return;}
+  status('Esportazione CRM richiede la nuova versione di Android bridge.');return;
+ }
+ var link=document.createElement('a'),url=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+ link.href=url;link.download='SEVA-intenzioni-locali.json';link.click();
+ setTimeout(function(){URL.revokeObjectURL(url);},1500);
+});
+el('fly-calc').addEventListener('click',function(){
+ var purchase=Number(el('fly-purchase').value),budget=Number(el('fly-budget').value);
+ if(!Number.isFinite(purchase)||!Number.isFinite(budget)||purchase<0||budget<0||
+ purchase>1000000||budget>1000000){el('fly-output').textContent='Importi non validi.';return;}
+ var approved=el('fly-agreement').checked;
+ var potential=approved?Math.min(purchase,budget):0;
+ el('fly-output').textContent='Prezzo dovuto: '+formatEuro(Math.round(purchase*100))+
+ '\\nBeneficio POTENZIALE, non erogato: '+formatEuro(Math.round(potential*100))+
+ '\\nCosto netto IPOTETICO: '+formatEuro(Math.round((purchase-potential)*100))+
+ '\\nIncasso o cashback reale confermato: €0. Nessun pagamento avviato.';
+});
+el('whatsapp-open').addEventListener('click',function(){
+ var message=safeText(el('share-text').value,450);
+ if(!message){status('Scrivi prima il tuo messaggio.');return;}
+ if(!confirm('Aprire WhatsApp con il messaggio scritto da te? L’invio resta una tua decisione.'))return;
+ if(window.SevaAndroid&&typeof window.SevaAndroid.openWhatsApp==='function')window.SevaAndroid.openWhatsApp(message);
+ else status('WhatsApp disponibile tramite la versione mobile Android; nessun messaggio è stato inviato.');
+});
+
+readIntents();load();render();renderIntents();
 })();
 </script>
 </body></html>
