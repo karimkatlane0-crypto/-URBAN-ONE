@@ -33,3 +33,7 @@
 - [ ] Match the original SEVA Work app before replacing or publishing its frontend. Do not override Work files or secrets from GitHub.
 
 **Status:** Source integration and CI are not proof of real provider, device, public site or commercial production readiness.
+
+## Existing SEVA Campus compatibility
+
+The repository already includes a separately maintained SEVA Campus/student identity source from PR #86. This extension **does not substitute university verification, infer student identity from images, or grant payment access by merely creating a student profile**. Lastre CRM is scoped to the authenticated SEVA user and requires its own opt-in, regardless of campus registration. A current institutional enrollment verification provider and age/consent checks must be validated separately before claiming globally verified student IDs.
