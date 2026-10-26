@@ -50,3 +50,30 @@ test('58 DBRELAY change feed emits IDs not private goal payload',async()=>{
 test('59 DBRELAY malformed cursor returns 400',async()=>{
  const r=await call('/api/dbrelay/changes?after=-1&limit=10');assert.equal(r.status,400);
 });
+
+test('60 anonymous KPI overview forbidden',async()=>{
+ const r=await fetch(base+'/api/analytics/overview');assert.equal(r.status,401);
+});
+test('61 owner KPI overview returns completed counts without claiming revenue',async()=>{
+ const r=await call('/api/analytics/overview');assert.equal(r.status,200);
+ assert.equal(r.data.goals.total,1);
+ assert.equal(r.data.disclaimers.proposalMoneyIsRevenue,false);
+});
+test('62 Lastre CRM rejects absent voluntary consent',async()=>{
+ const r=await call('/api/lastre/intents',{method:'POST',body:{category:'buy',description:'Camera',budgetCents:10000,consent:false}});
+ assert.equal(r.status,400);
+});
+test('63 Lastre voluntary CRM records only metadata, never photo bytes',async()=>{
+ const r=await call('/api/lastre/intents',{method:'POST',body:{category:'rent',description:'Apartment near university',budgetCents:150000,consent:true}});
+ assert.equal(r.status,201);
+ const list=await call('/api/lastre/intents');assert.equal(list.status,200);
+ assert.equal(list.data.intents[0].description,'Apartment near university');
+ assert.equal(list.data.photosStored,false);
+});
+test('64 Lastre AI without backend provider key fails closed',async()=>{
+ const r=await call('/api/lastre/analyze',{method:'POST',body:{consentToAI:false}});
+ assert.equal(r.status,503);
+});
+test('65 Lastre API denies anonymous identity access',async()=>{
+ const r=await fetch(base+'/api/lastre/intents');assert.equal(r.status,401);
+});
