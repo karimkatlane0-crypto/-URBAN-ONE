@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - 'seva-enterprise-phase2-phase3-*'
+      - 'seva-*'
       - 'main-@URBAN-ONE'
     paths:
       - 'apps/seva-enterprise/**'
