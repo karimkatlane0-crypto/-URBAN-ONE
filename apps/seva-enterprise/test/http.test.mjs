@@ -154,3 +154,35 @@ test('OMNICHANNEL: mobile page and cached module exist',async()=>{
  assert.equal(script.status,200);
  assert.match(await script.text(),/initializeNotifications/);
 });
+
+
+test('SEVA 100+ communication route blocks anonymous draft generation',async()=>{
+ const r=await fetch(base+'/api/communications/draft',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+  channel:'whatsapp',purpose:'customer_support',subject:'Consulenza',context:'Supporto obiettivi, dettagli verificati'
+ })});
+ assert.equal(r.status,401);
+});
+test('SEVA 100+ marketing draft without permission is rejected before OpenAI',async()=>{
+ const r=await call('/api/communications/draft',{method:'POST',body:{
+  channel:'whatsapp',purpose:'offer',subject:'Servizio',context:'Descrizione del servizio'
+ }});
+ assert.equal(r.status,403);
+});
+test('SEVA 100+ non-paying synthetic account cannot make paid OpenAI request',async()=>{
+ const r=await call('/api/communications/draft',{method:'POST',body:{
+  channel:'email',purpose:'customer_support',subject:'Servizio',context:'Supporto ai clienti'
+ }});
+ assert.equal(r.status,402);
+});
+test('SEVA 100+ mobile command center and AI draft studio served as static shell',async()=>{
+ const page=await fetch(base+'/');
+ assert.equal(page.status,200);
+ const html=await page.text();
+ assert.match(html,/Il tuo centro operativo/);
+ assert.match(html,/data-open-tab="communications"/);
+ assert.match(html,/communicationForm/);
+ assert.match(html,/approvazione|inviate|invio automatico/i);
+ const js=await fetch(base+'/communications-ui.js');
+ assert.equal(js.status,200);
+ assert.match(await js.text(),/initializeCommunications/);
+});
