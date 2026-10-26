@@ -221,6 +221,7 @@ test('ORIGINAL SEVA: KPI, Lastre and AI opt-in sections bundled into mobile shel
  for(const section of ['data-tab="analytics"','data-tab="lastre"','id="lastreCRMConsent"','id="lastreAIConsent"','id="localPhoto"','id="kpiMeter"'])
   assert.ok(html.includes(section),section);
  const js=await fetch(base+'/original-intelligence-ui.js');assert.equal(js.status,200);
- assert.match(await js.text(),/localPrivacyJpeg/);
- assert.match(await js.text(),/initializeOriginalIntelligence/);
+ const client=await js.text();
+ assert.match(client,/localPrivacyJpeg/);
+ assert.match(client,/initializeOriginalIntelligence/);
 });
