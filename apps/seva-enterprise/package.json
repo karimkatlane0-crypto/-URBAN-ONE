@@ -10,6 +10,8 @@
   "scripts": {
     "start": "node --experimental-sqlite server.mjs",
     "test": "node --experimental-sqlite --test test/*.test.mjs",
-    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check annual-billing.mjs && node --check dbrelay.mjs && node --check analytics.mjs && node --check lastre.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js && node --check commerce.mjs && node --check public/shop.js"
+    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check annual-billing.mjs && node --check dbrelay.mjs && node --check analytics.mjs && node --check lastre.mjs && node --check maintenance.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js && node --check commerce.mjs && node --check public/shop.js",
+    "db:backup": "node --experimental-sqlite maintenance.mjs backup",
+    "db:restore": "node --experimental-sqlite maintenance.mjs restore"
   }
 }
