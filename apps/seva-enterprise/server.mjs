@@ -12,6 +12,8 @@ import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 import {previewFundedMarketingPurchase} from './marketing-flywheel.mjs';
 import {createCommerce} from './commerce.mjs';
 import {createAffiliateLedger} from './affiliate-ledger.mjs';
+import {analyticsOverview} from './analytics.mjs';
+import {analyzeLastre} from './lastre.mjs';
 import {createNotificationCenter} from './notification-center.mjs';
 import {validateCommercialDraft,produceDraft} from './communications.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
@@ -93,6 +95,19 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   });
   store.audit(u.id,'communications_draft',result.id||'draft');
   return json(res,200,{...result,requiresHumanApproval:true,pricingVerified:false});
+ }
+ if(path==='/api/analytics/overview'&&method==='GET'){rate(req,'analytics-overview',40);const u=auth(req);return json(res,200,analyticsOverview(store,u.id));}
+ if(path==='/api/lastre/intents'&&method==='GET'){rate(req,'lastre-list',40);const u=auth(req);return json(res,200,{intents:store.listIntents(u.id),photosStored:false});}
+ if(path==='/api/lastre/intents'&&method==='POST'){rate(req,'lastre-create',12);const u=auth(req);return json(res,201,{id:store.createIntent(u.id,JSON.parse(await rawBody(req,6000))),photosStored:false});}
+ if(path.startsWith('/api/lastre/intents/')&&method==='DELETE'){rate(req,'lastre-delete',20);const u=auth(req);return json(res,200,{deleted:store.deleteIntent(u.id,path.slice('/api/lastre/intents/'.length))});}
+ if(path==='/api/lastre/analyze'&&method==='POST'){
+  rate(req,'lastre-vision',3);const u=auth(req);
+  if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});
+  if(!store.hasAccess(u.id)&&!(process.env.SEVA_ADMIN_EMAIL&&u.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))throw Object.assign(Error('Active SEVA plan required'),{status:402});
+  const payload=JSON.parse(await rawBody(req,1800000));
+  const result=await analyzeLastre(payload,{apiKey:process.env.OPENAI_API_KEY,model:process.env.OPENAI_MODEL||'gpt-5.1',endpoint:process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses'});
+  store.audit(u.id,'lastre_vision_request',result.id||'not_supplied');
+  return json(res,200,result);
  }
  if(path==='/api/notifications/preferences'&&method==='GET'){
   const u=auth(req);return json(res,200,{preferences:notifications.prefs(u.id)});
