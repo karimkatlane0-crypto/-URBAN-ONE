@@ -77,25 +77,58 @@ export function createStore(filename=':memory:'){
  function hasAccess(user){return db.prepare('SELECT active FROM entitlements WHERE user_id=?').get(user)?.active===1;}
  function recordCheckout(user,session){db.prepare('INSERT OR IGNORE INTO checkout_sessions VALUES (?,?,?)').run(session,user,at());audit(user,'checkout_created',session);}
  function getCheckoutOwner(session){return db.prepare('SELECT user_id FROM checkout_sessions WHERE session_id=?').get(session)?.user_id;}
- function processStripeEvent(event){if(!event?.id||!event?.type)throw Error('Bad webhook event');
- if(db.prepare('SELECT 1 FROM webhook_events WHERE event_id=?').get(event.id))return 'duplicate';
- const obj=event.data?.object||{};let userId=null,active=null;
- if(event.type==='checkout.session.completed' && obj.mode==='subscription' && obj.payment_status==='paid'){
-    userId=getCheckoutOwner(obj.id);if(!userId || (obj.client_reference_id&&userId!==obj.client_reference_id))throw Error('Checkout owner mismatch');active=true;
- } else if (event.type==='invoice.paid'||event.type==='invoice.payment_failed'||event.type==='customer.subscription.deleted'||event.type==='customer.subscription.updated') {
-  const sub=event.type.startsWith('customer.subscription')?obj.id:obj.subscription;
-  const entitlement=db.prepare('SELECT user_id FROM entitlements WHERE subscription=?').get(sub);
-  if(entitlement){userId=entitlement.user_id;active=event.type==='invoice.paid'||(event.type==='customer.subscription.updated'&&['active','trialing'].includes(obj.status));}
+ function processStripeEvent(event){
+  if(!event?.id||typeof event.id!=='string'||!event?.type)throw Error('Bad webhook event');
+  if(db.prepare('SELECT 1 FROM webhook_events WHERE event_id=?').get(event.id))return 'duplicate';
+  const obj=event.data?.object||{};
+  const checkoutSuccess=event.type==='checkout.session.completed'||event.type==='checkout.session.async_payment_succeeded';
+  // Stripe invoice schema varies across API versions. New invoices attach the
+  // subscription under parent.subscription_details rather than subscription.
+  const invoiceSubscription=obj.subscription||obj.parent?.subscription_details?.subscription||null;
+  let userId=null,active=null,subscription=null,customer=null;
+  if(checkoutSuccess&&obj.mode==='subscription'&&obj.payment_status==='paid'){
+    userId=getCheckoutOwner(obj.id);
+    if(!userId||(obj.client_reference_id&&userId!==obj.client_reference_id))
+      throw Error('Checkout owner mismatch');
+    if(!obj.subscription||typeof obj.subscription!=='string')
+      throw Error('Paid checkout requires subscription ID');
+    subscription=obj.subscription;customer=obj.customer||null;active=true;
+  }else if([
+    'invoice.paid','invoice.payment_failed',
+    'customer.subscription.deleted','customer.subscription.updated'
+  ].includes(event.type)){
+    subscription=event.type.startsWith('customer.subscription.')?obj.id:invoiceSubscription;
+    if(subscription){
+      const entitlement=db.prepare('SELECT user_id,active FROM entitlements WHERE subscription=?').get(subscription);
+      if(entitlement){
+        userId=entitlement.user_id;customer=obj.customer||null;
+        if(event.type==='invoice.paid')active=true;
+        if(event.type==='invoice.payment_failed'||event.type==='customer.subscription.deleted')active=false;
+        // An "active" subscription status does NOT prove the invoice was paid.
+        // Reactivation is granted only by invoice.paid or a paid Checkout.
+        if(event.type==='customer.subscription.updated'&&
+          ['canceled','unpaid','paused','incomplete_expired','past_due'].includes(obj.status))active=false;
+      }
+    }
+  }
+  // Receipt and entitlement MUST commit together. Replays are idempotent.
+  db.exec('BEGIN IMMEDIATE');
+  try{
+    if(userId!==null&&active!==null){
+      if(checkoutSuccess){
+        db.prepare('INSERT INTO entitlements(user_id,customer,subscription,active,updated) VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET customer=COALESCE(excluded.customer,entitlements.customer),subscription=excluded.subscription,active=excluded.active,updated=excluded.updated').run(userId,customer,subscription,Number(active),at());
+      }else{
+        // A delayed event for a canceled OLD subscription must not modify a
+        // newer subscription belonging to the same user.
+        db.prepare('UPDATE entitlements SET customer=COALESCE(?,customer),active=?,updated=? WHERE user_id=? AND subscription=?').run(customer,Number(active),at(),userId,subscription);
+      }
+      audit(userId,active?'access_enabled':'access_disabled',event.type);
+    }
+    db.prepare('INSERT INTO webhook_events VALUES(?,?,?)').run(event.id,event.type,at());
+    db.exec('COMMIT');
+  }catch(e){db.exec('ROLLBACK');throw e;}
+  return userId&&active!==null?(active?'enabled':'disabled'):'recorded';
  }
- // Atomic commit of event receipt + entitlement to ensure webhook retries are idempotent.
- db.exec('BEGIN IMMEDIATE');try{
-   if(userId!==null&&active!==null){const sub=event.type==='checkout.session.completed'?obj.subscription:(event.type.startsWith('customer.subscription')?obj.id:obj.subscription);
-     db.prepare('INSERT INTO entitlements(user_id,customer,subscription,active,updated) VALUES(?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET customer=COALESCE(excluded.customer,entitlements.customer),subscription=COALESCE(excluded.subscription,entitlements.subscription),active=excluded.active,updated=excluded.updated').run(userId,obj.customer||null,sub||null,Number(active),at());
-     audit(userId,active?'access_enabled':'access_disabled',event.type);
-   }
-   db.prepare('INSERT INTO webhook_events VALUES(?,?,?)').run(event.id,event.type,at());db.exec('COMMIT');
- }catch(e){db.exec('ROLLBACK');throw e;}
- return userId?(active?'enabled':'disabled'):'recorded';}
  function saveCampaign(user,quote,terms={}){
    if(!Number.isInteger(terms.quorumTarget)||terms.quorumTarget<1||terms.quorumTarget>1000000)throw Error('Invalid quorum target');
    if(typeof terms.deadlineIso!=='string'||!/^\d{4}-\d\d-\d\dT/.test(terms.deadlineIso)||!/(Z|[+-]\d\d:\d\d)$/.test(terms.deadlineIso)||!Number.isFinite(Date.parse(terms.deadlineIso)))throw Error('Invalid deadline with timezone');
