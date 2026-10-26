@@ -79,3 +79,19 @@ test('BLACK BOX partner opportunities are read-only and never advertise earned i
  const post=await call('/api/commerce/affiliate/opportunities',{method:'POST',body:{commissionCents:100}});
  assert.equal(post.status,404);
 });
+
+test('Double Flywheel HTTP purchase preview is explicitly unfunded and charges nothing',async()=>{
+ const r=await call('/api/commercial/marketing-benefit-preview',{method:'POST',body:{purchaseCents:10000,verifiedMerchantBudgetCents:10000,exclusiveAllocatedCents:0,contractCapCents:10000}});
+ assert.equal(r.status,200);
+ assert.equal(r.data.preview.potentialBenefitCents,0);
+ assert.equal(r.data.preview.customerDueAtCheckoutCents,10000);
+ assert.equal(r.data.preview.paymentExecuted,false);
+ assert.equal(r.data.settlementExecuted,false);
+ assert.equal(r.data.receiptVerifiedByServer,false);
+});
+test('Double Flywheel UI is served with explicit non-guaranteed benefit language',async()=>{
+ const r=await fetch(base+'/commercial.html');assert.equal(r.status,200);
+ const html=await r.text();
+ assert.match(html,/Double Flywheel/);
+ assert.match(html,/Non attesta|non prova un acquisto gratuito/i);
+});
