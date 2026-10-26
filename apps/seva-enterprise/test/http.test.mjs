@@ -50,3 +50,11 @@ test('58 DBRELAY change feed emits IDs not private goal payload',async()=>{
 test('59 DBRELAY malformed cursor returns 400',async()=>{
  const r=await call('/api/dbrelay/changes?after=-1&limit=10');assert.equal(r.status,400);
 });
+
+const studentInput={displayName:'Synthetic Student',university:'Example University',course:'Engineering',academicYear:'2026/2027',consent:true,declaration:true,noticeVersion:'2026-10-26',version:0};
+test('60 student profile requires cookie authentication, forged identity headers do not count',async()=>{const r=await fetch(base+'/api/student',{headers:{'oai-authenticated-user-id':'forged-user'}});assert.equal(r.status,401);});
+test('61 authenticated customer creates student profile',async()=>{const r=await call('/api/student',{method:'PUT',body:studentInput});assert.equal(r.status,200);assert.match(r.data.profile.studentId,/^SEVA-STU-/);assert.equal(r.data.profile.verificationStatus,'self_declared');});
+test('62 student stale updates are rejected via HTTP',async()=>{const r=await call('/api/student',{method:'PUT',body:studentInput});assert.equal(r.status,409);});
+test('63 student profile cannot be verified by client input',async()=>{const r=await call('/api/student',{method:'PUT',body:{...studentInput,version:1,verificationStatus:'verified'}});assert.equal(r.status,400);});
+test('64 student write CSRF is rejected',async()=>{const r=await call('/api/student',{method:'PUT',headers:{Origin:'https://attacker.invalid'},body:{...studentInput,version:1}});assert.equal(r.status,403);});
+test('65 signed-in student can delete their profile',async()=>{const r=await call('/api/student',{method:'DELETE',body:{version:1}});assert.equal(r.status,200);assert.equal((await call('/api/student')).data.profile,null);});

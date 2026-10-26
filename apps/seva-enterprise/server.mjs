@@ -1,3 +1,5 @@
+import {readStudent,saveStudent,deleteStudent} from './students.mjs';
+import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve, extname} from 'node:path';
@@ -22,7 +24,7 @@ async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const c
 function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
-function status(){return {name:'SEVA',version:'2.4.0',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
+function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
 async function stripe(method,path,data){const key=process.env.STRIPE_SECRET_KEY;if(!key)throw Object.assign(Error('Stripe server credentials unavailable'),{status:503});const resp=await fetch('https://api.stripe.com/v1/'+path,{method,headers:{Authorization:`Bearer ${key}`,...(data?{'Content-Type':'application/x-www-form-urlencoded'}:{})},body:data?new URLSearchParams(data):undefined,signal:AbortSignal.timeout(15000)});
  const body=await resp.json();if(!resp.ok)throw Object.assign(Error(body.error?.message||'Stripe unavailable'),{status:resp.status===401?503:502});return body;}
 async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
@@ -93,6 +95,16 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/auth/register'&&method==='POST'){rate(req,'reg',5);const body=JSON.parse(await rawBody(req));const u=store.register(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,201,{user:u});}
  if(path==='/api/auth/login'&&method==='POST'){rate(req,'login',10);const body=JSON.parse(await rawBody(req));const u=store.login(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,200,{user:u});}
  if(path==='/api/auth/logout'&&method==='POST'){const token=cookies(req).seva_session;if(token)store.db.prepare('DELETE FROM sessions WHERE token=?').run(token);res.setHeader('Set-Cookie',`seva_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secureCookie(req)}`);return json(res,200,{ok:true});}
+ if(path==='/api/student'){
+  const u=auth(req),db=studentDatabase(store.db);
+  if(method==='GET')return json(res,200,{profile:await readStudent(db,u.id)});
+  if(!['PUT','DELETE'].includes(method))return json(res,405,{error:'Method not allowed'});
+  rate(req,'student-profile',20);
+  if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
+  const b=JSON.parse(await rawBody(req,8192));
+  if(method==='PUT')return json(res,200,{profile:await saveStudent(db,u.id,b)});
+  return json(res,200,await deleteStudent(db,u.id,b?.version));
+ }
  if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id)});}
  if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=auth(req);return json(res,200,dbrelayStatus(store,u.id));}
  if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
