@@ -4,6 +4,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import {installStudentStore} from './student-store.mjs';
 import {installDBRelay} from './dbrelay.mjs';
+import {validateIntent} from './lastre.mjs';
 
 export const priceId = 'price_1UUWSlRzfcoKq6cnfB1elOxQ';
 export const productId = 'prod_VVXXVGhdpIodLC';
@@ -56,6 +57,7 @@ export function createStore(filename=':memory:'){
  CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,user_id TEXT,action TEXT NOT NULL,detail TEXT,created INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS campaign_drafts(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,quote_json TEXT NOT NULL,terms_json TEXT NOT NULL,snapshot_sha256 TEXT NOT NULL,status TEXT NOT NULL,created INTEGER NOT NULL);
  CREATE INDEX IF NOT EXISTS campaign_owner ON campaign_drafts(user_id,created);`);
+ db.exec("CREATE TABLE IF NOT EXISTS lastre_intents(id TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,category TEXT NOT NULL CHECK(category IN ('buy','rent','lease','credit','other')),description TEXT NOT NULL,budget_cents INTEGER NOT NULL CHECK(budget_cents>=0),consent_at INTEGER NOT NULL,created INTEGER NOT NULL); CREATE INDEX IF NOT EXISTS lastre_owner ON lastre_intents(user_id,created);");
  installDBRelay(db);
  installStudentStore(db);
  const at=()=>Math.floor(Date.now()/1000), uid=()=>randomUUID();
@@ -178,9 +180,21 @@ export function createStore(filename=':memory:'){
    audit(user,'campaign_draft_created',id);return id;
  }
  function listCampaigns(user){return db.prepare('SELECT id,quote_json,terms_json,snapshot_sha256,status,created FROM campaign_drafts WHERE user_id=? ORDER BY created DESC LIMIT 100').all(user).map(x=>({id:x.id,quote:JSON.parse(x.quote_json),terms:JSON.parse(x.terms_json),snapshotSha256:x.snapshot_sha256,status:x.status,created:x.created}));}
+ function createIntent(user,input){
+  const data=validateIntent(input),id=uid();
+  db.prepare('INSERT INTO lastre_intents VALUES(?,?,?,?,?,?,?)').run(id,user,data.category,data.description,data.budgetCents,at(),at());
+  audit(user,'lastre_intent_created',id);return id;
+ }
+ function listIntents(user){return db.prepare('SELECT id,category,description,budget_cents AS budgetCents,consent_at AS consentAt,created FROM lastre_intents WHERE user_id=? ORDER BY created DESC LIMIT 100').all(user);}
+ function deleteIntent(user,id){
+  if(!/^[0-9a-f-]{36}$/.test(String(id)))throw Object.assign(Error('Invalid intent ID'),{status:400});
+  const changed=db.prepare('DELETE FROM lastre_intents WHERE id=? AND user_id=?').run(id,user).changes;
+  if(changed)audit(user,'lastre_intent_deleted',id);
+  return changed>0;
+ }
  function rewards(user){return db.prepare('SELECT id,kind,amount_cents,approval,created FROM rewards WHERE user_id=? ORDER BY created DESC').all(user);}
  function recordReward(user,sourceEvent,kind,amount){if(!Number.isInteger(amount)||amount<0||amount>100000000)throw Error('Invalid reward amount');
  // Reward records are pending only; transfers require separate authorized program and verified payout provider.
  db.prepare('INSERT OR IGNORE INTO rewards VALUES(?,?,?,?,?,?,?)').run(uid(),user,sourceEvent,String(kind),amount,'pending',at());audit(user,'reward_pending',sourceEvent);}
- return {db,persistent:filename!==':memory:',register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,hasPlanAccess,activePlans,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
+ return {db,persistent:filename!==':memory:',createIntent,listIntents,deleteIntent,register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,hasPlanAccess,activePlans,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
 }
