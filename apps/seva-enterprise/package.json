@@ -10,6 +10,6 @@
   "scripts": {
     "start": "node --experimental-sqlite server.mjs",
     "test": "node --experimental-sqlite --test test/*.test.mjs",
-    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check annual-billing.mjs && node --check dbrelay.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js && node --check commerce.mjs && node --check public/shop.js && node --check students.mjs && node --check student-store.mjs && node --check public/students.js && node --check runtime.mjs && node --check communications.mjs && node --check public/communications-ui.js"
+    "check": "node --check server.mjs && node --check core.mjs && node --check commercial.mjs && node --check billing.mjs && node --check annual-billing.mjs && node --check dbrelay.mjs && node --check public/sw.js && node --check public/app.js && node --check public/commercial.js && node --check commerce.mjs && node --check public/shop.js && node --check students.mjs && node --check student-store.mjs && node --check public/students.js && node --check runtime.mjs && node --check communications.mjs && node --check public/communications-ui.js && node --check analytics.mjs && node --check lastre.mjs && node --check public/original-intelligence-ui.js"
   }
 }
