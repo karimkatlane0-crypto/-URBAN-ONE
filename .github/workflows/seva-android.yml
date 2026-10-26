@@ -94,26 +94,28 @@ jobs:
           APK=$(find downloaded -type f -name 'app-debug.apk' -print -quit)
           test -n "$APK"
           test -s "$APK"
-          cp "$APK" "SEVA-Enterprise-2.4.2-offline-debug.apk"
-          sha256sum SEVA-Enterprise-2.4.2-offline-debug.apk | tee SEVA-Enterprise-2.4.2-offline-debug.sha256
+          SHORT_SHA="${GITHUB_SHA:0:8}"
+          FILENAME="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.apk"
+          cp "$APK" "$FILENAME"
+          sha256sum "$FILENAME" | tee "SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.sha256"
       - name: Publish direct downloadable GitHub prerelease asset
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          TAG="seva-android-v2.4.2-offline-debug"
-          APK="SEVA-Enterprise-2.4.2-offline-debug.apk"
-          SHA="SEVA-Enterprise-2.4.2-offline-debug.sha256"
+          SHORT_SHA="${GITHUB_SHA:0:8}"
+          TAG="seva-android-v2.4.2-offline-${SHORT_SHA}"
+          APK="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.apk"
+          SHA="SEVA-Enterprise-2.4.2-offline-${SHORT_SHA}-debug.sha256"
           if gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
-            echo "Existing $TAG release found; updating same-version APK and hash."
-            gh release upload "$TAG" "$APK" "$SHA" --repo "$GH_REPO" --clobber
+            echo "Immutable release $TAG already exists; preserved, no overwrite attempted."
           else
             gh release create "$TAG" "$APK" "$SHA" \
               --repo "$GH_REPO" \
               --target "$GITHUB_SHA" \
               --title "SEVA Enterprise 2.4.2 — APK Android LOCALE DEBUG" \
-              --notes "**APK LOCALE DI PROVA, non Google Play / produzione.** Versione 2.4.2, min Android API 24, target API 36, identificativo ai.seva.enterprise.local. Contiene goal planner autonomo offline con massimo tre livelli di sotto-obiettivi, criteri ed evidenze, esportazione/importazione JSON. Nessun login online, Stripe, OpenAI, verifica universitaria o invio dati. Non richiede rete. L'APK e firmato con chiave DEBUG; mantenere backup del piano. Test installazione su dispositivo reale ancora da eseguire. Verificare SHA-256 allegato." \
+              --notes "**APK LOCALE CON CONTROLLI AGGIORNATI, non Google Play / produzione.** Versione 2.4.2, min Android API 24, target API 36, identificativo ai.seva.enterprise.local. Contiene goal planner autonomo offline con massimo tre livelli di sotto-obiettivi, criteri ed evidenze, esportazione/importazione JSON. Nessun login online, Stripe, OpenAI, verifica universitaria o invio dati. Non richiede rete. L'APK e firmato con chiave DEBUG; mantenere backup del piano. Test installazione su dispositivo reale ancora da eseguire. Verificare SHA-256 allegato." \
               --prerelease
           fi
           gh release view "$TAG" --repo "$GH_REPO" --json url,assets,isPrerelease
