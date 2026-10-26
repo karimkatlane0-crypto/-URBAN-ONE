@@ -64,8 +64,10 @@ function validate(items){
  items.forEach(function(g){
   if(!g||typeof g.id!=='string'||!g.id||ids.has(g.id))throw Error('ID duplicato o mancante.');
   ids.add(g.id);
+  if(typeof g.parent!=='string')throw Error('Obiettivo padre non valido.');
   if(typeof g.title!=='string'||!g.title.trim()||g.title.length>160)throw Error('Titolo non valido.');
   if(!states.includes(g.status)||!['description','criteria','evidence'].every(function(k){return typeof g[k]==='string'&&g[k].length<=(k==='description'?3000:1200);}))throw Error('Campi non validi.');
+  if(g.status==='done'&&(!g.criteria.trim()||!g.evidence.trim()))throw Error('Per verificare un obiettivo servono criteri ed evidenze.');
  });
  var index=new Map(items.map(function(g){return [g.id,g];}));
  items.forEach(function(g){
@@ -75,7 +77,7 @@ function validate(items){
  return items;
 }
 function load(){
- try{var saved=localStorage.getItem(KEY);if(saved){var input=JSON.parse(saved);goals=validate(input.goals||[]);}}
+ try{var saved=localStorage.getItem(KEY);if(saved){var input=JSON.parse(saved);if(input.schema!==SCHEMA)throw Error('Formato del backup non riconosciuto.');var repaired=false;var restored=input.goals;if(Array.isArray(restored))restored=restored.map(function(g){if(g&&g.status==='done'&&(!String(g.criteria||'').trim()||!String(g.evidence||'').trim())){repaired=true;return Object.assign({},g,{status:'doing'});}return g;});goals=validate(restored);if(repaired)status('Obiettivi precedenti conservati: quelli senza criteri o evidenze sono tornati In corso.');}}
  catch(e){status('Impossibile leggere gli obiettivi locali: '+e.message);goals=[];}
 }
 function persist(next){
@@ -123,7 +125,7 @@ function removeGoal(id){
  var descendants=count(id);
  if(!confirm('Eliminare questo obiettivo e '+descendants+' sotto-obiettivi?'))return;
  var erase=new Set([id]),more=true;while(more){more=false;goals.forEach(function(g){if(erase.has(g.parent)&&!erase.has(g.id)){erase.add(g.id);more=true;}});}
- if(persist(goals.filter(function(g){return !erase.has(g.id);}))) {render();status('Obiettivo eliminato.');}
+ if(persist(goals.filter(function(g){return !erase.has(g.id);}))) {el('editor').hidden=true;editId=null;render();status('Obiettivo eliminato.');}
 }
 el('new').addEventListener('click',function(){openEditor(null);});
 el('cancel').addEventListener('click',function(){el('editor').hidden=true;editId=null;});
@@ -151,7 +153,7 @@ el('import').addEventListener('click',function(){
   if(parsed.schema!==SCHEMA)throw Error('Formato del backup non riconosciuto.');
   var items=validate(parsed.goals);
   if(!confirm('Sostituire '+goals.length+' obiettivi locali con '+items.length+' dal backup?'))return;
-  if(persist(items)){render();el('import-json').value='';status('Backup importato: '+items.length+' obiettivi.');}
+  if(persist(items)){el('editor').hidden=true;editId=null;render();el('import-json').value='';status('Backup importato: '+items.length+' obiettivi.');}
  }catch(e){status('Importazione annullata: '+e.message);}
 });
 load();render();
