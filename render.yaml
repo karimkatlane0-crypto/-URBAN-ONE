@@ -24,6 +24,8 @@ services:
         value: 22.16.0
       - key: SEVA_DB_PATH
         value: /var/data/seva.sqlite
+      - key: SEVA_PUBLIC_URL
+        sync: false
       - key: SEVA_SALES_ENABLED
         value: 'false'
       - key: SEVA_ANNUAL_SALES_ENABLED

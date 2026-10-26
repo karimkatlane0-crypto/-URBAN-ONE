@@ -11,6 +11,13 @@ test('33 anonymous goals forbidden',async()=>{const r=await call('/api/goals');a
 test('34 HTTP signup sets httpOnly sameSite cookie',async()=>{const r=await call('/api/auth/register',{method:'POST',body:{email:'smoke@example.com',password:'Twelve+Secure-Pass123'}});assert.equal(r.status,201);assert.match(r.cookie,/HttpOnly/);assert.match(r.cookie,/SameSite=Lax/);cookie=r.cookie.split(';')[0];});
 test('35 signed-in account can save and retrieve goals',async()=>{const r=await call('/api/goals',{method:'POST',body:{title:'Audit payment webhook',status:'doing'}});assert.equal(r.status,201);const d=await call('/api/goals');assert.equal(d.data.goals.length,1);assert.equal(d.data.goals[0].status,'doing');});
 test('36 CSRF cross-origin request denied',async()=>{const r=await call('/api/goals',{method:'POST',headers:{Origin:'https://attacker.example'},body:{title:'Injected'}});assert.equal(r.status,403);});
+test('CSRF rejects invalid and same-host wrong-scheme origins without a server error',async()=>{
+ for(const Origin of ['null','not-a-url',base.replace('http:','https:')]){
+  const r=await call('/api/goals',{method:'POST',headers:{Origin},body:{title:'Must not be saved'}});
+  assert.equal(r.status,403);
+ }
+ assert.equal((await call('/api/goals')).data.goals.length,1);
+});
 test('37 payment checkout fail closed',async()=>{const r=await call('/api/billing/checkout',{method:'POST',body:{}});assert.equal(r.status,503);});
 test('38 OpenAI unavailable without server secret',async()=>{const r=await call('/api/ai/generate',{method:'POST',body:{prompt:'hello'}});assert.equal(r.status,503);});
 test('39 forged Stripe callback rejected without secret',async()=>{const r=await call('/api/stripe/webhook',{method:'POST',body:{id:'fake'}});assert.equal(r.status,503);});

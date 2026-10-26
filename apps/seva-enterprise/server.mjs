@@ -10,14 +10,15 @@ import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 import {createCommerce} from './commerce.mjs';
+import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 
+validateRuntime();
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
 const store=createStore(process.env.SEVA_DB_PATH||'./data/seva.sqlite');
 const commerce=createCommerce(store);
 const port=Number(process.env.PORT||3000);
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=>x.trim().split('=').map(decodeURIComponent)).filter(x=>x.length===2));
-const sameOrigin=req=>{const origin=req.headers.origin;const host=req.headers.host;return (!origin||new URL(origin).host===host) && req.headers['sec-fetch-site']!=='cross-site';};
 const limiter=new Map();
 function rate(req,key,max=25){const now=Date.now();const id=key+':'+(req.socket.remoteAddress||'unknown');let row=limiter.get(id);if(!row||row.until<now){row={n:0,until:now+60000};limiter.set(id,row);}if(++row.n>max)throw Object.assign(Error('Rate limit reached'),{status:429});if(limiter.size>5000)for(const [k,v] of limiter)if(v.until<now)limiter.delete(k);}
 async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const chunk of req){n+=chunk.length;if(n>max)throw Object.assign(Error('Request too large'),{status:413});chunks.push(chunk);}return Buffer.concat(chunks).toString('utf8');}
@@ -64,7 +65,7 @@ async function aiPlan(user,prompt){if(!process.env.OPENAI_API_KEY)throw Object.a
  const resp=await fetch(process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-5.1',instructions:'You are SEVA AI. Build an actionable goal-driven plan with numbered steps, acceptance criteria, evidence, responsible actor, realistic limitations and status. Never claim to have executed external actions. Answer in the user language. Do not reveal secrets.',input,store:false,max_output_tokens:1200}),signal:AbortSignal.timeout(40000)});
  let body=await resp.json();if(!resp.ok)throw Object.assign(Error('OpenAI request failed: '+(body.error?.message||resp.status)),{status:502});const output=body.output_text||body.output?.flatMap(o=>o.content||[]).filter(c=>c.type==='output_text').map(c=>c.text).join('\n');if(!output)throw Object.assign(Error('OpenAI response contained no text'),{status:502});store.audit(user.id,'ai_response',body.id||'');return {text:output,model:body.model||process.env.OPENAI_MODEL||'gpt-5.1',id:body.id,provider:'OpenAI',verified:true};}
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
- if(path==='/health')return json(res,200,{ok:true,service:'seva',timestamp:new Date().toISOString()});
+ if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
  if(path==='/api/stripe/webhook'&&method==='POST'){
     if(!process.env.STRIPE_WEBHOOK_SECRET)return json(res,503,{error:'Webhook not configured'});
