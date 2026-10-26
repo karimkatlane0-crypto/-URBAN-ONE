@@ -186,3 +186,41 @@ test('SEVA 100+ mobile command center and AI draft studio served as static shell
  assert.equal(js.status,200);
  assert.match(await js.text(),/initializeCommunications/);
 });
+
+
+test('ORIGINAL SEVA: analytics access denied to anonymous users',async()=>{
+ const r=await fetch(base+'/api/analytics/overview');assert.equal(r.status,401);
+});
+test('ORIGINAL SEVA: owner-specific KPI actual goal counts and no invented earnings',async()=>{
+ const r=await call('/api/analytics/overview');assert.equal(r.status,200);
+ assert.ok(r.data.goals.total>=1);
+ assert.equal(r.data.disclaimers.proposalMoneyIsRevenue,false);
+ assert.equal(r.data.disclaimers.savingsAreGuaranteed,false);
+ assert.ok(Number.isFinite(r.data.goals.completionPercent));
+});
+test('ORIGINAL SEVA: CRM consent required, no photo bytes persisted',async()=>{
+ const no=await call('/api/lastre/intents',{method:'POST',body:{category:'buy',description:'Need laptop',budgetCents:70000,consent:false}});
+ assert.equal(no.status,400);
+ const r=await call('/api/lastre/intents',{method:'POST',body:{category:'lease',description:'Synthetic leasing request',budgetCents:170000,consent:true}});
+ assert.equal(r.status,201);
+ assert.equal(r.data.photosStored,false);
+ const b=await call('/api/lastre/intents');assert.equal(b.status,200);
+ assert.ok(b.data.intents.some(x=>x.description==='Synthetic leasing request'));
+ assert.equal(b.data.photosStored,false);
+ const del=await call('/api/lastre/intents/'+r.data.id,{method:'DELETE'});
+ assert.equal(del.status,200);assert.equal(del.data.deleted,true);
+});
+test('ORIGINAL SEVA: anonymous CRM denied and image processing refuses missing provider',async()=>{
+ assert.equal((await fetch(base+'/api/lastre/intents')).status,401);
+ const r=await call('/api/lastre/analyze',{method:'POST',body:{consentToAI:false}});
+ assert.equal(r.status,503);
+});
+test('ORIGINAL SEVA: KPI, Lastre and AI opt-in sections bundled into mobile shell',async()=>{
+ const resp=await fetch(base+'/');assert.equal(resp.status,200);
+ const html=await resp.text();
+ for(const section of ['data-tab="analytics"','data-tab="lastre"','id="lastreCRMConsent"','id="lastreAIConsent"','id="localPhoto"','id="kpiMeter"'])
+  assert.ok(html.includes(section),section);
+ const js=await fetch(base+'/original-intelligence-ui.js');assert.equal(js.status,200);
+ assert.match(await js.text(),/localPrivacyJpeg/);
+ assert.match(await js.text(),/initializeOriginalIntelligence/);
+});
