@@ -10,12 +10,14 @@ import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 import {createCommerce} from './commerce.mjs';
+import {createAffiliateLedger} from './affiliate-ledger.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 
 validateRuntime();
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
 const store=createStore(process.env.SEVA_DB_PATH||'./data/seva.sqlite');
 const commerce=createCommerce(store);
+const affiliateLedger=createAffiliateLedger(store);
 const port=Number(process.env.PORT||3000);
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=>x.trim().split('=').map(decodeURIComponent)).filter(x=>x.length===2));
@@ -75,6 +77,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
  if(path==='/api/commerce/catalog'&&method==='GET')return json(res,200,{products:commerce.catalog(),pricingVerified:false});
+ if(path==='/api/commerce/affiliate/opportunities'&&method==='GET'){const u=auth(req);return json(res,200,{opportunities:affiliateLedger.list(u.id),incomePaidCents:0,settlementExecuted:false,notice:'Internal audit candidates only; no partner payout, no automatic commission or charge on incomplete purchases.'});}
  if(path==='/api/commerce/profile'&&method==='GET'){const u=auth(req);return json(res,200,{profile:commerce.profile(u.id)});}
  if(path==='/api/commerce/profile'&&method==='PUT'){rate(req,'profile',20);const u=auth(req);return json(res,200,{profile:commerce.saveProfile(u.id,JSON.parse(await rawBody(req,3000)))});}
  if(path==='/api/commerce/profile'&&method==='DELETE'){rate(req,'eraseprofile',10);const u=auth(req);return json(res,200,commerce.deleteProfile(u.id));}
