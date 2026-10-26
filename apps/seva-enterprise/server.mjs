@@ -6,6 +6,8 @@ import {createStore,verifyStripeSignature} from './core.mjs';
 import {validateMonthlyPlan} from './billing.mjs';
 import {getAnnualPlan,validateAnnualPlan} from './annual-billing.mjs';
 import {dbrelayStatus,dbrelaySnapshot,dbrelayChanges} from './dbrelay.mjs';
+import {analyticsOverview} from './analytics.mjs';
+import {analyzeLastre} from './lastre.mjs';
 import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 import {createCommerce} from './commerce.mjs';
 
@@ -94,6 +96,21 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/auth/login'&&method==='POST'){rate(req,'login',10);const body=JSON.parse(await rawBody(req));const u=store.login(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,200,{user:u});}
  if(path==='/api/auth/logout'&&method==='POST'){const token=cookies(req).seva_session;if(token)store.db.prepare('DELETE FROM sessions WHERE token=?').run(token);res.setHeader('Set-Cookie',`seva_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secureCookie(req)}`);return json(res,200,{ok:true});}
  if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id)});}
+ if(path==='/api/analytics/overview'&&method==='GET'){rate(req,'analytics',40);const u=auth(req);return json(res,200,analyticsOverview(store,u.id));}
+ if(path==='/api/lastre/intents'&&method==='GET'){rate(req,'lastre-list',40);const u=auth(req);return json(res,200,{intents:store.listIntents(u.id),photosStored:false});}
+ if(path==='/api/lastre/intents'&&method==='POST'){rate(req,'lastre-create',12);const u=auth(req);const input=JSON.parse(await rawBody(req,6000));return json(res,201,{id:store.createIntent(u.id,input),photosStored:false});}
+ if(path.startsWith('/api/lastre/intents/')&&method==='DELETE'){rate(req,'lastre-delete',20);const u=auth(req);return json(res,200,{deleted:store.deleteIntent(u.id,path.slice('/api/lastre/intents/'.length))});}
+ if(path==='/api/lastre/analyze'&&method==='POST'){
+  rate(req,'lastre-vision',3);
+  const u=auth(req);
+  if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});
+  if(!store.hasAccess(u.id)&&!(process.env.SEVA_ADMIN_EMAIL&&u.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))
+   throw Object.assign(Error('Active SEVA plan required for Lastre AI'),{status:402});
+  const input=JSON.parse(await rawBody(req,1_650_000));
+  const result=await analyzeLastre(input,{apiKey:process.env.OPENAI_API_KEY,model:process.env.OPENAI_MODEL||'gpt-5.1'});
+  store.audit(u.id,'lastre_vision_response',result.id||'');
+  return json(res,200,result);
+ }
  if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=auth(req);return json(res,200,dbrelayStatus(store,u.id));}
  if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
  if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
