@@ -86,3 +86,50 @@ test('localized checkout currency is validated through the configured price, not
  await applyStripeEvent(f.db,event('invoice.paid',invoice({currency:'usd',amount_paid:3200})),f.env);
  assert.equal((await getEntitlement(f.db,user)).allowed,true);
 });
+
+test('signed purchase pipeline grants only its bound non-owner customer',async()=>{
+ const f=await init();
+ const deliver=async e=>{
+  const raw=Buffer.from(JSON.stringify(e)),t=Math.floor(Date.now()/1000);
+  const digest=createHmac('sha256',f.env.STRIPE_WEBHOOK_SECRET).update(t+'.').update(raw).digest('hex');
+  return applyStripeEvent(f.db,verifyStripeEvent(raw,`t=${t},v1=${digest}`,f.env.STRIPE_WEBHOOK_SECRET),f.env);
+ };
+ assert.equal((await getEntitlement(f.db,user)).allowed,false);
+ for(const e of [event('invoice.paid',invoice()),event('checkout.session.completed',session(f.token)),event('customer.subscription.created',subscription())])await deliver(e);
+ const paid=await getEntitlement(f.db,user);
+ assert.equal(paid.state,'active');assert.equal(paid.remaining,50);
+ assert.equal((await getEntitlement(f.db,{userId:'other-buyer',email:user.email})).allowed,false);
+ assert.equal((await getEntitlement(f.db,null)).allowed,false);
+ await reserveAnalysis(f.db,paid.usageKey);
+ await deliver(event('invoice.paid',invoice()));
+ assert.equal((await getEntitlement(f.db,user)).remaining,49);
+});
+test('asynchronous checkout remains blocked until its payment succeeds',async()=>{
+ const f=await init();
+ await applyStripeEvent(f.db,event('customer.subscription.created',subscription()),f.env);
+ await applyStripeEvent(f.db,event('invoice.paid',invoice()),f.env);
+ await applyStripeEvent(f.db,event('checkout.session.completed',{...session(f.token),payment_status:'unpaid'}),f.env);
+ assert.equal((await getEntitlement(f.db,user)).allowed,false);
+ await applyStripeEvent(f.db,event('checkout.session.async_payment_succeeded',session(f.token)),f.env);
+ assert.equal((await getEntitlement(f.db,user)).allowed,true);
+});
+test('cancellation scheduled at period end preserves paid access until expiry',async()=>{
+ const f=await init();await grant(f);
+ await applyStripeEvent(f.db,event('customer.subscription.updated',subscription({cancel_at_period_end:true}),'cancel_scheduled'),f.env);
+ assert.equal((await getEntitlement(f.db,user)).allowed,true);
+ assert.equal((await getEntitlement(f.db,user,(now+2600001)*1000)).allowed,false);
+});
+test('failed renewal cannot extend the last paid period',async()=>{
+ const f=await init();await grant(f);
+ const failed=invoice({status:'open',amount_paid:0,amount_remaining:2900,lines:{data:[{price:{id:'price_science'},quantity:1,period:{start:now+2600000,end:now+5200000}}]}});
+ await applyStripeEvent(f.db,event('invoice.payment_failed',failed,'renewal_failed'),f.env);
+ assert.equal((await getEntitlement(f.db,user)).allowed,true);
+ assert.equal((await getEntitlement(f.db,user,(now+2600001)*1000)).allowed,false);
+});
+test('a consumed checkout intent cannot bind a second checkout session',async()=>{
+ const f=await init();await grant(f);
+ await applyStripeEvent(f.db,event('checkout.session.completed',{...session(f.token),id:'cs_second',subscription:'sub_second'},'second_session'),f.env);
+ const intent=await f.db.prepare('SELECT session_id,subscription_id FROM science_checkout_intents WHERE token=?').bind(f.token).first();
+ assert.equal(intent.session_id,'cs_science');assert.equal(intent.subscription_id,'sub_science');
+ assert.equal(await f.db.prepare('SELECT id FROM science_subscriptions WHERE id=?').bind('sub_second').first(),null);
+});
