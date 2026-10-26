@@ -12,6 +12,7 @@ import {quoteSEVA,evaluateMarketingRedemption} from './commercial.mjs';
 import {previewFundedMarketingPurchase} from './marketing-flywheel.mjs';
 import {createCommerce} from './commerce.mjs';
 import {createAffiliateLedger} from './affiliate-ledger.mjs';
+import {createNotificationCenter} from './notification-center.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 
 validateRuntime();
@@ -19,6 +20,7 @@ const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
 const store=createStore(process.env.SEVA_DB_PATH||'./data/seva.sqlite');
 const commerce=createCommerce(store);
 const affiliateLedger=createAffiliateLedger(store);
+const notifications=createNotificationCenter(store);
 const port=Number(process.env.PORT||3000);
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=>x.trim().split('=').map(decodeURIComponent)).filter(x=>x.length===2));
@@ -77,6 +79,27 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+ if(path==='/api/notifications/preferences'&&method==='GET'){
+  const u=auth(req);return json(res,200,{preferences:notifications.prefs(u.id)});
+ }
+ if(path==='/api/notifications/preferences'&&method==='PUT'){
+  rate(req,'notification-preferences',12);const u=auth(req);
+  const body=JSON.parse(await rawBody(req,500));
+  return json(res,200,{preferences:notifications.setPrefs(u.id,body)});
+ }
+ if(path==='/api/notifications'&&method==='GET'){
+  rate(req,'notification-list',60);const u=auth(req);
+  return json(res,200,notifications.list(u.id));
+ }
+ if(path==='/api/notifications/read'&&method==='POST'){
+  rate(req,'notification-read',50);const u=auth(req);
+  const body=JSON.parse(await rawBody(req,500));
+  return json(res,200,notifications.acknowledge(u.id,body.id));
+ }
+ if(path==='/api/notifications'&&method==='DELETE'){
+  rate(req,'notification-delete',6);const u=auth(req);
+  return json(res,200,notifications.erase(u.id));
+ }
  if(path==='/api/commerce/catalog'&&method==='GET')return json(res,200,{products:commerce.catalog(),pricingVerified:false});
  if(path==='/api/commerce/affiliate/opportunities'&&method==='GET'){const u=auth(req);return json(res,200,{opportunities:affiliateLedger.list(u.id),incomePaidCents:0,settlementExecuted:false,notice:'Internal audit candidates only; no partner payout, no automatic commission or charge on incomplete purchases.'});}
  if(path==='/api/commerce/profile'&&method==='GET'){const u=auth(req);return json(res,200,{profile:commerce.profile(u.id)});}
@@ -121,8 +144,8 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
  if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
  if(path==='/api/goals'&&method==='GET'){const u=auth(req);return json(res,200,{goals:store.listGoals(u.id)});}
- if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));return json(res,201,{id:store.saveGoal(u.id,body)});}
- if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const b=JSON.parse(await rawBody(req));return json(res,200,{id:store.saveGoal(u.id,b,id)});}
+ if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));const id=store.saveGoal(u.id,body);notifications.publishGoal(u.id,id,body.status);return json(res,201,{id});}
+ if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
  if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt));}
  if(path==='/api/billing/checkout'&&method==='POST'){rate(req,'checkout',6);const u=auth(req);return json(res,200,await createCheckout(u));}
  if(path==='/api/billing/checkout/annual'&&method==='POST'){rate(req,'checkout-annual',6);const u=auth(req);const body=JSON.parse(await rawBody(req,2000));return json(res,200,await createAnnualCheckout(u,body.plan));}
