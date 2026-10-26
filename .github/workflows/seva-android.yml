@@ -52,3 +52,47 @@ jobs:
             SEVA-debug-sha256.txt
           retention-days: 14
           if-no-files-found: error
+
+  direct-download:
+    name: Public APK prerelease (debug only)
+    needs: [apk]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main-@URBAN-ONE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - name: Retrieve APK from verified build in this run
+        uses: actions/download-artifact@v4
+        with:
+          name: SEVA-Enterprise-Android-API36-debug
+          path: downloaded
+      - name: Prepare stable APK and checksum
+        run: |
+          set -euo pipefail
+          APK=$(find downloaded -type f -name 'app-debug.apk' -print -quit)
+          test -n "$APK"
+          test -s "$APK"
+          cp "$APK" "SEVA-Enterprise-2.4.1-debug.apk"
+          sha256sum SEVA-Enterprise-2.4.1-debug.apk | tee SEVA-Enterprise-2.4.1-debug.sha256
+      - name: Publish direct downloadable GitHub prerelease asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          TAG="seva-android-v2.4.1-debug"
+          APK="SEVA-Enterprise-2.4.1-debug.apk"
+          SHA="SEVA-Enterprise-2.4.1-debug.sha256"
+          if gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then
+            echo "Existing $TAG release found; updating same-version APK and hash."
+            gh release upload "$TAG" "$APK" "$SHA" --repo "$GH_REPO" --clobber
+          else
+            gh release create "$TAG" "$APK" "$SHA" \
+              --repo "$GH_REPO" \
+              --target "$GITHUB_SHA" \
+              --title "SEVA Enterprise 2.4.1 — APK Android DEBUG" \
+              --notes "**APK DI PROVA, non Google Play / produzione.** Versione 2.4.1, min Android API 24, target API 36. Contenitore WebView HTTPS del sito SEVA. Login reale, pagamenti Stripe e backend Enterprise non ancora collaudati. Scaricare l'APK soltanto se si riconosce il repository ufficiale; consentire l'installazione Android da origine esterna solo temporaneamente. Confrontare SHA-256 con il file .sha256 allegato." \
+              --prerelease
+          fi
+          gh release view "$TAG" --repo "$GH_REPO" --json url,assets,isPrerelease
