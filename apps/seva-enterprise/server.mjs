@@ -94,16 +94,18 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
  if(path==='/api/stripe/webhook'&&method==='POST'){
+    // In SEPA-only mode, no Stripe event may mutate customer access or orders.
+    if(process.env.SEVA_PAYMENT_METHOD==='sepa')return json(res,503,{error:'Stripe webhooks disabled in SEPA-only mode'});
     if(!process.env.STRIPE_WEBHOOK_SECRET)return json(res,503,{error:'Webhook not configured'});
     const raw=await rawBody(req,1000000);if(!verifyStripeSignature(raw,req.headers['stripe-signature'],process.env.STRIPE_WEBHOOK_SECRET))return json(res,400,{error:'Invalid signature'});
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
  if(path==='/api/v1/capabilities'&&method==='GET')return json(res,200,{
-  product:'SEVA Developer API',apiVersion:'v1',billing:'enterprise_monthly_stripe_verified_only',
+  product:'SEVA Developer API',apiVersion:'v1',billing:process.env.SEVA_PAYMENT_METHOD==='sepa'?'sepa_manual_operator_verified_only':'enterprise_monthly_stripe_verified_only',
   endpoints:['POST /api/v1/ai/plan'],rateLimit:'6 requests/minute/key',
   provider:'configured OpenAI Responses API only',claudeGemini:false,
-  publicCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true',status:'GATED'
+  publicCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true',status:'GATED'
  });
  if(path==='/api/developer/keys'&&method==='GET'){const u=auth(req);return json(res,200,{keys:developerApi.listKeys(u.id)});}
  if(path==='/api/developer/keys'&&method==='POST'){
