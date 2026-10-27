@@ -9,5 +9,6 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 
 /* SEVA global Android PWA — isolated enhancement */
+.backup-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}.backup-import-label{border:1px solid #476182;border-radius:12px;padding:10px 14px;cursor:pointer;color:#c4f4e7}.backup-import-label input{display:block;max-width:180px;margin-top:8px;font-size:12px}.backup-controls .minor-notice{flex-basis:100%;margin:0}
 .pwa-toast{position:fixed;z-index:999;left:16px;right:16px;bottom:16px;max-width:520px;margin:auto;border:1px solid #63c5b0;border-radius:14px;padding:16px;background:#17324c;color:#e2fff0;box-shadow:0 12px 32px #0007;font-size:14px}
 #install-seva{cursor:pointer;font-weight:700}
