@@ -77,7 +77,7 @@
       serverReady=true;
       $('service-dot').classList.add('online');
       $('service-state').textContent='Server SEVA raggiungibile';
-      $('provider-status').textContent=status.aiConfigured?'Configurato':'Non configurato';
+      $('provider-status').textContent=status.aiConfigured?'Chiave presente · da collaudare':'Non configurato';
       $('model-state').textContent=status.aiConfigured?'non collaudato':'disattivo';
       salesEnabled=status.salesEnabled===true;
     } catch {
@@ -128,7 +128,7 @@
     addChat('user',prompt);
     const send=$('send-ai');send.disabled=true;send.textContent='…';
     try {
-      const response=await request('/api/ai/generate',jsonOptions({prompt}));
+      const response=await request('/api/ai/generate',jsonOptions({prompt,consent:true}));
       addChat('assistant',response.text||'Il provider non ha restituito testo.');
     } catch(error) { addChat('assistant',appError(error)); }
     finally {send.disabled=false;send.textContent='Invia ↑';}
