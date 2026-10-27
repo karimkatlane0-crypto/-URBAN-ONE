@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1422"><meta name="description" content="SEVA PSDM: confronto trasparente di alternative con criteri, pesi e prove dichiarate.">
+<title>SEVA · Problem Solving & Decision Making</title><link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/psdm.css"></head>
+<body><header class="top"><a class="brand" href="/">✦ SEVA</a><span>PSDM · DECISION STUDIO</span><a href="/">← Torna a SEVA</a></header>
+<main>
+ <section class="hero"><p class="eyebrow">PROBLEM SOLVING → DECISION MAKING</p><h1>Dalla complessità a una <em>scelta motivata.</em></h1>
+ <p>Definisci un problema, confronta alternative, assegna pesi e documenta le prove. Nessuna AI, pagamento o operazione esterna viene eseguita da questo strumento.</p>
+ <div class="status">MODULO LOCALE DI SUPPORTO · NON CONFERMA UNA DECISIONE</div></section>
+ <section class="panel"><h2>1. Definisci il problema</h2><label for="problem">Che cosa occorre risolvere?</label>
+ <textarea id="problem" maxlength="500" rows="3" placeholder="Es. Quale soluzione adottare per collegare l'app mobile al backend, con costi e rischi controllati?"></textarea>
+ <h2>2. Definisci le alternative</h2><p>Da 2 a 5 alternative, una per riga. Non inserire dati personali, password o segreti.</p>
+ <label for="options">Alternative</label><textarea id="options" rows="4" maxlength="600">Interfaccia web mobile
+App Android nativa</textarea>
+ <h2>3. Assegna i pesi ai criteri</h2><p>Da 1 (importanza minima) a 5 (massima). Il punteggio di ogni alternativa andrà da 0 (peggiore) a 5 (migliore).</p>
+ <div id="criteria" class="criteria">
+ <label>Impatto positivo <input data-criterion="Impatto" type="number" min="1" max="5" value="5"></label>
+ <label>Fattibilità <input data-criterion="Fattibilità" type="number" min="1" max="5" value="4"></label>
+ <label>Risorse e costi sostenibili <input data-criterion="Risorse e costi" type="number" min="1" max="5" value="3"></label>
+ <label>Rischio contenuto <input data-criterion="Rischio contenuto" type="number" min="1" max="5" value="5"></label>
+ </div>
+ <button id="prepare" class="primary" type="button">Prepara matrice di confronto</button>
+ </section>
+ <section class="panel" id="matrixSection" hidden><h2>4. Valuta ogni alternativa</h2><p>Inserisci i punteggi con attenzione: 0–5 per ciascun criterio. Indica la fonte o la prova a sostegno di ogni alternativa, se disponibile.</p>
+ <div id="matrix"></div><div class="actions"><button id="calculate" class="primary" type="button">Calcola confronto</button><button id="reset" type="button">Ricomincia</button></div></section>
+ <section class="panel" id="resultsSection" hidden><h2>5. Verifica e decidi</h2><p id="resultStatus" role="status" aria-live="polite"></p>
+ <div id="results"></div><p class="warning">I risultati sono un supporto al ragionamento, non attestano l'esecuzione di obiettivi o l'esattezza delle valutazioni.</p>
+ <button id="export" type="button">Esporta valutazione JSON</button></section>
+ <p class="error" id="error" role="alert" aria-live="polite"></p>
+ <footer>Privacy by design: nessun invio a servizi esterni e nessun salvataggio automatico. L'esportazione avviene solo su tua richiesta. Il modulo Enterprise GitHub non è automaticamente pubblicato sul sito SEVA di ChatGPT Sites.</footer>
+</main><script type="module" src="/psdm.js"></script></body></html>
