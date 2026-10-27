@@ -1,7 +1,7 @@
 # SEVA Studio & Developer API — public source, gated commercial service
 
 **Status 27 October 2026: SOURCE PUBLICATION / QA, NOT A LIVE PAID LAUNCH.**
-SEVA is an independent service. This repository is public source documentation; no consumer access to ChatGPT, Claude or Gemini accounts is bundled or transferred. API access uses properly configured, server-side OpenAI Responses API only and may fail if credits are exhausted. No API credentials are committed.
+SEVA is an independent service. This repository is public source documentation; no consumer access to ChatGPT, Claude or Gemini accounts is bundled or transferred. API access uses properly configured, server-side OpenAI Responses API only and may fail if credits are exhausted. Developer requests send **only the explicitly consented prompt**, not other stored goals or Lastre CRM records. No API credentials are committed.
 
 ## New SEVA Studio
 - UI: /studio.html with responsive, accessible executive workspace; local goal drafts, a deterministic non-AI goal outline, authenticated SEVA AI requests, developer key issuance and disabled-by-default Stripe checkout.

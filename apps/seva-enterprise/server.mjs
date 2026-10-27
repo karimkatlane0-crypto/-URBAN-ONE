@@ -1,5 +1,6 @@
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {createDeveloperApi} from './developer-api.mjs';
+import {developerAI} from './developer-ai.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -74,7 +75,7 @@ async function aiPlan(user,prompt){if(!process.env.OPENAI_API_KEY)throw Object.a
  const data=store.listGoals(user.id).slice(0,80);let input='GOALS: '+JSON.stringify(data).slice(0,15000)+'\nUSER TASK: '+String(prompt||'Prepare a clear execution plan').slice(0,2000);
  const resp=await fetch(process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-5.1',instructions:'You are SEVA AI. Build an actionable goal-driven plan with numbered steps, acceptance criteria, evidence, responsible actor, realistic limitations and status. Never claim to have executed external actions. Answer in the user language. Do not reveal secrets.',input,store:false,max_output_tokens:1200}),signal:AbortSignal.timeout(40000)});
  let body=await resp.json();if(!resp.ok)throw Object.assign(Error('OpenAI request failed: '+(body.error?.message||resp.status)),{status:502});const output=body.output_text||body.output?.flatMap(o=>o.content||[]).filter(c=>c.type==='output_text').map(c=>c.text).join('\n');if(!output)throw Object.assign(Error('OpenAI response contained no text'),{status:502});store.audit(user.id,'ai_response',body.id||'');return {text:output,model:body.model||process.env.OPENAI_MODEL||'gpt-5.1',id:body.id,provider:'OpenAI',verified:true};}
-const developerApi=createDeveloperApi(store, aiPlan);
+const developerApi=createDeveloperApi(store, developerAI);
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
  if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
