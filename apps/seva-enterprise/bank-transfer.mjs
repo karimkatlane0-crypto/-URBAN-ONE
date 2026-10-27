@@ -27,7 +27,7 @@ export function bankConfig(env=process.env){
  const beneficiary=typeof env.SEVA_BANK_BENEFICIARY==='string'?env.SEVA_BANK_BENEFICIARY.trim():'';
  const eligible=validateItalianIban(iban)&&beneficiary.length>=3&&beneficiary.length<=140&&
   !/[\u0000-\u001f]/.test(beneficiary);
- const enabled=env.SEVA_BANK_ORDERS_ENABLED==='true'&&env.SEVA_BANK_LIVE_APPROVED==='true'&&eligible;
+ const enabled=env.SEVA_PAYMENT_METHOD==='sepa'&&env.SEVA_BANK_ORDERS_ENABLED==='true'&&env.SEVA_BANK_LIVE_APPROVED==='true'&&eligible;
  return {enabled,iban:enabled?iban:null,beneficiary:enabled?beneficiary:null,
   status:enabled?'MANUAL_TRANSFER_AVAILABLE':'NOT_CONFIGURED_OR_APPROVED',
   automaticDebit:false,bankApiConnected:false,automaticAccess:false};
@@ -91,7 +91,9 @@ export function createBankOrders(store){
    const months=BANK_PLAN_AMOUNTS[order.plan].months;
    const prev=db.prepare("SELECT MAX(access_until) AS until FROM seva_bank_orders WHERE user_id=? AND plan=? AND status='credited'").get(order.user_id,order.plan)?.until||0;
    const base=new Date(Math.max(now(),prev)*1000);
-   base.setUTCMonth(base.getUTCMonth()+months);
+   const originalDay=base.getUTCDate();base.setUTCDate(1);base.setUTCMonth(base.getUTCMonth()+months);
+   const monthLast=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()+1,0)).getUTCDate();
+   base.setUTCDate(Math.min(originalDay,monthLast));
    const accessUntil=Math.floor(base.getTime()/1000);
    db.prepare("UPDATE seva_bank_orders SET status='credited',confirmed=?,access_until=?,bank_transaction_hash=?,operator=? WHERE id=?")
     .run(now(),accessUntil,fingerprint,operator.trim(),orderId);
