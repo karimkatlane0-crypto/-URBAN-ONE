@@ -225,3 +225,12 @@ test('ORIGINAL SEVA: KPI, Lastre and AI opt-in sections bundled into mobile shel
  assert.match(client,/localPrivacyJpeg/);
  assert.match(client,/initializeOriginalIntelligence/);
 });
+
+
+test('PSDM standalone page, engine and privacy message are served',async()=>{
+ const html=await fetch(base+'/psdm.html');assert.equal(html.status,200);
+ const page=await html.text();assert.match(page,/Problem Solving/);assert.match(page,/nessun invio a servizi esterni/i);
+ const script=await fetch(base+'/psdm-engine.js');assert.equal(script.status,200);
+ const js=await script.text();assert.match(js,/rankDecisions/);assert.match(js,/SIMULAZIONE_NON_VERIFICATA/);
+ const css=await fetch(base+'/psdm.css');assert.equal(css.status,200);
+});
