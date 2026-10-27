@@ -1,11 +1,11 @@
 // SEVA PSDM — deterministic, client-side decision support. No AI/API/payment calls.
 // Scores are supplied by the person using the tool, not independently verified.
 const fail=(message)=>{throw new Error(message);};
-const label=(v,max=100)=>{const s=typeof v==='string'?v.trim():'';if(!s||s.length>max||/[\u0000-\u001f\u007f]/.test(s))fail('Testo mancante o non valido');return s;};
-const number=(v,min,max)=>{if(typeof v==='string'&&v.trim()==='')fail('Punteggio mancante');const n=Number(v);if(!Number.isInteger(n)||n<min||n>max)fail('Punteggio o peso fuori intervallo');return n;};
+const label=(v,max=100,multiline=false)=>{const s=typeof v==='string'?v.trim():'';if(!s||s.length>max||(/[\u0000-\u001f\u007f]/.test(s)&&!multiline)||(/[\u0000-\u0009\u000b-\u001f\u007f]/.test(s)))fail('Testo mancante o non valido');return s;};
+const number=(v,min,max)=>{if(!(['number','string'].includes(typeof v))||(typeof v==='string'&&!/^[0-9]+$/.test(v.trim())))fail('Punteggio mancante o non valido');const n=Number(v);if(!Number.isInteger(n)||n<min||n>max)fail('Punteggio o peso fuori intervallo');return n;};
 export function rankDecisions(input){
  if(!input||typeof input!=='object'||Array.isArray(input))fail('Richiesta non valida');
- const problem=label(input.problem,500);
+ const problem=label(input.problem,500,true);
  if(problem.length<8)fail('Descrivi il problema con almeno 8 caratteri');
  if(!Array.isArray(input.criteria)||input.criteria.length<2||input.criteria.length>6)fail('Servono da 2 a 6 criteri');
  if(!Array.isArray(input.options)||input.options.length<2||input.options.length>5)fail('Servono da 2 a 5 alternative');
