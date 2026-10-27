@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: SEVA Enterprise Developer API
+  version: 1.0.0-rc
+  description: >-
+    Server-to-server paid developer interface for consented AI goal planning.
+    LIVE sales and provider execution remain unavailable until independently verified.
+servers:
+  - url: https://YOUR-VERIFIED-SEVA-HOST
+    description: Replace with the operator-approved HTTPS Node service.
+paths:
+  /api/v1/capabilities:
+    get:
+      summary: Public API capabilities and availability
+      responses:
+        '200':
+          description: Public version/limits without any secret or entitlement.
+  /api/v1/ai/plan:
+    post:
+      security:
+        - DeveloperKey: []
+      summary: Goal-oriented AI planning with a verified Enterprise entitlement
+      description: >-
+        Requires an active Enterprise monthly subscription recorded via signed
+        Stripe webhooks; an active key; explicit request-specific user consent;
+        available provider credit and server-side provider configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [prompt, consent]
+              properties:
+                prompt: { type: string, minLength: 1, maxLength: 2000 }
+                consent: { type: boolean, const: true }
+      responses:
+        '200':
+          description: AI response from server-configured, verified provider
+        '400': { description: Invalid input or missing consent }
+        '401': { description: Missing, revoked or expired developer API key }
+        '402': { description: Verified paid entitlement required }
+        '429': { description: Rate limit }
+        '502': { description: Provider request failed }
+        '503': { description: Provider or runtime unavailable }
+  /api/developer/keys:
+    get:
+      summary: List owned keys (requires same-origin authenticated web session)
+      responses:
+        '200': { description: Metadata only, never API key secrets }
+        '401': { description: Login required }
+    post:
+      summary: Issue one developer key for a paid Enterprise account
+      description: Requires authenticated same-origin user session and paid entitlement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, maxLength: 60 }
+      responses:
+        '201': { description: New token shown once }
+        '402': { description: Active Enterprise subscription missing }
+  /api/developer/keys/{id}:
+    delete:
+      summary: Revoke one owned key (requires authenticated same-origin web session)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Owner-scoped revocation status }
+components:
+  securitySchemes:
+    DeveloperKey:
+      type: http
+      scheme: bearer
+      bearerFormat: SEVA_TOKEN
