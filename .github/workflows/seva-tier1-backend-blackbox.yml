@@ -1,0 +1,43 @@
+name: SEVA Tier-1 Backend Black Box
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "apps/seva-enterprise/test/blackbox-restart.test.mjs"
+      - ".github/workflows/seva-tier1-backend-blackbox.yml"
+      - "render.yaml"
+  push:
+    branches: ["main-@URBAN-ONE"]
+    paths:
+      - "apps/seva-enterprise/test/blackbox-restart.test.mjs"
+      - ".github/workflows/seva-tier1-backend-blackbox.yml"
+      - "render.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  backend-restart-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.4.0"
+      - name: HTTP two-account persistence and fail-closed backend controls
+        working-directory: apps/seva-enterprise
+        env:
+          SEVA_BLACKBOX_REPORT_PATH: ../../reports/seva-tier1-backend-blackbox.json
+        run: node --experimental-sqlite --test --test-reporter=spec test/blackbox-restart.test.mjs
+      - name: Publish inspectable synthetic test receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seva-tier1-backend-blackbox
+          path: reports/seva-tier1-backend-blackbox.json
+          retention-days: 14
+          if-no-files-found: warn
