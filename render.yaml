@@ -4,7 +4,7 @@ services:
   - type: web
     name: seva-enterprise-stage
     runtime: node
-    plan: starter
+    plan: 0.5c-512mb
     region: frankfurt
     branch: main-@URBAN-ONE
     rootDir: apps/seva-enterprise
@@ -16,16 +16,20 @@ services:
     disk:
       name: seva-sqlite-stage
       mountPath: /var/data
-      sizeGB: 1
+      sizeGB: 5
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
-        value: 22.16.0
+        value: 24.4.0
       - key: SEVA_DB_PATH
         value: /var/data/seva.sqlite
       - key: SEVA_PUBLIC_URL
         sync: false
+      - key: SEVA_BANK_ORDERS_ENABLED
+        value: 'false'
+      - key: SEVA_BANK_LIVE_APPROVED
+        value: 'false'
       - key: SEVA_SALES_ENABLED
         value: 'false'
       - key: SEVA_ANNUAL_SALES_ENABLED
