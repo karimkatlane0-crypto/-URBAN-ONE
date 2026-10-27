@@ -234,3 +234,24 @@ test('PSDM standalone page, engine and privacy message are served',async()=>{
  const js=await script.text();assert.match(js,/rankDecisions/);assert.match(js,/SIMULAZIONE_NON_VERIFICATA/);
  const css=await fetch(base+'/psdm.css');assert.equal(css.status,200);
 });
+
+test('SEVA bank-transfer public status discloses no IBAN or customer data',async()=>{
+ const r=await call('/api/bank/status');assert.equal(r.status,200);
+ assert.equal(r.data.automaticDebit,false);
+ assert.equal(r.data.bankApiConnected,false);
+ assert.equal(Object.hasOwn(r.data,'iban'),false);
+});
+test('SEVA bank-transfer order creation requires authentication',async()=>{
+ const res=await fetch(base+'/api/bank/orders',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({plan:'enterprise_monthly',termsAccepted:true})});
+ assert.equal(res.status,401);
+});
+test('SEVA bank-transfer orders stay closed without verified merchant configuration',async()=>{
+ const r=await call('/api/bank/orders',{method:'POST',body:{plan:'enterprise_monthly',termsAccepted:true}});
+ assert.equal(r.status,503);
+});
+test('SEVA bank-transfer instructions are an actual static route',async()=>{
+ const r=await fetch(base+'/bank.html');assert.equal(r.status,200);
+ assert.match(await r.text(),/PAGAMENTI SENZA STRIPE/);
+ const js=await fetch(base+'/bank.js');assert.equal(js.status,200);
+ assert.match(await js.text(),/SEVA Enterprise/);
+});
