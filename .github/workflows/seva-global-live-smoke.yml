@@ -1,6 +1,11 @@
 name: SEVA Global Public HTTP Smoke
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/seva-global-live-smoke.mjs'
+      - 'scripts/test/seva-global-live-smoke.test.mjs'
+      - '.github/workflows/seva-global-live-smoke.yml'
   schedule:
     - cron: '18 7 * * *'
   push:
