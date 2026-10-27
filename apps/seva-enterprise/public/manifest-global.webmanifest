@@ -1,0 +1,41 @@
+{
+  "id": "/",
+  "name": "SEVA — Intelligence Studio",
+  "short_name": "SEVA",
+  "description": "Organizza obiettivi, scegli con criteri verificabili e prepara strategie. Modalità locale sul dispositivo.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "it",
+  "dir": "ltr",
+  "background_color": "#080f1d",
+  "theme_color": "#07101f",
+  "categories": [
+    "productivity",
+    "business",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "/seva-global-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "I miei obiettivi",
+      "url": "/#goals"
+    },
+    {
+      "name": "Decision Studio",
+      "url": "/psdm.html"
+    },
+    {
+      "name": "AI Studio",
+      "url": "/#assistant"
+    }
+  ]
+}
