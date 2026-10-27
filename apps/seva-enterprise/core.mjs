@@ -1,5 +1,6 @@
 import { createHmac, createHash, timingSafeEqual, randomUUID, randomBytes, scryptSync } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
+import {createBankOrders} from './bank-transfer.mjs';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import {installStudentStore} from './student-store.mjs';
@@ -79,8 +80,9 @@ export function createStore(filename=':memory:'){
  else db.prepare('INSERT INTO goals VALUES (?,?,?,?,?,?,?,?,?)').run(gid,user,parent,g.title,g.description,g.criteria,g.evidence,g.status,at());
  audit(user,id?'goal_updated':'goal_created',gid);return gid;}
  function deleteGoal(user,id){const result=db.prepare('DELETE FROM goals WHERE id=? AND user_id=?').run(id,user);if(!result.changes)throw Error('Goal not found');audit(user,'goal_deleted',id);}
- function activePlans(user){return db.prepare('SELECT plan FROM plan_entitlements WHERE user_id=? AND active=1 ORDER BY plan').all(user).map(x=>x.plan);}
- function hasPlanAccess(user,plan){return db.prepare('SELECT active FROM plan_entitlements WHERE user_id=? AND plan=?').get(user,plan)?.active===1;}
+ let bank;
+ function activePlans(user){const stripePlans=db.prepare('SELECT plan FROM plan_entitlements WHERE user_id=? AND active=1 ORDER BY plan').all(user).map(x=>x.plan);return [...new Set([...stripePlans,...(bank?.accessiblePlans(user)||[]).map(x=>x.plan)])];}
+ function hasPlanAccess(user,plan){return db.prepare('SELECT active FROM plan_entitlements WHERE user_id=? AND plan=?').get(user,plan)?.active===1||Boolean(bank?.accessiblePlans(user).some(x=>x.plan===plan));}
  function hasAccess(user){return db.prepare('SELECT active FROM entitlements WHERE user_id=?').get(user)?.active===1||activePlans(user).length>0;}
  function recordCheckout(user,session,plan=null,priceId=null){
   if(plan!==null&&(!['enterprise_monthly','buyer_annual','ecommerce_annual'].includes(plan)||!/^price_[a-zA-Z0-9]+$/.test(priceId||'')))throw Error('Checkout plan/price binding invalid');
@@ -196,5 +198,6 @@ export function createStore(filename=':memory:'){
  function recordReward(user,sourceEvent,kind,amount){if(!Number.isInteger(amount)||amount<0||amount>100000000)throw Error('Invalid reward amount');
  // Reward records are pending only; transfers require separate authorized program and verified payout provider.
  db.prepare('INSERT OR IGNORE INTO rewards VALUES(?,?,?,?,?,?,?)').run(uid(),user,sourceEvent,String(kind),amount,'pending',at());audit(user,'reward_pending',sourceEvent);}
- return {db,persistent:filename!==':memory:',createIntent,listIntents,deleteIntent,register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,hasPlanAccess,activePlans,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
+ const service={db,persistent:filename!==':memory:',createIntent,listIntents,deleteIntent,register,login,newSession,fromSession,listGoals,saveGoal,deleteGoal,hasAccess,hasPlanAccess,activePlans,recordCheckout,getCheckoutOwner,processStripeEvent,rewards,recordReward,audit,saveCampaign,listCampaigns};
+ bank=createBankOrders(service);service.bank=bank;return service;
 }
