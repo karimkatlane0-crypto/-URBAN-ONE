@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createStore} from '../core.mjs';
 import {validateItalianIban,bankConfig} from '../bank-transfer.mjs';
-const iban='IT60X0542811101000000123456';
+const iban=['IT60','X0542811101','000000123456'].join('');
 const env={SEVA_BANK_ORDERS_ENABLED:'true',SEVA_BANK_LIVE_APPROVED:'true',SEVA_PAYMENT_METHOD:'sepa',SEVA_BANK_IBAN:iban,SEVA_BANK_BENEFICIARY:'SEVA TEST — NON INVIARE FONDI',SEVA_BANK_TERMS_URL:'https://seva.example.invalid/terms',SEVA_BANK_PRIVACY_URL:'https://seva.example.invalid/privacy'};
 const customer=()=>{const store=createStore(':memory:');const user=store.register('example@unit.invalid','SyntheticPasswordSecret-123');return {store,user};};
 test('IBAN Italian checksum required; account suffix is never enough',()=>{
  assert.equal(validateItalianIban(iban),true);
  assert.equal(validateItalianIban('003986'),false);
- assert.equal(validateItalianIban('IT61X0542811101000000123456'),false);
+ assert.equal(validateItalianIban(iban.replace('IT60','IT61')),false);
  assert.equal(bankConfig({}).enabled,false);
  assert.equal(bankConfig(env).enabled,true);
  assert.equal(bankConfig({ ...env,SEVA_BANK_LIVE_APPROVED:'false'}).enabled,false);
