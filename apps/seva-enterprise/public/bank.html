@@ -1,0 +1,27 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#081726"><title>SEVA · Bonifico SEPA</title>
+<link rel="stylesheet" href="/psdm.css"><link rel="icon" href="/icon.svg" type="image/svg+xml"></head>
+<body><header class="top"><a class="brand" href="/">✦ SEVA</a><span>BANK TRANSFER · SEPA</span><a href="/">← Area SEVA</a></header>
+<main><section class="hero"><p class="eyebrow">PAGAMENTI SENZA STRIPE</p><h1>Bonifico bancario <em>volontario e tracciabile.</em></h1>
+<p>Questa pagina prepara un ordine da pagare fuori da SEVA, tramite la tua banca. SEVA non addebita automaticamente il conto, non effettua bonifici e non convalida ricevute di pagamento.</p>
+<div class="status" id="status">Verifica disponibilità ordini</div></section>
+<section class="panel"><h2>Richiedi istruzioni di pagamento</h2>
+<p>È necessario un account SEVA Enterprise autenticato. I prezzi e i periodi sono quelli del listino attuale; il bonifico non rinnova automaticamente l'abbonamento.</p>
+<label for="plan">Piano SEVA</label><select id="plan" style="width:100%;padding:12px;border-radius:9px;background:#07192b;color:white;border:1px solid #4b6483">
+<option value="enterprise_monthly">Enterprise · €50 / mese</option><option value="buyer_annual">Acquirente · €50 / anno</option><option value="ecommerce_annual">E-commerce · €500 / anno</option>
+</select>
+<p id="legalLinks" aria-live="polite">I documenti contrattuali saranno disponibili qui solo dopo la configurazione del gestore.</p>
+<label><input id="agree" type="checkbox" style="width:20px;min-height:20px;vertical-align:middle">
+Ho letto e accetto le condizioni di vendita e l'informativa privacy pubblicate per SEVA e comprendo che l'accesso verrà attivato soltanto dopo la verifica dell'accredito effettivo.</label>
+<p class="warning">Se le condizioni di vendita e l'identità del beneficiario non sono ancora pubblicate e verificate, non effettuare un bonifico. Non inviare contanti, carte o password tramite chat.</p>
+<button id="request" class="primary" disabled>Richiedi coordinate e causale</button>
+<p id="error" class="error" role="alert" aria-live="polite"></p></section>
+<section class="panel" id="payment" hidden><h2>Dati per il bonifico</h2>
+<p id="paymentStatus" role="status">ORDINE IN ATTESA DI PAGAMENTO</p>
+<div id="instructions"></div>
+<button id="copy" type="button">Copia dati bonifico</button>
+<p class="warning">Prima di pagare verifica nell'app bancaria che il beneficiario corrisponda esattamente all'intestatario indicato. Non si attiva l'accesso mediante ricevute o screenshot.</p></section>
+<section class="panel"><h2>I tuoi ordini</h2><button id="refresh">Aggiorna stato ordini</button>
+<div id="orders" aria-live="polite"><p>Non ancora caricati.</p></div></section>
+<footer>L'attivazione dei servizi e la fatturazione richiedono una verifica amministrativa separata. Nessun dato di conto viene prelevato da SEVA: i dettagli del beneficiario sono configurati solo sul server autorizzato.</footer>
+</main><script type="module" src="/bank.js"></script></body></html>
