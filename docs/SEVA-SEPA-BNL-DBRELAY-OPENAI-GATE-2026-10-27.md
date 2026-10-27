@@ -22,6 +22,8 @@ Non salvare le seguenti impostazioni (soprattutto IBAN e credenziali) nel reposi
 - SEVA_BANK_LIVE_APPROVED=true SOLO dopo verifica bancaria, fiscale, privacy e commerciale
 - SEVA_BANK_IBAN=IT... (27 caratteri validati, intero conto aziendale confermato)
 - SEVA_BANK_BENEFICIARY=nome esatto intestatario bancario
+- SEVA_BANK_TERMS_URL=https://dominio-verificato.example/termini
+- SEVA_BANK_PRIVACY_URL=https://dominio-verificato.example/privacy
 - SEVA_DB_PATH=/percorso/assoluto/privato/seva.sqlite
 - SEVA_PUBLIC_URL=https://host-confermato.example
 - Riconciliazione CLI separata e temporanea: SEVA_BANK_RECONCILE_ALLOWED=true, SEVA_BANK_OPERATOR=operatore autorizzato, accesso diretto TTY e conferma umana.
