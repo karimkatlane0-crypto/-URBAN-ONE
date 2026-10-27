@@ -44,6 +44,24 @@ test('Studio sends the same explicit consent checked in UI',async()=>{
  assert.match(js,/ai-consent/);
 });
 test('39 forged Stripe callback rejected without secret',async()=>{const r=await call('/api/stripe/webhook',{method:'POST',body:{id:'fake'}});assert.equal(r.status,503);});
+test('SEPA-only mode refuses Stripe webhooks even with Stripe credentials and does not advertise checkout',async()=>{
+ const previousMethod=process.env.SEVA_PAYMENT_METHOD,previousSecret=process.env.STRIPE_WEBHOOK_SECRET;
+ process.env.SEVA_PAYMENT_METHOD='sepa';process.env.STRIPE_WEBHOOK_SECRET='whsec-synthetic-must-not-be-used';
+ try{
+  const webhook=await call('/api/stripe/webhook',{method:'POST',body:{id:'evt_synthetic'}});
+  assert.equal(webhook.status,503);
+  assert.match(webhook.data.error,/disabled in SEPA-only mode/);
+  const checkout=await call('/api/billing/checkout',{method:'POST',body:{}});
+  assert.equal(checkout.status,503);
+  const info=await call('/api/v1/capabilities');
+  assert.equal(info.status,200);
+  assert.equal(info.data.publicCheckoutEnabled,false);
+  assert.match(info.data.billing,/sepa_manual/);
+ }finally{
+  if(previousMethod===undefined)delete process.env.SEVA_PAYMENT_METHOD;else process.env.SEVA_PAYMENT_METHOD=previousMethod;
+  if(previousSecret===undefined)delete process.env.STRIPE_WEBHOOK_SECRET;else process.env.STRIPE_WEBHOOK_SECRET=previousSecret;
+ }
+});
 test('40 client HTML route works',async()=>{const r=await fetch(base+'/');assert.equal(r.status,200);assert.match(await r.text(),/SEVA/);});
 test('41 commercial price preview is public and does not charge',async()=>{const r=await call('/api/commercial/quote',{method:'POST',body:{months:2,marketingRequestedCents:10000}});assert.equal(r.status,200);assert.equal(r.data.quote.dueNowCents,10000);assert.equal(r.data.checkoutEnabled,false);});
 test('42 invalid commercial preview is rejected',async()=>{const r=await call('/api/commercial/quote',{method:'POST',body:{months:-1}});assert.equal(r.status,400);});
