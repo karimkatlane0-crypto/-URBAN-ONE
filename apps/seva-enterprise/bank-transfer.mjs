@@ -11,6 +11,7 @@ export const BANK_PLAN_AMOUNTS=Object.freeze({
 const bankError=(message,status=400)=>Object.assign(Error(message),{status});
 const now=()=>Math.floor(Date.now()/1000);
 const ibanClean=(raw)=>typeof raw==='string'?raw.replace(/\s/g,'').toUpperCase():'';
+const verifiedLegalUrl=value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.hostname.length>3&&!['localhost','127.0.0.1'].includes(u.hostname);}catch{return false;}};
 export function validateItalianIban(value){
  const iban=ibanClean(value);
  if(!/^IT[0-9]{2}[A-Z][0-9]{22}$/.test(iban))return false;
@@ -27,8 +28,10 @@ export function bankConfig(env=process.env){
  const beneficiary=typeof env.SEVA_BANK_BENEFICIARY==='string'?env.SEVA_BANK_BENEFICIARY.trim():'';
  const eligible=validateItalianIban(iban)&&beneficiary.length>=3&&beneficiary.length<=140&&
   !/[\u0000-\u001f]/.test(beneficiary);
- const enabled=env.SEVA_PAYMENT_METHOD==='sepa'&&env.SEVA_BANK_ORDERS_ENABLED==='true'&&env.SEVA_BANK_LIVE_APPROVED==='true'&&eligible;
+ const legalReady=verifiedLegalUrl(env.SEVA_BANK_TERMS_URL)&&verifiedLegalUrl(env.SEVA_BANK_PRIVACY_URL);
+ const enabled=env.SEVA_PAYMENT_METHOD==='sepa'&&env.SEVA_BANK_ORDERS_ENABLED==='true'&&env.SEVA_BANK_LIVE_APPROVED==='true'&&eligible&&legalReady;
  return {enabled,iban:enabled?iban:null,beneficiary:enabled?beneficiary:null,
+  termsUrl:enabled?env.SEVA_BANK_TERMS_URL:null,privacyUrl:enabled?env.SEVA_BANK_PRIVACY_URL:null,
   status:enabled?'MANUAL_TRANSFER_AVAILABLE':'NOT_CONFIGURED_OR_APPROVED',
   automaticDebit:false,bankApiConnected:false,automaticAccess:false};
 }
@@ -68,7 +71,7 @@ export function createBankOrders(store){
    .run(id,owner,plan,product.amountCents,reference,now());
   store.audit(owner,'bank_order_created',id);
   return {id,plan,amountCents:product.amountCents,currency:'EUR',reference,status:'pending',
-   beneficiary:config.beneficiary,iban:config.iban,bankTransferRequired:true,
+   beneficiary:config.beneficiary,iban:config.iban,termsUrl:config.termsUrl,privacyUrl:config.privacyUrl,bankTransferRequired:true,
    accessGranted:false,automaticDebit:false,
    notice:'Bonifico esterno volontario: nessuna somma addebitata da SEVA. Accesso solo dopo accredito bancario effettivo, verificato dal gestore.'};
  }
