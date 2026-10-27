@@ -1,8 +1,8 @@
 /* SEVA Global PWA — static assets ONLY, privacy-preserving fail-closed fetch policy.
  * Never cache auth, API data, AI, checkout, banking, customer data or query-bearing HTML.
  */
-const CACHE='seva-global-v2-20261027';
-const STATIC=['/','/studio.html','/studio.css','/studio.js','/pwa-global.js','/backup-global.js','/psdm.html','/psdm.css','/psdm.js','/psdm-engine.js','/mobile.html','/manifest-global.webmanifest','/seva-global-icon.svg','/seva-global-192.png','/seva-global-512.png'];
+const CACHE='seva-global-v3-growth-20261027';
+const STATIC=['/','/studio.html','/studio.css','/studio.js','/discover.html','/discover.css','/discover.js','/pwa-global.js','/backup-global.js','/psdm.html','/psdm.css','/psdm.js','/psdm-engine.js','/mobile.html','/manifest-global.webmanifest','/seva-global-icon.svg','/seva-global-192.png','/seva-global-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(STATIC)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(
  Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('seva-global-')&&k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])
