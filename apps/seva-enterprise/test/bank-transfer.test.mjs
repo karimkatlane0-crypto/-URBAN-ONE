@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createStore} from '../core.mjs';
 import {validateItalianIban,bankConfig} from '../bank-transfer.mjs';
 const iban='IT60X0542811101000000123456';
-const env={SEVA_BANK_ORDERS_ENABLED:'true',SEVA_BANK_LIVE_APPROVED:'true',SEVA_BANK_IBAN:iban,SEVA_BANK_BENEFICIARY:'SEVA TEST — NON INVIARE FONDI'};
+const env={SEVA_BANK_ORDERS_ENABLED:'true',SEVA_BANK_LIVE_APPROVED:'true',SEVA_PAYMENT_METHOD:'sepa',SEVA_BANK_IBAN:iban,SEVA_BANK_BENEFICIARY:'SEVA TEST — NON INVIARE FONDI'};
 const customer=()=>{const store=createStore(':memory:');const user=store.register('example@unit.invalid','SyntheticPasswordSecret-123');return {store,user};};
 test('IBAN Italian checksum required; account suffix is never enough',()=>{
  assert.equal(validateItalianIban(iban),true);
