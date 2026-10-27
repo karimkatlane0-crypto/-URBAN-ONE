@@ -1,4 +1,5 @@
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
+import {createDeveloperApi} from './developer-api.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -73,6 +74,7 @@ async function aiPlan(user,prompt){if(!process.env.OPENAI_API_KEY)throw Object.a
  const data=store.listGoals(user.id).slice(0,80);let input='GOALS: '+JSON.stringify(data).slice(0,15000)+'\nUSER TASK: '+String(prompt||'Prepare a clear execution plan').slice(0,2000);
  const resp=await fetch(process.env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-5.1',instructions:'You are SEVA AI. Build an actionable goal-driven plan with numbered steps, acceptance criteria, evidence, responsible actor, realistic limitations and status. Never claim to have executed external actions. Answer in the user language. Do not reveal secrets.',input,store:false,max_output_tokens:1200}),signal:AbortSignal.timeout(40000)});
  let body=await resp.json();if(!resp.ok)throw Object.assign(Error('OpenAI request failed: '+(body.error?.message||resp.status)),{status:502});const output=body.output_text||body.output?.flatMap(o=>o.content||[]).filter(c=>c.type==='output_text').map(c=>c.text).join('\n');if(!output)throw Object.assign(Error('OpenAI response contained no text'),{status:502});store.audit(user.id,'ai_response',body.id||'');return {text:output,model:body.model||process.env.OPENAI_MODEL||'gpt-5.1',id:body.id,provider:'OpenAI',verified:true};}
+const developerApi=createDeveloperApi(store, aiPlan);
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
  if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
@@ -82,6 +84,26 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+ if(path==='/api/v1/capabilities'&&method==='GET')return json(res,200,{
+  product:'SEVA Developer API',apiVersion:'v1',billing:'enterprise_monthly_stripe_verified_only',
+  endpoints:['POST /api/v1/ai/plan'],rateLimit:'6 requests/minute/key',
+  provider:'configured OpenAI Responses API only',claudeGemini:false,
+  publicCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true',status:'GATED'
+ });
+ if(path==='/api/developer/keys'&&method==='GET'){const u=auth(req);return json(res,200,{keys:developerApi.listKeys(u.id)});}
+ if(path==='/api/developer/keys'&&method==='POST'){
+   rate(req,'developer-keys',5);const u=auth(req);const b=JSON.parse(await rawBody(req,300));
+   return json(res,201,developerApi.issueKey(u.id,b.name));
+ }
+ if(path.startsWith('/api/developer/keys/')&&method==='DELETE'){
+   rate(req,'developer-revoke',10);const u=auth(req);
+   return json(res,200,developerApi.revokeKey(u.id,path.slice('/api/developer/keys/'.length)));
+ }
+ if(path==='/api/v1/ai/plan'&&method==='POST'){
+   rate(req,'developer-ai',25);const b=JSON.parse(await rawBody(req,3000));
+   return json(res,200,await developerApi.generate(req.headers.authorization,b));
+ }
+
  if(path==='/api/communications/draft'&&method==='POST'){
   rate(req,'ai-communications',5);
   const u=auth(req);
