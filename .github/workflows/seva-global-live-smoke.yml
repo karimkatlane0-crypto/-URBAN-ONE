@@ -1,0 +1,41 @@
+name: SEVA Global Public HTTP Smoke
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '18 7 * * *'
+  push:
+    branches: ['main-@URBAN-ONE']
+    paths:
+      - 'scripts/seva-global-live-smoke.mjs'
+      - 'scripts/test/seva-global-live-smoke.test.mjs'
+      - '.github/workflows/seva-global-live-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  public-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify smoke logic without network
+        run: node --test scripts/test/seva-global-live-smoke.test.mjs
+      - name: Probe public production pages (no credentials)
+        id: probe
+        continue-on-error: true
+        run: node scripts/seva-global-live-smoke.mjs
+      - name: Upload auditable HTTP evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seva-global-live-http-evidence
+          path: reports/seva-global-live-smoke.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Enforce frontend response status
+        if: steps.probe.outcome != 'success'
+        run: |
+          echo 'Public HTTP smoke check FAILED; production status is not verified.'
+          exit 1
