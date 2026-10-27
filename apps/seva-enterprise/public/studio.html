@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07101f">
+  <meta name="description" content="SEVA Studio — workspace obiettivi, piani AI autenticati e Developer API governata.">
+  <title>SEVA Studio — Intelligence with purpose</title>
+  <link rel="stylesheet" href="/studio.css">
+  <script defer src="/studio.js"></script>
+</head>
+<body>
+  <a class="skip" href="#workspace">Vai al contenuto</a>
+  <div class="shell">
+    <aside class="rail">
+      <a class="brand" href="/studio.html" aria-label="SEVA Studio">
+        <span class="emblem" aria-hidden="true">✳</span><span><strong>SEVA</strong><small>INTELLIGENCE STUDIO</small></span>
+      </a>
+      <div class="rail-label">WORKSPACE</div>
+      <nav class="nav" aria-label="Navigazione">
+        <a class="selected" href="#workspace"><span>◫</span> Panoramica</a>
+        <a href="#goals"><span>◎</span> I tuoi obiettivi</a>
+        <a href="#assistant"><span>✦</span> AI Studio</a>
+        <a href="#developers"><span>⌘</span> Developer API</a>
+        <a href="#plans"><span>◈</span> Abbonamento</a>
+      </nav>
+      <div class="rail-bottom">
+        <div class="integration"><span class="pulse" id="service-dot"></span><span id="service-state">Verifica connessione…</span></div>
+        <p>OpenAI API, Gemini API e Claude API richiedono credenziali e diritti separati. Nessun accesso universale implicito.</p>
+        <a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer" class="source">Sorgente pubblico GitHub ↗</a>
+      </div>
+    </aside>
+    <main id="workspace">
+      <header class="topbar">
+        <div class="breadcrumbs">SEVA <span>/</span> Executive workspace <span>/</span> <b>Overview</b></div>
+        <div class="top-right"><span class="pill" id="user-state">Sessione non verificata</span><a class="small-btn" href="/">Accedi / Registrati ↗</a></div>
+      </header>
+      <div class="main-content">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-glow" aria-hidden="true"></div>
+          <div class="eyebrow"><span class="sparkle">✦</span> GOLDEN AGE · EXECUTIVE TIER-1</div>
+          <h1 id="hero-title">Intelligenza, <em>direzione,</em><br>risultati verificabili.</h1>
+          <p>Trasforma un obiettivo in un piano. Documenta le prove. Controlla la tua API con consenso, autenticazione e accessi governati.</p>
+          <div class="hero-actions"><a class="primary" href="#assistant">Apri AI Studio <span>↗</span></a><a class="ghost" href="#goals">Crea un obiettivo →</a></div>
+          <div class="hero-footer"><span>GOAL</span><i></i><span>EXECUTE</span><i></i><span>VERIFY</span><i></i><span>RELEASE</span></div>
+        </section>
+        <section class="stats" aria-label="Indicatori workspace">
+          <article class="metric"><div class="metric-head"><span>Obiettivi salvati localmente</span><b>◎</b></div><strong id="goal-count">0</strong><small>Bozze su questo browser, non nel cloud</small></article>
+          <article class="metric"><div class="metric-head"><span>Provider configurato</span><b>✧</b></div><strong id="provider-status">Non verificato</strong><small>AI reale soltanto dal server autenticato</small></article>
+          <article class="metric"><div class="metric-head"><span>Abbonamento</span><b>◇</b></div><strong id="access-status">Da verificare</strong><small>L'acquisto richiede fulfillment Stripe firmato</small></article>
+        </section>
+        <div class="two-column">
+          <section class="panel" id="goals">
+            <div class="panel-title"><div><div class="eyebrow muted">01 / GOAL ENGINE</div><h2>I tuoi obiettivi</h2><p>Definisci un risultato misurabile prima di eseguirlo.</p></div><span class="round-icon">◎</span></div>
+            <form id="goal-form" autocomplete="off">
+              <label for="goal-title">Obiettivo</label>
+              <input id="goal-title" maxlength="160" placeholder="Es. Presentare il progetto a 10 clienti" required>
+              <label for="goal-criteria">Criterio di verifica</label>
+              <textarea id="goal-criteria" maxlength="500" rows="2" placeholder="Es. 10 demo eseguite e registrate" required></textarea>
+              <button class="form-submit" type="submit">+ Aggiungi obiettivo</button>
+            </form>
+            <div id="goal-list" class="goal-list" aria-live="polite"></div>
+            <div class="minor-notice">Le bozze sono volontarie e restano nel browser. Usa il tuo account SEVA per il backend persistente, quando attivo.</div>
+          </section>
+          <section class="panel ai-panel" id="assistant">
+            <div class="panel-title"><div><div class="eyebrow muted">02 / ASSISTED EXECUTION</div><h2>SEVA AI Studio</h2><p>Analisi e pianificazione con evidenze.</p></div><span class="round-icon accent">✦</span></div>
+            <div class="models" role="group" aria-label="Provider AI">
+              <span class="model active">✦ OpenAI <span id="model-state">da verificare</span></span>
+              <span class="model disabled" title="Richiede integrazione ufficiale">Gemini · non attivo</span>
+              <span class="model disabled" title="Richiede integrazione ufficiale">Claude · non attivo</span>
+            </div>
+            <div class="chat" id="chat-log" role="log" aria-live="polite" aria-label="Conversazione">
+              <div class="assistant-line"><span class="chat-avatar">✦</span><div><b>SEVA</b><p>Descrivi il tuo obiettivo. Posso preparare uno schema locale immediato; la risposta AI reale richiede accesso, provider configurato e piano abilitato.</p></div></div>
+            </div>
+            <form id="ai-form">
+              <label class="sr-only" for="ai-prompt">Messaggio per SEVA AI</label>
+              <textarea id="ai-prompt" rows="3" maxlength="2000" placeholder="Qual è il risultato che vuoi raggiungere?" required></textarea>
+              <div class="chat-bottom"><label class="consent"><input id="ai-consent" type="checkbox"> Acconsento all'invio del testo al provider AI configurato</label><button id="send-ai" type="submit" aria-label="Invia alla API SEVA">Invia ↑</button></div>
+            </form>
+            <button class="secondary-action" id="local-plan" type="button">Genera schema locale (senza AI e senza invio)</button>
+          </section>
+        </div>
+        <section class="panel api-panel" id="developers">
+          <div class="api-copy"><div class="eyebrow muted">03 / BUILD WITH SEVA</div><h2>API che rispettano il tuo lavoro.</h2><p>Endpoint per piani assistiti, chiavi per abbonati Enterprise, revoca immediata e limiti d'utilizzo. La chiave privata viene mostrata una sola volta.</p><div class="api-actions"><button class="outline" id="issue-key" type="button">Crea chiave API (abbonati)</button><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/tree/main-%40URBAN-ONE/apps/seva-enterprise" target="_blank" rel="noopener noreferrer">Documentazione ↗</a></div><pre id="api-key-out" class="key-output" hidden></pre></div>
+          <div class="code-panel"><div class="code-bar"><span class="lights">● ● ●</span> <span>POST /api/v1/ai/plan</span></div><pre>curl -X POST "$SEVA_BASE/api/v1/ai/plan" \
+  -H "Authorization: Bearer $SEVA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Piano di lancio",
+       "consent":true}'</pre><div class="code-footer">HTTPS · TOKEN SERVER-TO-SERVER · 6 RPM</div></div>
+        </section>
+        <section class="panel price-panel" id="plans">
+          <div><div class="eyebrow muted">04 / COMMERCIAL GATE</div><h2>SEVA Enterprise</h2><p>Il prezzo è tratto dal catalogo SEVA verificato. Nessun abbonamento viene avviato senza checkout autentico e servizio validato.</p></div>
+          <div class="price-box"><div class="money">€50<span>/mese</span></div><small>Canone ricorrente · IVA da verificare</small><button id="checkout" class="primary price-button" type="button" disabled>Acquisto non ancora disponibile</button><div id="purchase-state" class="purchase-state">Il go-live rimane subordinato a backend, webhook, AI e verifica fiscale.</div></div>
+        </section>
+        <footer>SEVA · URBAN ONE Enterprise <span>Un progetto indipendente. Non affiliato a OpenAI, Google o Anthropic.</span><span>AD MAIORA SEMPER</span></footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
