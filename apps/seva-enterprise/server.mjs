@@ -180,7 +180,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
  if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt));}
  if(path==='/api/bank/status'&&method==='GET'){
-  const config=bankConfig();return json(res,200,{status:config.status,enabled:config.enabled,
+  const config=bankConfig();return json(res,200,{status:config.status,enabled:config.enabled,termsUrl:config.termsUrl,privacyUrl:config.privacyUrl,
    bankApiConnected:false,automaticDebit:false,accessOnScreenshot:false,
    plans:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,cfg])=>({plan,amountCents:cfg.amountCents,currency:'EUR'}))});
  }
