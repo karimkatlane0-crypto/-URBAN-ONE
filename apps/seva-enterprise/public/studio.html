@@ -8,6 +8,12 @@
   <title>SEVA Studio — Intelligence with purpose</title>
   <link rel="stylesheet" href="/studio.css">
   <script defer src="/studio.js"></script>
+  <link rel="manifest" href="/manifest-global.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/seva-global-icon.svg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SEVA">
+  <script defer src="/pwa-global.js"></script>
 </head>
 <body>
   <a class="skip" href="#workspace">Vai al contenuto</a>
@@ -20,6 +26,8 @@
       <nav class="nav" aria-label="Navigazione">
         <a class="selected" href="#workspace"><span>◫</span> Panoramica</a>
         <a href="#goals"><span>◎</span> I tuoi obiettivi</a>
+        <a href="/psdm.html"><span>◇</span> Decision Studio PSDM</a>
+        <a href="/mobile.html"><span>▣</span> Installa su Android</a>
         <a href="#assistant"><span>✦</span> AI Studio</a>
         <a href="#developers"><span>⌘</span> Developer API</a>
         <a href="#plans"><span>◈</span> Abbonamento</a>
@@ -33,7 +41,7 @@
     <main id="workspace">
       <header class="topbar">
         <div class="breadcrumbs">SEVA <span>/</span> Executive workspace <span>/</span> <b>Overview</b></div>
-        <div class="top-right"><span class="pill" id="user-state">Sessione non verificata</span><a class="small-btn" href="https://seva.karimkatlane0.chatgpt.site/" target="_blank" rel="noopener noreferrer">Account SEVA (sito separato) ↗</a></div>
+        <div class="top-right"><button class="small-btn" id="install-seva" type="button" hidden>Installa SEVA</button><span class="pill" id="user-state">Sessione non verificata</span><a class="small-btn" href="https://seva.karimkatlane0.chatgpt.site/" target="_blank" rel="noopener noreferrer">Account SEVA (sito separato) ↗</a></div>
       </header>
       <div class="main-content">
         <section class="hero" aria-labelledby="hero-title">
@@ -96,5 +104,6 @@
       </div>
     </main>
   </div>
+<div id="install-message" class="pwa-toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
