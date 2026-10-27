@@ -1,0 +1,25 @@
+plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'ai.seva.global'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'ai.seva.global'
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '1.0.0-beta'
+    }
+    buildTypes {
+        debug { applicationIdSuffix '.debug'; versionNameSuffix '-debug' }
+        release { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.7.3'
+}
