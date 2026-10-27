@@ -4,7 +4,7 @@ import {developerAI} from './developer-ai.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
-import {resolve, extname} from 'node:path';
+import {resolve, extname, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createStore,verifyStripeSignature} from './core.mjs';
 import {validateMonthlyPlan} from './billing.mjs';
@@ -19,6 +19,7 @@ import {analyzeLastre} from './lastre.mjs';
 import {createNotificationCenter} from './notification-center.mjs';
 import {validateCommercialDraft,produceDraft} from './communications.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
+import {bankConfig,BANK_PLAN_AMOUNTS} from './bank-transfer.mjs';
 
 validateRuntime();
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
@@ -35,10 +36,10 @@ async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const c
 function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
-function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,rewards:'ledger only; payout disabled until separate agreement'};}
+function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,bankTransfer:bankConfig().status,bankOrderPrices:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents})),rewards:'ledger only; payout disabled until separate agreement'};}
 async function stripe(method,path,data){const key=process.env.STRIPE_SECRET_KEY;if(!key)throw Object.assign(Error('Stripe server credentials unavailable'),{status:503});const resp=await fetch('https://api.stripe.com/v1/'+path,{method,headers:{Authorization:`Bearer ${key}`,...(data?{'Content-Type':'application/x-www-form-urlencoded'}:{})},body:data?new URLSearchParams(data):undefined,signal:AbortSignal.timeout(15000)});
  const body=await resp.json();if(!resp.ok)throw Object.assign(Error(body.error?.message||'Stripe unavailable'),{status:resp.status===401?503:502});return body;}
-async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
+async function createCheckout(user){if(process.env.SEVA_PAYMENT_METHOD==='sepa')throw Object.assign(Error('Stripe disabled in SEPA-only mode'),{status:503});if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
  const monthlyPriceId=process.env.SEVA_MONTHLY_PRICE_ID;
  if(!monthlyPriceId)throw Object.assign(Error('Monthly Stripe product is not configured'),{status:503});
  const p=await stripe('GET','prices/'+encodeURIComponent(monthlyPriceId));const prod=await stripe('GET','products/'+encodeURIComponent(p.product));
@@ -47,6 +48,7 @@ async function createCheckout(user){if(process.env.SEVA_SALES_ENABLED!=='true')t
  const s=await stripe('POST','checkout/sessions',{'mode':'subscription','line_items[0][price]':p.id,'line_items[0][quantity]':'1','customer_email':user.email,'client_reference_id':user.id,'metadata[seva_user_id]':user.id,'metadata[seva_plan]':'enterprise_monthly','metadata[seva_price_id]':p.id,'subscription_data[metadata][seva_plan]':'enterprise_monthly','success_url':`${url}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`,'cancel_url':`${url}/?checkout=cancel`});
  if(!s.id||!s.url)throw Object.assign(Error('Checkout response invalid'),{status:502});store.recordCheckout(user.id,s.id,'enterprise_monthly',p.id);return {url:s.url};}
 async function createAnnualCheckout(user,planName){
+  if(process.env.SEVA_PAYMENT_METHOD==='sepa')throw Object.assign(Error('Stripe disabled in SEPA-only mode'),{status:503});
  // Annual subscriptions are separate from the A=EUR50/month commercial quote and monthly SKU.
  if(process.env.SEVA_SALES_ENABLED!=='true'||process.env.SEVA_ANNUAL_SALES_ENABLED!=='true')
    throw Object.assign(Error('Annual SEVA sales are closed pending end-to-end verification'),{status:503});
@@ -200,6 +202,23 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));const id=store.saveGoal(u.id,body);notifications.publishGoal(u.id,id,body.status);return json(res,201,{id});}
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
  if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt));}
+ if(path==='/api/bank/status'&&method==='GET'){
+  const cfg=bankConfig();const durable=store.persistent&&isAbsolute(process.env.SEVA_DB_PATH||'');
+  const enabled=Boolean(cfg.enabled&&durable);
+  return json(res,200,{enabled,status:enabled?cfg.status:'NOT_CONFIGURED_OR_APPROVED',
+    termsUrl:enabled?cfg.termsUrl:null,privacyUrl:enabled?cfg.privacyUrl:null,
+    bankApiConnected:false,automaticDebit:false,accessOnScreenshot:false,
+    plans:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents,currency:'EUR'}))});
+ }
+ if(path==='/api/bank/orders'&&method==='GET'){rate(req,'bank-list',20);const u=auth(req);return json(res,200,{orders:store.bank.list(u.id)});}
+ if(path==='/api/bank/orders'&&method==='POST'){
+  rate(req,'bank-order',3);const u=auth(req);
+  if(!store.persistent||!isAbsolute(process.env.SEVA_DB_PATH||''))return json(res,503,{error:'Persistent absolute-path database required'});
+  if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
+  const b=JSON.parse(await rawBody(req,1000));
+  const order=store.bank.place(u.id,b.plan,b.termsAccepted);
+  return json(res,201,{order});
+ }
  if(path==='/api/billing/checkout'&&method==='POST'){rate(req,'checkout',6);const u=auth(req);return json(res,200,await createCheckout(u));}
  if(path==='/api/billing/checkout/annual'&&method==='POST'){rate(req,'checkout-annual',6);const u=auth(req);const body=JSON.parse(await rawBody(req,2000));return json(res,200,await createAnnualCheckout(u,body.plan));}
  if(path==='/api/rewards'&&method==='GET'){const u=auth(req);return json(res,200,{rewards:store.rewards(u.id),payoutsEnabled:false});}
