@@ -20,6 +20,29 @@ test('CSRF rejects invalid and same-host wrong-scheme origins without a server e
 });
 test('37 payment checkout fail closed',async()=>{const r=await call('/api/billing/checkout',{method:'POST',body:{}});assert.equal(r.status,503);});
 test('38 OpenAI unavailable without server secret',async()=>{const r=await call('/api/ai/generate',{method:'POST',body:{prompt:'hello'}});assert.equal(r.status,503);});
+test('OpenAI must receive explicit consent and must not send a provider request without it',async()=>{
+  const previous=process.env.OPENAI_API_KEY;
+  process.env.OPENAI_API_KEY='synthetic-test-key-no-provider-request';
+  try{
+    const denied=await call('/api/ai/generate',{method:'POST',body:{prompt:'Do not send'}}); 
+    assert.equal(denied.status,400);
+    assert.match(denied.data.error,/Explicit consent/);
+    const blank=await call('/api/ai/generate',{method:'POST',body:{prompt:' ',consent:true}});
+    assert.equal(blank.status,400);
+    const noEntitlement=await call('/api/ai/generate',{method:'POST',body:{prompt:'Plan this',consent:true}});
+    assert.equal(noEntitlement.status,402);
+  }finally{
+    if(previous===undefined)delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY=previous;
+  }
+});
+test('Studio sends the same explicit consent checked in UI',async()=>{
+ const response=await fetch(base+'/studio.js');
+ assert.equal(response.status,200);
+ const js=await response.text();
+ assert.match(js,/jsonOptions\(\{prompt,consent:true\}\)/);
+ assert.match(js,/ai-consent/);
+});
 test('39 forged Stripe callback rejected without secret',async()=>{const r=await call('/api/stripe/webhook',{method:'POST',body:{id:'fake'}});assert.equal(r.status,503);});
 test('40 client HTML route works',async()=>{const r=await fetch(base+'/');assert.equal(r.status,200);assert.match(await r.text(),/SEVA/);});
 test('41 commercial price preview is public and does not charge',async()=>{const r=await call('/api/commercial/quote',{method:'POST',body:{months:2,marketingRequestedCents:10000}});assert.equal(r.status,200);assert.equal(r.data.quote.dueNowCents,10000);assert.equal(r.data.checkoutEnabled,false);});
