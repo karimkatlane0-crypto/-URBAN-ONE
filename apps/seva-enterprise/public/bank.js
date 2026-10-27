@@ -34,6 +34,8 @@ async function start(){
   const s=await run('/api/bank/status');
   const on=s.enabled===true;
   el('status').textContent=on?'ORDINI BONIFICO DISPONIBILI — verifica beneficiario':'PAGAMENTO SEPA NON ATTIVO — dati bancari o autorizzazione mancanti';
+  const notices=el('legalLinks');notices.replaceChildren();
+  if(on&&s.termsUrl&&s.privacyUrl){for(const [label,url] of [['Condizioni di vendita',s.termsUrl],['Informativa privacy',s.privacyUrl]]){const link=document.createElement('a');link.href=url;link.textContent=label;link.target='_blank';link.rel='noopener noreferrer';notices.append(link,document.createTextNode(' · '));}}else{notices.textContent='Informative non configurate. Non inviare pagamenti.';}
   el('request').disabled=!on;
  }catch(e){el('status').textContent='Servizio non verificato: '+e.message;}
  await refresh();
