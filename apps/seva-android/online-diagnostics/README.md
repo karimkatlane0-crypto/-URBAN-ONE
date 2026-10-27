@@ -8,6 +8,8 @@ This directory is optional source for a future connected SEVA Enterprise Android
 - DiagnosticsDashboard.kt: lifecycle-aware Compose screen and explicit Android 13+ notification permission button.
 - Existing apps/seva-android/app/src/main remains Java and fully offline. No INTERNET permission is added.
 - No Gmail, CRM, Gemini, OpenAI, banking or Stripe integration is activated by this source.
+- Isolated Android Gradle library project: run gradle -p apps/seva-android/online-diagnostics --no-daemon assembleDebug. This generates an AAR when CI passes, never an APK; the SEVA Android workflow also compiles it separately before the existing offline APK.
+- The library is not included by the app's Java Gradle build, and an AAR by itself cannot be installed on a phone.
 
 ## Corrections from the pasted draft
 - The undefined unsyncedErrors identifier is replaced by unsyncedCount.
