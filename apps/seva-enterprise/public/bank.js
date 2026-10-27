@@ -10,6 +10,8 @@ const money=c=>(c/100).toLocaleString('it-IT',{style:'currency',currency:'EUR'})
 let paymentText='';
 function renderOrder(order){
  el('payment').hidden=false;const instructions=el('instructions');instructions.replaceChildren();
+ const legal=document.createElement('p');const link=document.createElement('a');link.href=order.termsUrl;link.textContent='Condizioni di vendita';link.rel='noopener noreferrer';legal.append(link);
+ const privacy=document.createElement('a');privacy.href=order.privacyUrl;privacy.textContent=' Informativa privacy';privacy.rel='noopener noreferrer';legal.append(privacy);instructions.append(legal);
  const rows=[['Beneficiario',order.beneficiary],['IBAN',order.iban],['Importo',money(order.amountCents)],['Causale obbligatoria',order.reference]];
  paymentText=rows.map(r=>r.join(': ')).join('\n');
  for(const [name,value] of rows){const p=document.createElement('p');p.append(text('strong',name+': '));p.append(text('span',value));instructions.append(p);}
