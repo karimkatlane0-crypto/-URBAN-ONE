@@ -2,7 +2,7 @@ import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
-import {resolve, extname} from 'node:path';
+import {resolve, extname, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createStore,verifyStripeSignature} from './core.mjs';
 import {validateMonthlyPlan} from './billing.mjs';
@@ -180,7 +180,8 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
  if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt));}
  if(path==='/api/bank/status'&&method==='GET'){
-  const config=bankConfig();return json(res,200,{status:config.status,enabled:config.enabled,termsUrl:config.termsUrl,privacyUrl:config.privacyUrl,
+  const config=bankConfig();const storageReady=store.persistent===true&&isAbsolute(process.env.SEVA_DB_PATH||'');const enabled=config.enabled&&storageReady;
+  return json(res,200,{status:enabled?config.status:'NOT_CONFIGURED_OR_APPROVED',enabled,termsUrl:enabled?config.termsUrl:null,privacyUrl:enabled?config.privacyUrl:null,
    bankApiConnected:false,automaticDebit:false,accessOnScreenshot:false,
    plans:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,cfg])=>({plan,amountCents:cfg.amountCents,currency:'EUR'}))});
  }
@@ -189,6 +190,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   rate(req,'bank-order',3);const u=auth(req);
   if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
   const body=JSON.parse(await rawBody(req,1000));
+  if(!store.persistent||!isAbsolute(process.env.SEVA_DB_PATH||''))return json(res,503,{error:'Persistent absolute-path SEVA bank database is required'});
   const order=store.bank.place(u.id,body.plan,body.termsAccepted);
   return json(res,201,{order});
  }
