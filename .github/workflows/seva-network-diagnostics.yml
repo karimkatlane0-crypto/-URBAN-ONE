@@ -1,0 +1,45 @@
+name: SEVA Online Diagnostics Kotlin Library
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/seva-android/online-diagnostics/**'
+      - 'apps/seva-enterprise/test/seva-network-diagnostics-source-contract.test.mjs'
+      - '.github/workflows/seva-network-diagnostics.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    name: Compile optional Room and Compose library (offline APK unchanged)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Ensure Android API 36 SDK
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_HOME"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Check no production/offline permissions or source-set changes
+        run: |
+          node --test apps/seva-enterprise/test/seva-network-diagnostics-source-contract.test.mjs
+          ! grep -q 'android.permission.INTERNET' apps/seva-android/app/src/main/AndroidManifest.xml
+          ! grep -q 'android.permission.POST_NOTIFICATIONS' apps/seva-android/app/src/main/AndroidManifest.xml
+      - name: Compile independent Kotlin diagnostics Android library
+        run: gradle -p apps/seva-android/online-diagnostics --no-daemon assembleDebug
+      - name: Verify independent AAR only (not an APK release)
+        run: |
+          set -euo pipefail
+          find apps/seva-android/online-diagnostics/build/outputs/aar -name '*.aar' -size +0c -print -quit | grep -q '.aar'
+          echo "Source library compilation OK; NOT linked into shipping offline APK."
