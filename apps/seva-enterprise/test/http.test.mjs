@@ -40,7 +40,7 @@ test('Studio sends the same explicit consent checked in UI',async()=>{
  const response=await fetch(base+'/studio.js');
  assert.equal(response.status,200);
  const js=await response.text();
- assert.match(js,/jsonOptions\(\{prompt,consent:true,provider:/);
+ assert.match(js,/jsonOptions\(\{prompt,consent:true,provider\}\)/);
  assert.match(js,/ai-consent/);
 });
 test('39 forged Stripe callback rejected without secret',async()=>{const r=await call('/api/stripe/webhook',{method:'POST',body:{id:'fake'}});assert.equal(r.status,503);});

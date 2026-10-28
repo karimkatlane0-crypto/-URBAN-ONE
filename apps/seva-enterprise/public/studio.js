@@ -5,6 +5,7 @@
   const maxDrafts = 40;
   let serverReady = false, session = null, salesEnabled = false;
   let generativeProviders = {openai:false,gemini:false};
+  let aiInFlight = false;
 
   function drafts() {
     try {
@@ -54,7 +55,24 @@
   }
   async function request(path,options={}) {
     const response=await fetch(path,{credentials:'same-origin',cache:'no-store',...options});
-    const result=await response.json().catch(()=>({error:'Risposta non valida dal server'}));
+    const contentType=response.headers.get('content-type')||'';
+    if (!/^application\/([a-z0-9.+-]*\+)?json\b/i.test(contentType)) {
+      const e=Error('Il percorso non risponde con JSON SEVA: backend non verificato');
+      e.status=502;
+      throw e;
+    }
+    let result;
+    try {result=await response.json();}
+    catch {
+      const e=Error('Risposta JSON non valida dal backend SEVA');
+      e.status=502;
+      throw e;
+    }
+    if (!result||typeof result!=='object'||Array.isArray(result)) {
+      const e=Error('Risposta API SEVA non valida');
+      e.status=502;
+      throw e;
+    }
     if (!response.ok) {
       const e=Error(result.error||'Servizio non disponibile');
       e.status=response.status;
@@ -67,9 +85,10 @@
   }
   function appError(error) {
     if (error.status===401) return 'Effettua l’accesso al tuo account SEVA. Nessuna chiamata AI effettuata.';
-    if (error.status===402) return 'Serve un abbonamento SEVA Enterprise verificato con Stripe. Nessun addebito avviato.';
+    if (error.status===402) return 'Serve un accesso SEVA verificato e autorizzato. Nessun pagamento avviato.';
     if (error.status===429) return 'Limite temporaneo o credito del provider esaurito. Nessuna risposta AI generata.';
     if (error.status===503) return 'Servizio o provider non configurato. Nessuna risposta AI generata.';
+    if (error.status===502) return 'Risposta del backend o del provider non valida. Controlla la connessione e la prova HTTPS.';
     return 'Richiesta non completata: '+(error.message||'errore temporaneo');
   }
   function showProviderStatus() {
@@ -86,17 +105,35 @@
     showProviderStatus();
   });
   async function refreshStatus() {
+    serverReady=false;
+    session=null;
+    salesEnabled=false;
+    generativeProviders={openai:false,gemini:false};
+    $('service-dot').classList.remove('online');
     try {
+      // A static CDN can serve index.html with HTTP 200 for missing /api routes.
+      // Require both a real Node health response and the SEVA status contract.
+      const health=await request('/health');
+      if(health.ok!==true||health.service!=='seva')throw Error('SEVA health contract invalid');
       const status=await request('/api/public/status');
+      if(status.name!=='SEVA'||typeof status.salesEnabled!=='boolean'||
+        !status.generativeProviders||
+        typeof status.generativeProviders.openai!=='boolean'||
+        typeof status.generativeProviders.gemini!=='boolean')
+        throw Error('SEVA status contract invalid');
       serverReady=true;
       $('service-dot').classList.add('online');
       $('service-state').textContent='Server SEVA raggiungibile';
-      generativeProviders=status.generativeProviders||{openai:status.aiConfigured===true,gemini:false};
+      generativeProviders=status.generativeProviders;
       showProviderStatus();
       salesEnabled=status.salesEnabled===true;
     } catch {
-      $('service-state').textContent='Anteprima / backend non raggiungibile';
+      $('service-dot').classList.remove('online');
+      $('service-state').textContent='Backend SEVA non verificato (anche se il sito statico risponde)';
       $('provider-status').textContent='Non verificato';
+      $('model-state').textContent='disattivo';
+      $('access-status').textContent='Non autenticato';
+      $('checkout').disabled=true;
     }
     try {
       if (!serverReady) return;
@@ -133,19 +170,38 @@
   });
   $('ai-form').addEventListener('submit',async event=>{
     event.preventDefault();
+    if(aiInFlight)return;
     const prompt=$('ai-prompt').value.trim();
     if(!prompt)return;
     if(!$('ai-consent').checked){
       addChat('assistant','Seleziona il consenso esplicito per inviare il testo al provider AI configurato. Per la modalità senza invio usa «Genera schema locale».');
       return;
     }
+    if(!serverReady){
+      addChat('assistant','Backend SEVA HTTPS non verificato. Lo schema locale resta disponibile senza inviare dati.');
+      return;
+    }
+    const provider=$('ai-provider').value;
+    const expected=provider==='gemini'?'Gemini':'OpenAI';
     addChat('user',prompt);
-    const send=$('send-ai');send.disabled=true;send.textContent='…';
+    aiInFlight=true;
+    const send=$('send-ai');
+    send.disabled=true;send.textContent='…';
+    $('ai-provider').disabled=true;
     try {
-      const response=await request('/api/ai/generate',jsonOptions({prompt,consent:true,provider:$('ai-provider').value}));
-      addChat('assistant',response.text||'Il provider non ha restituito testo.');
+      const response=await request('/api/ai/generate',jsonOptions({prompt,consent:true,provider}));
+      if(response.provider!==expected||typeof response.id!=='string'||!response.id.trim()||
+        typeof response.model!=='string'||!response.model.trim()||
+        typeof response.text!=='string'||!response.text.trim())
+        throw Object.assign(Error('Tracciabilità AI non verificabile'),{status:502});
+      addChat('assistant','Fonte: '+response.provider+' · '+response.model+' · risposta '+response.id+'\n'+response.text);
     } catch(error) { addChat('assistant',appError(error)); }
-    finally {send.disabled=false;send.textContent='Invia ↑';$('ai-consent').checked=false;}
+    finally {
+      aiInFlight=false;
+      send.disabled=false;send.textContent='Invia ↑';
+      $('ai-provider').disabled=false;
+      $('ai-consent').checked=false;
+    }
   });
   $('issue-key').addEventListener('click',async()=>{
     const output=$('api-key-out');
