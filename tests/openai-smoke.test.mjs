@@ -43,6 +43,7 @@ test('OpenAI smoke client sends the expected secure Responses API request', asyn
       ...process.env,
       OPENAI_API_KEY:'test-runtime-token',
       OPENAI_MODEL:'test-model',
+      NODE_ENV:'test',
       OPENAI_BASE_URL:`http://127.0.0.1:${address.port}/v1`,
     },
     stdio:['ignore','pipe','pipe'],
@@ -72,4 +73,60 @@ test('OpenAI smoke client sends the expected secure Responses API request', asyn
   assert.equal(result.output,'URBAN_ONE_OPENAI_OK');
   assert.equal(stdout().includes('test-runtime-token'),false);
   assert.equal(stderr().includes('test-runtime-token'),false);
+});
+
+async function probe(overrides) {
+  const child=spawn(process.execPath,['scripts/openai-smoke.mjs'],{
+    cwd:new URL('..',import.meta.url),
+    env:{
+      ...process.env,
+      NODE_ENV:'test',
+      OPENAI_API_KEY:'test-runtime-token',
+      OPENAI_MODEL:'test-model',
+      ...overrides
+    },
+    stdio:['ignore','pipe','pipe'],
+  });
+  const stdout=collect(child.stdout);
+  const stderr=collect(child.stderr);
+  const [code]=await once(child,'close');
+  return {code,stdout:stdout(),stderr:stderr()};
+}
+
+test('smoke refuses a successful provider response without response id',async()=>{
+  const server=http.createServer((_req,res)=>{
+    res.writeHead(200,{'content-type':'application/json'});
+    res.end(JSON.stringify({output_text:'URBAN_ONE_OPENAI_OK',model:'test-model'}));
+  });
+  server.listen(0,'127.0.0.1');
+  await once(server,'listening');
+  const addr=server.address();
+  try {
+    const result=await probe({OPENAI_BASE_URL:`http://127.0.0.1:${addr.port}/v1`});
+    assert.equal(result.code,1);
+    assert.match(result.stderr,/OPENAI_RESPONSE_ID_REQUIRED/);
+    assert.equal(result.stdout,'');
+  } finally {
+    server.close();
+    await once(server,'close');
+  }
+});
+
+test('smoke rejects nonofficial API destinations before sending credentials',async()=>{
+  const result=await probe({OPENAI_BASE_URL:'https://example.invalid/v1'});
+  assert.equal(result.code,2);
+  assert.match(result.stderr,/OPENAI_BASE_URL_REJECTED/);
+  assert.equal(result.stdout,'');
+});
+
+test('smoke requires configured model instead of guessing model id',async()=>{
+  const result=await probe({OPENAI_MODEL:'',OPENAI_BASE_URL:'https://api.openai.com/v1'});
+  assert.equal(result.code,2);
+  assert.match(result.stderr,/OPENAI_MODEL_REQUIRED/);
+});
+
+test('smoke requires a server-side API credential',async()=>{
+  const result=await probe({OPENAI_API_KEY:'',OPENAI_BASE_URL:'https://api.openai.com/v1'});
+  assert.equal(result.code,2);
+  assert.match(result.stderr,/OPENAI_API_KEY_REQUIRED/);
 });
