@@ -41,5 +41,7 @@ export async function developerAI(_user, prompt, config = process.env, send = fe
     body.output?.flatMap(item => item.content || []).filter(item => item.type === 'output_text')
       .map(item => item.text).join('\n');
   if (!text) throw Object.assign(Error('AI provider returned no output'), { status: 502 });
+  if (typeof body.id !== 'string' || !/^resp_[A-Za-z0-9_-]+$/.test(body.id))
+    throw Object.assign(Error('AI provider returned no valid response ID'), { status: 502 });
   return { text, provider:'OpenAI', model: body.model || config.OPENAI_MODEL || 'gpt-5.1', id: body.id, verified: true };
 }
