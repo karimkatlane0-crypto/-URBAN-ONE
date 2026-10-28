@@ -16,3 +16,41 @@ test('cart marketing quote is blocked without distinct opt in',async()=>{await s
 test('marketing request records snapshot but no payment',async()=>{const q=await send('/api/commerce/requests','POST',{goalDescription:'Market goal',marketingBudgetConsent:true},cookieA);assert.equal(q.status,201);assert.equal(q.value.request.paymentExecuted,false);const list=await send('/api/commerce/requests','GET',undefined,cookieB);assert.equal(list.value.requests.length,0);});
 test('international store served with secure static policies',async()=>{const h=await send('/shop.html');assert.equal(h.status,200);assert.match(h.value,/SEVA.*Enterprise Store/i);assert.match(h.headers.get('content-security-policy'),/script-src 'self'/);const js=await send('/shop.js');assert.equal(js.status,200);assert.match(js.value,/const labels=/);});
 test('private data deletion available via secure route',async()=>{const d=await send('/api/commerce/profile','DELETE',undefined,cookieA);assert.equal(d.status,200);const r=await send('/api/commerce/profile','GET',undefined,cookieA);assert.equal(r.value.profile.fullName,'');});
+
+test('commerce AI advisor requires explicit opt-in, bounded user intent and entitlement',async()=>{
+ const prev=process.env.OPENAI_API_KEY;
+ process.env.OPENAI_API_KEY='synthetic-provider-key-no-network';
+ try{
+  const anonymous=await send('/api/commerce/assist','POST',{intent:'Plan a stay',consent:true});
+  assert.equal(anonymous.status,401);
+  const missing=await send('/api/commerce/assist','POST',{intent:'Plan a stay'},cookieA);
+  assert.equal(missing.status,400);
+  assert.match(missing.value.error,/consent/i);
+  const blank=await send('/api/commerce/assist','POST',{intent:' ',consent:true},cookieA);
+  assert.equal(blank.status,400);
+  const overlong=await send('/api/commerce/assist','POST',{intent:'x'.repeat(901),consent:true},cookieA);
+  assert.equal(overlong.status,400);
+  const unpaid=await send('/api/commerce/assist','POST',{intent:'Plan a stay',consent:true},cookieA);
+  assert.equal(unpaid.status,402);
+  const csrf=await send('/api/commerce/assist','POST',{intent:'Plan a stay',consent:true},cookieA,{Origin:'https://outside.example'});
+  assert.equal(csrf.status,403);
+ }finally{
+  if(prev===undefined)delete process.env.OPENAI_API_KEY;
+  else process.env.OPENAI_API_KEY=prev;
+ }
+});
+
+test('six-language commerce UI uses separate AI consent and safe text output',async()=>{
+ const html=await send('/shop.html');
+ assert.equal(html.status,200);
+ assert.match(html.value,/id="aiAssistConsent"/);
+ assert.match(html.value,/id="aiAssistResult"/);
+ assert.match(html.value,/aria-live="polite"/);
+ const js=await send('/shop.js');
+ assert.equal(js.status,200);
+ assert.match(js.value,/\/api\/commerce\/assist/);
+ assert.match(js.value,/consent:true/);
+ assert.match(js.value,/result\.textContent=response\.text/);
+ for(const lang of ['it','en','de','fr','es','pt'])
+   assert.match(js.value,new RegExp('(?:^|\\s)'+lang+':\\{aiAssist:','m'));
+});
