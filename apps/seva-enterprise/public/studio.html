@@ -76,9 +76,14 @@
           <section class="panel ai-panel" id="assistant">
             <div class="panel-title"><div><div class="eyebrow muted">02 / ASSISTED EXECUTION</div><h2>SEVA AI Studio</h2><p>Analisi e pianificazione con evidenze.</p></div><span class="round-icon accent">✦</span></div>
             <div class="models" role="group" aria-label="Provider AI">
-              <span class="model active">✦ OpenAI <span id="model-state">da verificare</span></span>
-              <span class="model disabled" title="Richiede integrazione ufficiale">Gemini · non attivo</span>
-              <span class="model disabled" title="Richiede integrazione ufficiale">Claude · non attivo</span>
+              <label class="model active" for="ai-provider">Provider
+                <select id="ai-provider" aria-label="Scegli un provider AI">
+                  <option value="openai">OpenAI</option>
+                  <option value="gemini">Gemini · Google DeepMind</option>
+                </select>
+              </label>
+              <span class="model" id="model-state">da verificare</span>
+              <span class="model disabled" title="Richiede integrazione separata">Claude · non attivo</span>
             </div>
             <div class="chat" id="chat-log" role="log" aria-live="polite" aria-label="Conversazione">
               <div class="assistant-line"><span class="chat-avatar">✦</span><div><b>SEVA</b><p>Descrivi il tuo obiettivo. Posso preparare uno schema locale immediato; la risposta AI reale richiede accesso, provider configurato e piano abilitato.</p></div></div>
@@ -86,7 +91,7 @@
             <form id="ai-form">
               <label class="sr-only" for="ai-prompt">Messaggio per SEVA AI</label>
               <textarea id="ai-prompt" rows="3" maxlength="2000" placeholder="Qual è il risultato che vuoi raggiungere?" required></textarea>
-              <div class="chat-bottom"><label class="consent"><input id="ai-consent" type="checkbox"> Acconsento all'invio del testo al provider AI configurato</label><button id="send-ai" type="submit" aria-label="Invia alla API SEVA">Invia ↑</button></div>
+              <div class="chat-bottom"><label class="consent"><input id="ai-consent" type="checkbox"> Acconsento all'invio del solo testo digitato al provider AI selezionato per questa richiesta</label><button id="send-ai" type="submit" aria-label="Invia alla API SEVA">Invia ↑</button></div>
             </form>
             <button class="secondary-action" id="local-plan" type="button">Genera schema locale (senza AI e senza invio)</button>
           </section>
