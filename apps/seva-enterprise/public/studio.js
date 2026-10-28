@@ -4,6 +4,7 @@
   const storageKey = 'seva-studio-local-drafts-v1';
   const maxDrafts = 40;
   let serverReady = false, session = null, salesEnabled = false;
+  let generativeProviders = {openai:false,gemini:false};
 
   function drafts() {
     try {
@@ -71,14 +72,27 @@
     if (error.status===503) return 'Servizio o provider non configurato. Nessuna risposta AI generata.';
     return 'Richiesta non completata: '+(error.message||'errore temporaneo');
   }
+  function showProviderStatus() {
+    const selected=$('ai-provider').value;
+    const configured=generativeProviders[selected]===true;
+    $('provider-status').textContent=configured
+      ? selected+' · configurato, non collaudato'
+      : selected+' · non configurato';
+    $('model-state').textContent=configured?'test live richiesto':'disattivo';
+  }
+  $('ai-provider').addEventListener('change',()=>{
+    // Consent is provider-specific and expires when changing provider.
+    $('ai-consent').checked=false;
+    showProviderStatus();
+  });
   async function refreshStatus() {
     try {
       const status=await request('/api/public/status');
       serverReady=true;
       $('service-dot').classList.add('online');
       $('service-state').textContent='Server SEVA raggiungibile';
-      $('provider-status').textContent=status.aiConfigured?'Chiave presente · da collaudare':'Non configurato';
-      $('model-state').textContent=status.aiConfigured?'non collaudato':'disattivo';
+      generativeProviders=status.generativeProviders||{openai:status.aiConfigured===true,gemini:false};
+      showProviderStatus();
       salesEnabled=status.salesEnabled===true;
     } catch {
       $('service-state').textContent='Anteprima / backend non raggiungibile';
@@ -128,10 +142,10 @@
     addChat('user',prompt);
     const send=$('send-ai');send.disabled=true;send.textContent='…';
     try {
-      const response=await request('/api/ai/generate',jsonOptions({prompt,consent:true}));
+      const response=await request('/api/ai/generate',jsonOptions({prompt,consent:true,provider:$('ai-provider').value}));
       addChat('assistant',response.text||'Il provider non ha restituito testo.');
     } catch(error) { addChat('assistant',appError(error)); }
-    finally {send.disabled=false;send.textContent='Invia ↑';}
+    finally {send.disabled=false;send.textContent='Invia ↑';$('ai-consent').checked=false;}
   });
   $('issue-key').addEventListener('click',async()=>{
     const output=$('api-key-out');

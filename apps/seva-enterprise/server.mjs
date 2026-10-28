@@ -1,6 +1,7 @@
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {createDeveloperApi} from './developer-api.mjs';
 import {developerAI} from './developer-ai.mjs';
+import {generateWithProvider,providerStatus,selectProvider} from './generative-ai.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
@@ -36,7 +37,7 @@ async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const c
 function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
-function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,bankTransfer:bankConfig().status,bankOrderPrices:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents})),rewards:'ledger only; payout disabled until separate agreement'};}
+function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),generativeProviders:providerStatus(process.env),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,bankTransfer:bankConfig().status,bankOrderPrices:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents})),rewards:'ledger only; payout disabled until separate agreement'};}
 async function stripe(method,path,data){const key=process.env.STRIPE_SECRET_KEY;if(!key)throw Object.assign(Error('Stripe server credentials unavailable'),{status:503});const resp=await fetch('https://api.stripe.com/v1/'+path,{method,headers:{Authorization:`Bearer ${key}`,...(data?{'Content-Type':'application/x-www-form-urlencoded'}:{})},body:data?new URLSearchParams(data):undefined,signal:AbortSignal.timeout(15000)});
  const body=await resp.json();if(!resp.ok)throw Object.assign(Error(body.error?.message||'Stripe unavailable'),{status:resp.status===401?503:502});return body;}
 async function createCheckout(user){if(process.env.SEVA_PAYMENT_METHOD==='sepa')throw Object.assign(Error('Stripe disabled in SEPA-only mode'),{status:503});if(process.env.SEVA_SALES_ENABLED!=='true')throw Object.assign(Error('Sales closed pending fulfillment verification'),{status:503});
@@ -73,9 +74,11 @@ async function createAnnualCheckout(user,planName){
  store.recordCheckout(user.id,checkout.id,planName+'_annual',price.id);
  return {url:checkout.url,plan:planName};
 }
-async function aiPlan(user,prompt,consent){
-  if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});
-  if(consent!==true)throw Object.assign(Error('Explicit consent required before sending a prompt to OpenAI'),{status:400});
+async function aiPlan(user,prompt,consent,provider='openai'){
+  const selected=selectProvider(provider);
+  if(!providerStatus(process.env)[selected])
+    throw Object.assign(Error('Selected AI provider not configured'),{status:503});
+  if(consent!==true)throw Object.assign(Error('Explicit consent required before sending a prompt to the selected AI provider'),{status:400});
   if(typeof prompt!=='string'||!prompt.trim()||prompt.length>2000)
     throw Object.assign(Error('Provide an AI prompt of 1 to 2000 characters'),{status:400});
   if(!store.hasAccess(user.id)&&!(process.env.SEVA_ADMIN_EMAIL&&user.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))
@@ -84,7 +87,7 @@ async function aiPlan(user,prompt,consent){
   // a user's private goal history, email, student record or account data.
   // The shared provider adapter rejects non-OpenAI destinations and
   // sanitizes 429/credit-exhausted errors without leaking provider details.
-  const result=await developerAI(user,prompt.trim(),process.env,fetch);
+  const result=await generateWithProvider(user,prompt.trim(),selected,process.env,fetch);
   if(!result?.id)throw Object.assign(Error('AI response has no provider trace ID'),{status:502});
   store.audit(user.id,'ai_response',result.id);
   return result;
@@ -227,7 +230,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/goals'&&method==='GET'){const u=auth(req);return json(res,200,{goals:store.listGoals(u.id)});}
  if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));const id=store.saveGoal(u.id,body);notifications.publishGoal(u.id,id,body.status);return json(res,201,{id});}
  if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
- if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt,b.consent));}
+ if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt,b.consent,b.provider));}
  if(path==='/api/bank/status'&&method==='GET'){
   const cfg=bankConfig();const durable=store.persistent&&isAbsolute(process.env.SEVA_DB_PATH||'');
   const enabled=Boolean(cfg.enabled&&durable);
