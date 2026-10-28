@@ -21,6 +21,16 @@ Object.assign(labels.pt,{
  transparent:'Propostas verificáveis',privacy:'Privacidade por escolha',mobile:'Web · Celular',baseline:'Plano Enterprise',noAuto:'Nenhuma compra automática. Impostos e total antes do pagamento.',catalogCaption:'Adicione serviços e peça orçamento. Valores variáveis não são cobrados.',email:'E-mail',password:'Senha',studentOpt:'Sou estudante universitário maior de idade e peço verificação',studentNote:'O status de estudante não concede desconto automaticamente.',profileNote:'Apenas dados necessários; endereço opcional, sem cartão.',fullName:'Nome completo',country:'País (ISO, ex. PT)',city:'Cidade',postal:'Código postal',address:'Endereço de faturação (opcional)',marketingConsent:'Consinto separadamente receber marketing, podendo revogar',saveProfile:'Salvar perfil',eraseProfile:'Apagar dados opcionais',institution:'Universidade / instituição',academicEmail:'E-mail académico (opcional)',adult:'Confirmo ter pelo menos 18 anos e solicito verificação',submitVerification:'Solicitar verificação',studentVerifyNote:'Desconto apenas após avaliação independente.',knownPrice:'Preço mensal conhecido (parcial)',cartDisclaimer:'O carrinho não é um pagamento. Preços, impostos e descontos a validar.',goalText:'Objetivo / pedido de orçamento',budgetConsent:'Consinto apenas pedir orçamento de marketing; sem gastos',monthlyCheckout:'Checkout €50/mês (se habilitado)',recent:'Pedidos recentes',footLegal:'Software independente sem afiliação a Spotify/ChatGPT/OpenAI.',added:'Adicionado',empty:'Carrinho vazio',verified:'Verificado',not_applied:'Não solicitado',saved:'Salvo',loginRequired:'Entre primeiro',requested:'Pedido registrado, sem cobrança.',cannotCheckout:'Somente plano mensal isolado e autorizado pode pagar.',desc:{
  'goal-free':['Meta gratuita','Organize uma meta sem custo.'],'enterprise-monthly':['Enterprise mensal','Plano SEVA a €50 por mês.'],'student-monthly':['Plano estudante','Preço após verificação; ainda não divulgado.'],'goal-once':['Serviço avulso','Preço acordado antes de comprar.'],'goal-success':['Pagar por objetivo','Resultados verificados e valor máximo contratado.'],'marketing-consented':['Marketing autorizado','Orçamento mediante consentimento expresso.'],'time-service':['Serviço por tempo','Duração, quórum e prazo acordados.']}});
 
+const aiAssistLabels={
+ it:{aiAssist:'Suggerimento AI (richiede accesso attivo)',aiAssistConsent:'Autorizzo l\'invio a OpenAI del solo testo digitato qui, per ottenere un suggerimento. Nessun acquisto.',aiConsentRequired:'Devi autorizzare separatamente il solo testo prima di inviarlo a OpenAI.',aiIntentLength:'Inserisci da 1 a 900 caratteri per la richiesta AI.'},
+ en:{aiAssist:'AI suggestion (active access required)',aiAssistConsent:'I explicitly agree to send only the text typed here to OpenAI for a suggestion. No purchase.',aiConsentRequired:'Consent to sending this text to OpenAI is required.',aiIntentLength:'Enter 1 to 900 characters for AI assistance.'},
+ de:{aiAssist:'KI-Vorschlag (aktiver Zugang nötig)',aiAssistConsent:'Ich stimme zu, nur den hier eingegebenen Text zur Beratung an OpenAI zu senden. Kein Kauf.',aiConsentRequired:'Die ausdrückliche Zustimmung für diesen Text ist erforderlich.',aiIntentLength:'Bitte 1 bis 900 Zeichen für die KI-Anfrage eingeben.'},
+ fr:{aiAssist:'Suggestion IA (accès actif requis)',aiAssistConsent:'Je consens à transmettre uniquement le texte saisi ici à OpenAI pour un conseil. Aucun achat.',aiConsentRequired:'Votre consentement distinct est requis avant tout envoi à OpenAI.',aiIntentLength:'Saisissez entre 1 et 900 caractères pour la demande IA.'},
+ es:{aiAssist:'Sugerencia IA (requiere acceso activo)',aiAssistConsent:'Acepto enviar solo el texto escrito aquí a OpenAI para obtener una sugerencia. Sin compra.',aiConsentRequired:'Se requiere consentimiento explícito antes de enviar el texto a OpenAI.',aiIntentLength:'Escribe entre 1 y 900 caracteres para la consulta IA.'},
+ pt:{aiAssist:'Sugestão de IA (requer acesso ativo)',aiAssistConsent:'Concordo em enviar somente o texto digitado aqui à OpenAI para receber uma sugestão. Nenhuma compra.',aiConsentRequired:'É necessário consentimento separado antes de enviar o texto à OpenAI.',aiIntentLength:'Digite entre 1 e 900 caracteres para a solicitação de IA.'}
+};
+for(const [locale,copy] of Object.entries(aiAssistLabels))Object.assign(labels[locale],copy);
+
 const state={locale:'it',user:null,products:[],cart:{items:[],knownMonthlyCents:0},student:null};
 const i18n=k=>labels[state.locale]?.[k]??labels.en[k]??labels.it[k]??k;
 const descr=sku=>labels[state.locale]?.desc?.[sku]??labels.en.desc[sku]??labels.it.desc[sku]??[sku,''];
@@ -41,5 +51,20 @@ $('profileForm').addEventListener('submit',async e=>{e.preventDefault();try{cons
 $('eraseProfile').addEventListener('click',async()=>{if(!confirm('Remove your optional commerce profile?'))return;try{await api('/api/commerce/profile','DELETE');await loadAccount();toast(i18n('saved'))}catch(e){toast(e.message)}});
 $('studentForm').addEventListener('submit',async e=>{e.preventDefault();try{const r=await api('/api/commerce/student/apply','POST',{institution:$('institution').value,academicEmail:$('academicEmail').value,confirmAdultStudent:$('adultStudent').checked});state.student=r.student;$('studentStatus').textContent=i18n(state.student.status);toast(i18n('pending'))}catch(e){toast(e.message)}});
 $('requestQuote').addEventListener('click',async()=>{if(!state.user){toast(i18n('loginRequired'));return}try{const r=await api('/api/commerce/requests','POST',{goalDescription:$('goalDescription').value,marketingBudgetConsent:$('marketingBudgetConsent').checked});$('customerNotice').textContent=i18n('requested')+' · '+r.request.id.slice(0,8);await loadAccount();}catch(e){toast(e.message)}});
+$('aiAssist').addEventListener('click',async()=>{
+ if(!state.user){toast(i18n('loginRequired'));return;}
+ const intent=$('goalDescription').value.trim();
+ if(!intent||intent.length>900){toast(i18n('aiIntentLength'));return;}
+ if(!$('aiAssistConsent').checked){toast(i18n('aiConsentRequired'));return;}
+ const result=$('aiAssistResult');
+ result.hidden=true;result.textContent='';
+ try{
+  // The checkbox applies only to this manually initiated OpenAI request.
+  // Do not send the cart, saved goal history, student fields or profile.
+  const response=await api('/api/commerce/assist','POST',{intent,consent:true});
+  result.textContent=response.text||'';
+  result.hidden=false;
+ }catch(e){toast(e.message);}
+});
 $('monthlyCheckout').addEventListener('click',async()=>{try{if(state.cart.items.length!==1||state.cart.items[0].sku!=='enterprise-monthly')throw Error(i18n('cannotCheckout'));const r=await api('/api/commerce/checkout','POST');if(!/^https:\/\/checkout\.stripe\.com\//.test(r.url))throw Error('Checkout unavailable');location.assign(r.url)}catch(e){toast(e.message)}});
 (async()=>{const lang=navigator.language?.slice(0,2);state.locale=labels[lang]?lang:'it';$('language').value=state.locale;try{const c=await api('/api/commerce/catalog');state.products=c.products;}catch(e){toast(e.message)}translate();await loadAccount();if(location.hash==='#student')$('identity').scrollIntoView({behavior:'smooth'});})();
