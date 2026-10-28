@@ -185,7 +185,19 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    if(cart.items.length!==1||cart.items[0]?.sku!=='enterprise-monthly')throw Object.assign(Error('Unpriced or student cart requires a quote and verification'),{status:409});
    return json(res,200,await createCheckout(u));
  }
- if(path==='/api/commerce/assist'&&method==='POST'){rate(req,'commerce-assist',5);const u=auth(req);const b=JSON.parse(await rawBody(req,2500));const intent=String(b.intent||'').slice(0,900);return json(res,200,await aiPlan(u,'Present no purchase or verified inventory claims. Recommend a SEVA catalog offering for this user intent: '+intent+'; catalog SKUs: goal-free, enterprise-monthly, student-monthly (needs verification), goal-once, goal-success, marketing-consented, time-service. Any price except €50/month or free must be quoted separately.'));}
+ if(path==='/api/commerce/assist'&&method==='POST'){
+  rate(req,'commerce-assist',5);
+  const u=auth(req);
+  const b=JSON.parse(await rawBody(req,2500));
+  const intent=typeof b.intent==='string'?b.intent.trim():'';
+  if(!intent||intent.length>900)return json(res,400,{error:'Provide a commerce intent of 1 to 900 characters'});
+  if(b.consent!==true)return json(res,400,{error:'Explicit AI prompt consent required'});
+  // Only send the approved intent text; never the cart, profile or student data.
+  return json(res,200,await aiPlan(u,
+    'Present no purchase or verified inventory claims. Recommend a SEVA catalog offering for this user intent: '+intent+
+    '; catalog SKUs: goal-free, enterprise-monthly, student-monthly (needs verification), goal-once, goal-success, marketing-consented, time-service. Any price except EUR 50/month or free must be quoted separately.',
+    true));
+ }
  if(path==='/api/commercial/marketing-benefit-preview'&&method==='POST'){
    rate(req,'marketing-benefit-preview',20);
    const body=JSON.parse(await rawBody(req,12000));
