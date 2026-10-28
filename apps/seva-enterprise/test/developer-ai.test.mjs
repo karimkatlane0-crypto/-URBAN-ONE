@@ -32,3 +32,18 @@ test('provider credit exhaustion fails closed without exposing private response'
  async()=>({ok:false,status:429,json:async()=>({error:{code:'credit_balance_exhausted',message:'Sensitive provider detail'}})})),
  e=>e.status===503&&!String(e.message).includes('Sensitive provider detail'));
 });
+
+test('in-app OpenAI adapter rejects a response with no real provider trace ID',async()=>{
+ await assert.rejects(
+  ()=>developerAI({},'Plan this',{
+   OPENAI_API_KEY:'synthetic-test-secret',OPENAI_MODEL:'test-model'
+  },async()=>({ok:true,json:async()=>({model:'test-model',output_text:'Synthetic answer without ID'})})),
+  e=>e.status===502&&/response ID/i.test(e.message)
+ );
+ await assert.rejects(
+  ()=>developerAI({},'Plan this',{
+   OPENAI_API_KEY:'synthetic-test-secret',OPENAI_MODEL:'test-model'
+  },async()=>({ok:true,json:async()=>({id:'locally-invented-id',model:'test-model',output_text:'Synthetic answer'})})),
+  e=>e.status===502
+ );
+});
