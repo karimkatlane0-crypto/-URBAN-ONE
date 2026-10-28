@@ -40,7 +40,7 @@ test('Studio sends the same explicit consent checked in UI',async()=>{
  const response=await fetch(base+'/studio.js');
  assert.equal(response.status,200);
  const js=await response.text();
- assert.match(js,/jsonOptions\(\{prompt,consent:true\}\)/);
+ assert.match(js,/jsonOptions\(\{prompt,consent:true,provider:/);
  assert.match(js,/ai-consent/);
 });
 test('39 forged Stripe callback rejected without secret',async()=>{const r=await call('/api/stripe/webhook',{method:'POST',body:{id:'fake'}});assert.equal(r.status,503);});
@@ -265,4 +265,24 @@ test('ORIGINAL SEVA: KPI, Lastre and AI opt-in sections bundled into mobile shel
  const client=await js.text();
  assert.match(client,/localPrivacyJpeg/);
  assert.match(client,/initializeOriginalIntelligence/);
+});
+
+test('Studio supports explicit provider switching without reusing consent',async()=>{
+ const html=await fetch(base+'/studio.html');assert.equal(html.status,200);
+ const page=await html.text();
+ assert.match(page,/id="ai-provider"/);
+ assert.match(page,/value="gemini"/);
+ const js=await fetch(base+'/studio.js');assert.equal(js.status,200);
+ const content=await js.text();
+ assert.match(content,/generativeProviders/);
+ assert.match(content,/ai-consent'\)\.checked=false/);
+});
+test('Generative provider selection denies unsupported engines and anonymous inference',async()=>{
+ const missing=await call('/api/ai/generate',{method:'POST',body:{prompt:'Plan',consent:true,provider:'gemini'}});
+ assert.equal(missing.status,503);
+ const invalid=await call('/api/ai/generate',{method:'POST',body:{prompt:'Plan',consent:true,provider:'unknown-provider'}});
+ assert.equal(invalid.status,400);
+ const publicStatus=await call('/api/public/status');
+ assert.equal(typeof publicStatus.data.generativeProviders.openai,'boolean');
+ assert.equal(publicStatus.data.generativeProviders.gemini,false);
 });
