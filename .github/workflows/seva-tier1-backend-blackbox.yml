@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - "apps/seva-enterprise/test/blackbox-restart.test.mjs"
+      - "apps/seva-enterprise/**"
       - ".github/workflows/seva-tier1-backend-blackbox.yml"
       - "render.yaml"
   push:
     branches: ["main-@URBAN-ONE"]
     paths:
-      - "apps/seva-enterprise/test/blackbox-restart.test.mjs"
+      - "apps/seva-enterprise/**"
       - ".github/workflows/seva-tier1-backend-blackbox.yml"
       - "render.yaml"
 
@@ -32,12 +32,16 @@ jobs:
         working-directory: apps/seva-enterprise
         env:
           SEVA_BLACKBOX_REPORT_PATH: ../../reports/seva-tier1-backend-blackbox.json
-        run: node --experimental-sqlite --test --test-reporter=spec test/blackbox-restart.test.mjs
+          SEVA_HTTPS_RECOVERY_REPORT_PATH: ../../reports/seva-https-recovery.json
+        run: node --experimental-sqlite --test --test-reporter=spec test/blackbox-restart.test.mjs test/https-recovery.test.mjs
       - name: Publish inspectable synthetic test receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: seva-tier1-backend-blackbox
-          path: reports/seva-tier1-backend-blackbox.json
+          path: |
+            reports/seva-tier1-backend-blackbox.json
+            reports/seva-https-recovery.json
           retention-days: 14
           if-no-files-found: warn
+

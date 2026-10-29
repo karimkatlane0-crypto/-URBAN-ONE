@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {createServer} from 'node:net';
+import {createServer as createHttpServer} from 'node:http';
+import {randomUUID} from 'node:crypto';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -48,12 +50,50 @@ test('G.1.1 BLACK BOX: 2 signed-in tenants survive real Node process restart',as
   const {privateReceipt,publicEvidence}=await prepare(url,{allowLoopback:true});
   assert.equal(publicEvidence.result,'PASS');
   assert.equal(publicEvidence.accounts,2);
+  const initialHealth=await (await fetch(url+'/health')).json();
+  assert.equal(privateReceipt.bootId,initialHealth.bootId);
+  assert.equal((await (await fetch(url+'/health')).json()).bootId,initialHealth.bootId);
+  await assert.rejects(
+   verifyAfterRestart(url,privateReceipt,{allowLoopback:true}),
+   /RESTART_NOT_OBSERVED/,
+   'Repeating verification on the same Node process must not certify a restart'
+  );
   await stop(server);server=null;
   server=await launch(port,db);
+  assert.notEqual((await (await fetch(url+'/health')).json()).bootId,initialHealth.bootId);
   const result=await verifyAfterRestart(url,privateReceipt,{allowLoopback:true});
   assert.equal(result.result,'PASS');
   assert.match(result.observed,/isolated/);
+  assert.equal(result.processChangeObserved,true);
+  assert.equal(result.operatorRestartEvidenceRequired,true);
  }finally{if(server)await stop(server);await rm(dir,{recursive:true,force:true});}
+});
+test('G.1.1 rejects legacy or missing boot-ID receipts before sending credentials',async()=>{
+ for(const receipt of [
+  {schema:'seva-blackbox-g11-v1',origin:'https://example.invalid',accounts:[{},{}]},
+  {schema:'seva-blackbox-g11-v2',origin:'https://example.invalid',accounts:[{},{}]},
+  {schema:'seva-blackbox-g11-v2',origin:'https://example.invalid',bootId:'invented',accounts:[{},{}]}
+ ])await assert.rejects(verifyAfterRestart('https://example.invalid',receipt),/Invalid G.1.1 private evidence/);
+});
+test('G.1.1 requires a SEVA runtime identity and makes no account writes on incompatible health',async t=>{
+ let health={ok:true,service:'seva'},writes=0;
+ const server=createHttpServer((req,res)=>{
+  if(req.method!=='GET')writes++;
+  res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify(health));
+ });
+ server.listen(0,'127.0.0.1');await once(server,'listening');
+ t.after(()=>new Promise(done=>server.close(done)));
+ const origin='http://127.0.0.1:'+server.address().port;
+ for(const invalid of [
+  {ok:true,service:'seva'},
+  {ok:true,service:'seva',bootId:'invalid'},
+  {ok:true,service:'another-product',bootId:randomUUID()},
+  {ok:false,service:'seva',bootId:randomUUID()}
+ ]){
+  health=invalid;
+  await assert.rejects(prepare(origin,{allowLoopback:true}),/Runtime identity unavailable/);
+ }
+ assert.equal(writes,0);
 });
 test('G.1.1 refuses accidental external plain HTTP or URL with credentials',()=>{
  assert.throws(()=>verifyTarget('http://example.com'),/HTTPS/);
@@ -61,3 +101,4 @@ test('G.1.1 refuses accidental external plain HTTP or URL with credentials',()=>
  assert.throws(()=>verifyTarget('https://example.com/path'),/bare HTTPS/);
  assert.equal(verifyTarget('http://127.0.0.1:3000/',{allowLoopback:true}),'http://127.0.0.1:3000');
 });
+

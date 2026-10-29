@@ -4,6 +4,7 @@ import {developerAI} from './developer-ai.mjs';
 import {generateWithProvider,providerStatus,selectProvider} from './generative-ai.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
+import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {resolve, extname, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -23,6 +24,8 @@ import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 import {bankConfig,BANK_PLAN_AMOUNTS} from './bank-transfer.mjs';
 
 validateRuntime();
+// Process identity only: no host name, credentials or tenant data are exposed.
+const bootId=randomUUID();
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
 const store=createStore(process.env.SEVA_DB_PATH||'./data/seva.sqlite');
 const commerce=createCommerce(store);
@@ -94,7 +97,7 @@ async function aiPlan(user,prompt,consent,provider='openai'){
 }
 const developerApi=createDeveloperApi(store, developerAI);
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
- if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
+ if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',bootId,timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
  if(path==='/api/stripe/webhook'&&method==='POST'){
     // In SEPA-only mode, no Stripe event may mutate customer access or orders.
@@ -259,3 +262,4 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
 const server=createServer((req,res)=>Promise.resolve(route(req,res)).catch(e=>{console.error(new Date().toISOString(),String(e.message));const code=e.status||(e instanceof RangeError||/Invalid|not found|unavailable|cycle|Maximum|Mismatch|already|constraint|UNIQUE/i.test(e.message)?400:500);json(res,code,{error:code===500?'Internal server error':e.message});}));
 if(process.env.SEVA_NO_LISTEN!=='1')server.listen(port,()=>console.log(`SEVA listening on http://localhost:${port}`));
 export {server,store};
+

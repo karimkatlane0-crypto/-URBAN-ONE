@@ -8,6 +8,24 @@ Target outcome: exactly **two synthetic accounts**, independent goal/DBRELAY dat
 - Any private evidence JSON contains synthetic passwords; it is written `0600` with no overwrite. Do **not** commit, email, attach, copy to GitHub issues or use customer credentials.
 - No Stripe checkout, OpenAI provider, commission, bank, live payment or customer marketing is called.
 
+## Runtime evidence (29 October 2026)
+
+`GET /health` includes a random `bootId` generated once per Node process. The v2
+private receipt records that identity during preparation. Verification refuses the
+same identity with `RESTART_NOT_OBSERVED` before logging in. Both phases also require
+a stable identity at their start and end; missing/invalid identities and old v1
+receipts are rejected. Deploy the matching backend and collect a new receipt.
+
+The cross-account update check accepts only an explicit ownership denial (400/404),
+not an unrelated authentication, internal-server or transient failure.
+
+A changed identity proves that a different process served the verification. Use an
+isolated **single-instance staging service**: load-balanced replicas or routing to a
+different deployment can also change the identity. Keep the hosting provider's
+restart/deployment receipt as independent evidence of the operator restart action.
+The report therefore includes `processChangeObserved:true` and
+`operatorRestartEvidenceRequired:true`; it cannot certify a provider restart alone.
+
 ## Local CI gate
 `test/blackbox-g11.test.mjs` starts SEVA in a distinct child process backed by a temporary SQLite file, performs `prepare`, terminates Node, starts a **new process** on the same database path, performs `verify`, checks owner isolation and unauthorized goal edits, then destroys all synthetic files.
 
@@ -34,3 +52,4 @@ Only after an authorized Node host and persistent volume are deployed (G.1):
 This repository contains a draft Render blueprint requiring manual authorization and persistent disk. No Render deployment, HTTPS health response, external restart, Stripe TEST webhook or customer-facing Android online login is evidenced merely by merging this code. Do not mark release GO before G.1–G.6.
 
 Reference: issue #82, `render.yaml`, `BLACKBOX-COMMERCIAL-ACCEPTANCE.md`.
+
