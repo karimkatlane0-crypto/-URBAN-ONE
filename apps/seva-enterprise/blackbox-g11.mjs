@@ -29,6 +29,13 @@ function headers(result){
  if(!result.cookie?.startsWith('seva_session='))throw Error('Authenticated cookie missing');
  return result.cookie;
 }
+const validBootId=value=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value);
+async function runtimeIdentity(origin){
+ const health=await request(origin,'/health');ok(health.status,200,'health');
+ if(health.data.ok!==true||health.data.service!=='seva'||!validBootId(health.data.bootId))
+  throw Error('Runtime identity unavailable; deploy the boot-ID health endpoint before collecting restart evidence');
+ return health.data.bootId;
+}
 async function signIn(origin,creds){
  const r=await request(origin,'/api/auth/login',{method:'POST',body:creds});
  ok(r.status,200,'login');return headers(r);
@@ -42,8 +49,7 @@ async function snapshot(origin,cookie){
 }
 export async function prepare(origin,{allowLoopback=false}={}){
  const base=verifyTarget(origin,{allowLoopback});
- const health=await request(base,'/health');ok(health.status,200,'health');
- if(health.data.ok!==true)throw Error('Database health not ready');
+ const bootId=await runtimeIdentity(base);
  const status=await request(base,'/api/public/status');ok(status.status,200,'public status');
  if(status.data.salesEnabled===true)throw Error('BLACK BOX must not create users with sales active');
  const accounts=[];
@@ -63,13 +69,15 @@ export async function prepare(origin,{allowLoopback=false}={}){
  const a=await snapshot(base,await signIn(base,accounts[0].credentials));
  const b=await snapshot(base,await signIn(base,accounts[1].credentials));
  if(a.goals.some(g=>g.id===accounts[1].goalId)||b.goals.some(g=>g.id===accounts[0].goalId))throw Error('CROSS_TENANT_LEAK');
- return {privateReceipt:{schema:'seva-blackbox-g11-v1',origin:base,accounts,version:status.data.version,stage:'after-prepare'},
+ if(await runtimeIdentity(base)!==bootId)throw Error('Runtime changed during preparation; repeat on one stable staging instance');
+ return {privateReceipt:{schema:'seva-blackbox-g11-v2',origin:base,bootId,accounts,version:status.data.version,stage:'after-prepare'},
   publicEvidence:{gate:'G.1.1',phase:'prepare',environment:'staging',result:'PASS',observed:'Two synthetic accounts and mutually isolated goals stored via HTTP, before restart',measuredAt:new Date().toISOString(),version:status.data.version,accounts:2}};
 }
 export async function verifyAfterRestart(origin,privateReceipt,{allowLoopback=false}={}){
  const base=verifyTarget(origin,{allowLoopback});
- if(privateReceipt?.schema!=='seva-blackbox-g11-v1'||privateReceipt.origin!==base||privateReceipt.accounts?.length!==2)throw Error('Invalid G.1.1 private evidence');
- const health=await request(base,'/health');ok(health.status,200,'health after restart');
+ if(privateReceipt?.schema!=='seva-blackbox-g11-v2'||privateReceipt.origin!==base||privateReceipt.accounts?.length!==2||!validBootId(privateReceipt.bootId))throw Error('Invalid G.1.1 private evidence; prepare a new v2 receipt with a runtime identity');
+ const bootId=await runtimeIdentity(base);
+ if(bootId===privateReceipt.bootId)throw Error('RESTART_NOT_OBSERVED: the prepared Node process is still serving requests');
  const [a,b]=privateReceipt.accounts;
  for(const [own,other] of [[a,b],[b,a]]){
   const cookie=await signIn(base,own.credentials);
@@ -78,11 +86,13 @@ export async function verifyAfterRestart(origin,privateReceipt,{allowLoopback=fa
   if(!ownGoal||ownGoal.title!==own.title||snap.cursor<own.cursor)throw Error('PERSISTENCE_FAILED');
   if(snap.goals.some(g=>g.id===other.goalId||g.title===other.title))throw Error('CROSS_TENANT_LEAK');
   const unauthorized=await request(base,'/api/goals/'+other.goalId,{method:'PUT',cookie,body:{title:'should-not-overwrite',status:'todo'}});
-  if(unauthorized.status===200)throw Error('CROSS_TENANT_WRITE');
+  if(![400,404].includes(unauthorized.status))throw Error('CROSS_TENANT_WRITE_NOT_PROVEN: expected an explicit ownership denial');
  }
+ if(await runtimeIdentity(base)!==bootId)throw Error('Runtime changed during verification; repeat on one stable staging instance');
  return {gate:'G.1.1',phase:'verify-after-restart',environment:'staging',result:'PASS',
-  expected:'Two accounts retain only their own goals and DBRELAY cursor after service restart',
-  observed:'Authenticated owners A and B retrieved isolated persisted goals; unauthorized write denied',
+  expected:'A different stable Node process serves both accounts with isolated persisted goals and DBRELAY cursors',
+  observed:'Different runtime identity observed; authenticated owners A and B retrieved isolated persisted goals; unauthorized write denied',
+  processChangeObserved:true,operatorRestartEvidenceRequired:true,
   accounts:2,measuredAt:new Date().toISOString(),version:privateReceipt.version};
 }
 async function main(){
@@ -101,3 +111,4 @@ async function main(){
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))
  main().catch(e=>{console.error('G.1.1 refused/failed: '+e.message);process.exitCode=1;});
+
