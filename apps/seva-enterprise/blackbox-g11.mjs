@@ -34,6 +34,11 @@ async function signIn(origin,creds){
  ok(r.status,200,'login');return headers(r);
 }
 function uniqueTitle(tag){return 'G11-'+tag+'-'+randomBytes(9).toString('hex');}
+function instanceId(health){
+ if(health.ok!==true||typeof health.instanceId!=='string'||!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(health.instanceId))
+  throw Error('Healthy server process identity missing');
+ return health.instanceId;
+}
 async function snapshot(origin,cookie){
  const r=await request(origin,'/api/dbrelay/snapshot',{cookie});
  ok(r.status,200,'DBRELAY snapshot');
@@ -43,7 +48,7 @@ async function snapshot(origin,cookie){
 export async function prepare(origin,{allowLoopback=false}={}){
  const base=verifyTarget(origin,{allowLoopback});
  const health=await request(base,'/health');ok(health.status,200,'health');
- if(health.data.ok!==true)throw Error('Database health not ready');
+ const beforeInstanceId=instanceId(health.data);
  const status=await request(base,'/api/public/status');ok(status.status,200,'public status');
  if(status.data.salesEnabled===true)throw Error('BLACK BOX must not create users with sales active');
  const accounts=[];
@@ -63,13 +68,15 @@ export async function prepare(origin,{allowLoopback=false}={}){
  const a=await snapshot(base,await signIn(base,accounts[0].credentials));
  const b=await snapshot(base,await signIn(base,accounts[1].credentials));
  if(a.goals.some(g=>g.id===accounts[1].goalId)||b.goals.some(g=>g.id===accounts[0].goalId))throw Error('CROSS_TENANT_LEAK');
- return {privateReceipt:{schema:'seva-blackbox-g11-v1',origin:base,accounts,version:status.data.version,stage:'after-prepare'},
+ return {privateReceipt:{schema:'seva-blackbox-g11-v2',origin:base,accounts,version:status.data.version,beforeInstanceId,stage:'after-prepare'},
   publicEvidence:{gate:'G.1.1',phase:'prepare',environment:'staging',result:'PASS',observed:'Two synthetic accounts and mutually isolated goals stored via HTTP, before restart',measuredAt:new Date().toISOString(),version:status.data.version,accounts:2}};
 }
 export async function verifyAfterRestart(origin,privateReceipt,{allowLoopback=false}={}){
  const base=verifyTarget(origin,{allowLoopback});
- if(privateReceipt?.schema!=='seva-blackbox-g11-v1'||privateReceipt.origin!==base||privateReceipt.accounts?.length!==2)throw Error('Invalid G.1.1 private evidence');
+ if(privateReceipt?.schema!=='seva-blackbox-g11-v2'||privateReceipt.origin!==base||privateReceipt.accounts?.length!==2||!privateReceipt.beforeInstanceId)throw Error('Invalid G.1.1 private evidence');
  const health=await request(base,'/health');ok(health.status,200,'health after restart');
+ const afterInstanceId=instanceId(health.data);
+ if(afterInstanceId===privateReceipt.beforeInstanceId)throw Error('RESTART_NOT_OBSERVED');
  const [a,b]=privateReceipt.accounts;
  for(const [own,other] of [[a,b],[b,a]]){
   const cookie=await signIn(base,own.credentials);
@@ -78,12 +85,12 @@ export async function verifyAfterRestart(origin,privateReceipt,{allowLoopback=fa
   if(!ownGoal||ownGoal.title!==own.title||snap.cursor<own.cursor)throw Error('PERSISTENCE_FAILED');
   if(snap.goals.some(g=>g.id===other.goalId||g.title===other.title))throw Error('CROSS_TENANT_LEAK');
   const unauthorized=await request(base,'/api/goals/'+other.goalId,{method:'PUT',cookie,body:{title:'should-not-overwrite',status:'todo'}});
-  if(unauthorized.status===200)throw Error('CROSS_TENANT_WRITE');
+  if(![403,404].includes(unauthorized.status))throw Error('Cross-tenant denial not proven: HTTP '+unauthorized.status);
  }
  return {gate:'G.1.1',phase:'verify-after-restart',environment:'staging',result:'PASS',
   expected:'Two accounts retain only their own goals and DBRELAY cursor after service restart',
   observed:'Authenticated owners A and B retrieved isolated persisted goals; unauthorized write denied',
-  accounts:2,measuredAt:new Date().toISOString(),version:privateReceipt.version};
+  accounts:2,processChanged:true,measuredAt:new Date().toISOString(),version:privateReceipt.version};
 }
 async function main(){
  const [mode,origin,receiptFile]=process.argv.slice(2);

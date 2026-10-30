@@ -2,14 +2,16 @@ import {studentPanelHTML,bindStudentPanel} from './students.js';
 import {initializeNotifications} from './notifications-ui.js';
 import {initializeCommunications} from './communications-ui.js';
 import {initializeOriginalIntelligence} from './original-intelligence-ui.js';
+import {createDBRelaySync} from './dbrelay-sync.js';
 const $=id=>document.getElementById(id);let user=null,goals=[],editing=null,registerMode=false,access=false,publicStatus=null;
 function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 async function api(path,method='GET',data){const res=await fetch(path,{method,headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined,credentials:'same-origin'});const body=await res.json();if(!res.ok)throw Error(body.error||'Errore di connessione');return body;}
-function showLogin(){ $('students').textContent='';dbrelayCursor=null;user=null;$('workspace').hidden=true;$('loginScreen').hidden=false;$('logout').hidden=true;}
+const dbrelaySync=createDBRelaySync(api);
+function showLogin(){ $('students').textContent='';dbrelaySync.reset();user=null;goals=[];editing=null;access=false;resetGoal();$('workspace').hidden=true;$('loginScreen').hidden=false;$('logout').hidden=true;}
 function showWorkspace(){ $('loginScreen').hidden=true;$('workspace').hidden=false;$('logout').hidden=false;$('welcome').textContent=`Accesso verificato · ${user.email}`;}
 async function sync(){try{publicStatus=await api('/api/public/status');const readiness=document.getElementById('commandReadiness');if(readiness)readiness.textContent='API raggiungibile · checkout '+(publicStatus.checkoutVerified?'convalidato':'da validare');$('system').textContent=publicStatus.aiConfigured?'OpenAI configurato':'OpenAI da collegare';$('buy').disabled=!publicStatus.salesEnabled;$('buyBuyer').disabled=!publicStatus.annualCheckoutEnabled;$('buyEcommerce').disabled=!publicStatus.annualCheckoutEnabled;$('billingStatus').textContent=`${access?'Accesso attivo':'Accesso non attivo'} · ${publicStatus.salesEnabled?'Vendite disponibili':'Vendite sospese fino a collaudo'} · ${publicStatus.stripeConfigured?'Stripe backend configurato':'Stripe backend non configurato'}`;}catch{$('system').textContent='Backend non verificato';}}
-async function refresh(){const me=await api('/api/me');user=me.user;access=me.access;showWorkspace();const data=await api('/api/goals');goals=data.goals;renderGoals();await sync();}
+async function refresh(){const me=await api('/api/me');if(user?.id!==me.user.id)dbrelaySync.reset();user=me.user;access=me.access;showWorkspace();const data=await api('/api/goals');goals=data.goals;renderGoals();await sync();}
 $('authBtn').onclick=async()=>{try{const b={email:$('email').value,password:$('password').value};await api(registerMode?'/api/auth/register':'/api/auth/login','POST',b);await refresh();toast('Accesso SEVA riuscito');}catch(e){toast(e.message)}};
 $('switchAuth').onclick=()=>{registerMode=!registerMode;$('authTitle').textContent=registerMode?'Crea account SEVA':'Accedi a SEVA';$('authBtn').textContent=registerMode?'Registrati':'Accedi';$('switchAuth').textContent=registerMode?'Hai già un account? Accedi':'Crea un account SEVA';};
 $('logout').onclick=async()=>{try{await api('/api/auth/logout','POST');showLogin();}catch(e){toast(e.message)}};
@@ -32,26 +34,14 @@ $('buy').onclick=async()=>{try{const r=await api('/api/billing/checkout','POST',
 async function annualCheckout(plan){try{const r=await api('/api/billing/checkout/annual','POST',{plan});if(!r.url?.startsWith('https://checkout.stripe.com/'))throw Error('Checkout URL non valido');location.href=r.url;}catch(e){toast(e.message);}}
 $('buyBuyer').onclick=()=>annualCheckout('buyer');
 $('buyEcommerce').onclick=()=>annualCheckout('ecommerce');
-let dbrelayCursor=null;
 async function refreshDBRelay(){
  const button=$('dbrelayRefresh');button.disabled=true;
  try{
-  const status=await api('/api/dbrelay/status');
-  let changes=0;let newSnapshot=false;
-  if(dbrelayCursor===null){
-   const snapshot=await api('/api/dbrelay/snapshot');dbrelayCursor=snapshot.cursor;
-   goals=snapshot.goals;renderGoals();newSnapshot=true;
-  } else {
-   let pageCount=0,more=true;
-   while(more&&pageCount++<30) {
-    const page=await api('/api/dbrelay/changes?after='+encodeURIComponent(dbrelayCursor)+'&limit=100');
-    changes+=page.changes.length;dbrelayCursor=page.nextCursor;more=page.hasMore;
-   }
-   if(changes){const snapshot=await api('/api/dbrelay/snapshot');goals=snapshot.goals;renderGoals();dbrelayCursor=snapshot.cursor;}
-   if(more)throw Error('Molte modifiche presenti: esegui nuovamente la sincronizzazione');
-  }
+  const result=await dbrelaySync.refresh();if(!result)return;
+  const {status,snapshot,cursor,changes,hasMore,initial}=result;
+  if(snapshot){goals=snapshot.goals;renderGoals();}
   $('dbrelayStatus').textContent='Database '+status.database+' · '+(status.persistent?'persistente':'in memoria (test)')+' · '+status.goals+' obiettivi · '+status.campaigns+' proposte';
-  $('dbrelayDetails').textContent='Cursor '+dbrelayCursor+' · '+(newSnapshot?'Snapshot iniziale verificato':changes+' eventi sincronizzati')+' · Relay esterni non connessi · Pagamenti non avviati';
+  $('dbrelayDetails').textContent='Cursor '+cursor+' · '+(initial?'Snapshot iniziale verificato':(hasMore?'Almeno ':'')+changes+' eventi rilevati'+(snapshot?' · snapshot aggiornato':''))+' · Relay esterni non connessi · Pagamenti non avviati';
  }catch(e){$('dbrelayStatus').textContent='DBRELAY non disponibile: '+e.message;}finally{button.disabled=false;}
 }
 $('dbrelayRefresh').onclick=refreshDBRelay;

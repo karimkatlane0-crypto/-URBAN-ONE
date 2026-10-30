@@ -4,6 +4,8 @@ Target outcome: exactly **two synthetic accounts**, independent goal/DBRELAY dat
 
 ## Implementation
 - `blackbox-g11.mjs` provides two explicit phases: `prepare` (create synthetic accounts, distinct goals, record private reauthentication evidence) and `verify` (repeat authentication after service restart, check both records and forbid cross-account write).
+- Receipt schema v2 also records the random process instance ID from `/health`. Verification requires a different healthy process ID; repeating verification against the original process fails with `RESTART_NOT_OBSERVED`. Old v1 receipts must be prepared again. This is intended for a single SQLite service instance; retain the hosting provider's restart/deployment evidence as well.
+- A forbidden cross-account write must return 403 or 404. A server error, expired login or rate-limit response cannot count as a successful authorization test.
 - The CLI refuses plain HTTP public hosts, URLs with query/path/embedded credentials, and live usage unless `SEVA_BLACKBOX_STAGING=YES` is set. Local loopback is allowed **only** for synthetic CI tests.
 - Any private evidence JSON contains synthetic passwords; it is written `0600` with no overwrite. Do **not** commit, email, attach, copy to GitHub issues or use customer credentials.
 - No Stripe checkout, OpenAI provider, commission, bank, live payment or customer marketing is called.

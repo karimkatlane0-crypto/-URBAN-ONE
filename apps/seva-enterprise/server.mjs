@@ -4,6 +4,7 @@ import {developerAI} from './developer-ai.mjs';
 import {generateWithProvider,providerStatus,selectProvider} from './generative-ai.mjs';
 import {studentDatabase} from './student-store.mjs';
 import {createServer} from 'node:http';
+import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {resolve, extname, isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -29,6 +30,7 @@ const commerce=createCommerce(store);
 const affiliateLedger=createAffiliateLedger(store);
 const notifications=createNotificationCenter(store);
 const port=Number(process.env.PORT||3000);
+const processInstanceId=randomUUID();
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
 const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=>x.trim().split('=').map(decodeURIComponent)).filter(x=>x.length===2));
 const limiter=new Map();
@@ -94,7 +96,7 @@ async function aiPlan(user,prompt,consent,provider='openai'){
 }
 const developerApi=createDeveloperApi(store, developerAI);
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
- if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',timestamp:new Date().toISOString()});}
+ if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',instanceId:processInstanceId,timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
  if(path==='/api/stripe/webhook'&&method==='POST'){
     // In SEPA-only mode, no Stripe event may mutate customer access or orders.
