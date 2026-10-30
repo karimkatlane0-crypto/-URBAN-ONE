@@ -58,7 +58,7 @@ Only after the final readback may the project state be reported as `REMOTE_INSTA
 
 ## DBRELAY boundary
 
-`DBRELAY` is not currently present as a verified URBAN ONE repository component and no authenticated DBRELAY endpoint is configured in this release. Treat it as an optional internal integration boundary only after its API/endpoint, authentication model, ownership, and data-handling contract are explicitly defined.
+SEVA has an implemented **same-origin, authenticated DBRELAY 2.0** in `apps/seva-enterprise/` with SQLite change events, cursor recovery, account isolation and WAL-aware backup/restore. Its 2026-10-30 source-acceptance document reports local tests passing. **Hosted Render HTTPS, durable-volume restart/recovery and an externally authenticated deployment remain unverified**. This SEVA data relay is **not** an EMM/MDM connector and does not provision, enroll, assign policies to, or remotely install apps on Android devices.
 
 A database relay must never be used to bypass Android Enterprise/EMM enrollment, Google Play authorization, user/organization authorization, or device policy controls.
 
@@ -78,7 +78,7 @@ The chosen EMM integration must provide equivalent operations for:
 
 - No EMM/MDM connector is currently attached to the ChatGPT workspace.
 - No authorized Desktop Commander device is currently connected for local administrative execution.
-- No verified DBRELAY endpoint/configuration exists in the repository.
+- SEVA DBRELAY is implemented in source but has no proven hosted production/staging endpoint; no DBRELAY-to-EMM integration exists.
 - No EMM deployment receipt has been produced.
 
 Therefore the authoritative state remains:
