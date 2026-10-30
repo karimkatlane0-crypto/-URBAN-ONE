@@ -37,6 +37,13 @@ jobs:
       - name: Build installable APK and Play bundle
         working-directory: apps/mobile/android
         run: ./gradlew assembleDebug bundleRelease
+      - name: Verify bundled web asset provenance
+        run: |
+          mkdir -p release
+          expected="$(sha256sum apps/mobile/www/index.html | awk '{print $1}')"
+          actual="$(unzip -p apps/mobile/android/app/build/outputs/bundle/release/app-release.aab base/assets/public/index.html | sha256sum | awk '{print $1}')"
+          test "$expected" = "$actual"
+          printf 'sourceCommit=%s\nwebIndexSHA256=%s\n' "$GITHUB_SHA" "$actual" > release/mobile-source-provenance.txt
       - name: Checksums
         run: |
           mkdir -p release
@@ -50,3 +57,4 @@ jobs:
             apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
             release/android-apk.sha256
             release/android-aab.sha256
+            release/mobile-source-provenance.txt
