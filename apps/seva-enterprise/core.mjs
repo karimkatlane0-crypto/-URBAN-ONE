@@ -70,7 +70,7 @@ export function createStore(filename=':memory:'){
  function fromSession(token){if(!token)return null;return db.prepare('SELECT u.id,u.email FROM sessions s JOIN users u ON s.user_id=u.id WHERE s.token=? AND s.expires>?').get(token,at())||null;}
  function listGoals(user){return db.prepare('SELECT id,parent_id,title,description,criteria,evidence,status,updated FROM goals WHERE user_id=? ORDER BY updated DESC').all(user);}
  function saveGoal(user,body,id){const g=validateGoal(body);const existing=id?db.prepare('SELECT * FROM goals WHERE id=? AND user_id=?').get(id,user):null;
- if(id&&!existing)throw Error('Goal not found');
+ if(id&&!existing)throw Object.assign(Error('Goal not found'),{status:404});
  const parent=body?.parent_id===undefined?(existing?.parent_id||null):(body.parent_id||null);
  if(parent){let current=parent,level=1,seen=new Set([id]);while(current){if(seen.has(current))throw Error('Goal cycle');seen.add(current);const p=db.prepare('SELECT id,parent_id FROM goals WHERE id=? AND user_id=?').get(current,user);if(!p)throw Error('Parent unavailable');level++;if(level>4)throw Error('Maximum 3 subgoal levels');current=p.parent_id;}}
  const gid=id||uid();
@@ -79,7 +79,7 @@ export function createStore(filename=':memory:'){
  if(existing)db.prepare('UPDATE goals SET parent_id=?,title=?,description=?,criteria=?,evidence=?,status=?,updated=? WHERE id=?').run(parent,g.title,g.description,g.criteria,g.evidence,g.status,at(),gid);
  else db.prepare('INSERT INTO goals VALUES (?,?,?,?,?,?,?,?,?)').run(gid,user,parent,g.title,g.description,g.criteria,g.evidence,g.status,at());
  audit(user,id?'goal_updated':'goal_created',gid);return gid;}
- function deleteGoal(user,id){const result=db.prepare('DELETE FROM goals WHERE id=? AND user_id=?').run(id,user);if(!result.changes)throw Error('Goal not found');audit(user,'goal_deleted',id);}
+ function deleteGoal(user,id){const result=db.prepare('DELETE FROM goals WHERE id=? AND user_id=?').run(id,user);if(!result.changes)throw Object.assign(Error('Goal not found'),{status:404});audit(user,'goal_deleted',id);}
  let bank;
  function activePlans(user){const stripe=db.prepare('SELECT plan FROM plan_entitlements WHERE user_id=? AND active=1 ORDER BY plan').all(user).map(x=>x.plan);return [...new Set([...stripe,...(bank?.accessiblePlans(user)||[]).map(x=>x.plan)])];}
  function hasPlanAccess(user,plan){return db.prepare('SELECT active FROM plan_entitlements WHERE user_id=? AND plan=?').get(user,plan)?.active===1||Boolean(bank?.accessiblePlans(user).some(x=>x.plan===plan));}

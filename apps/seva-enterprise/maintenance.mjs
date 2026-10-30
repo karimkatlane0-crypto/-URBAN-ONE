@@ -2,8 +2,7 @@
  * This prepares G.4 recovery; it does not configure an offsite store or verify hosted recovery.
  */
 import {DatabaseSync, backup} from 'node:sqlite';
-import {mkdir, stat, link, chmod, rm, copyFile} from 'node:fs/promises';
-import {constants} from 'node:fs';
+import {mkdir, stat, link, rm, open} from 'node:fs/promises';
 import {resolve, dirname, sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
@@ -27,41 +26,43 @@ function verify(db) {
     throw Error('SQLite integrity_check failed');
   const tables=new Set(db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all().map(row=>row.name));
   for(const name of requiredTables)if(!tables.has(name))throw Error('Missing SEVA table: '+name);
+  if(db.prepare('PRAGMA foreign_key_check').all().length)
+    throw Error('SQLite foreign_key_check failed');
   return true;
 }
-export async function backupSeva(sourcePath,destinationPath) {
+async function consistentCopy(sourcePath,destinationPath) {
   const source=privatePath(sourcePath),target=privatePath(destinationPath);
-  if(source===target)throw Error('Backup target must differ from source');
+  if(source===target)throw Error('Destination must differ from source');
   await stat(source);
   await mkdir(dirname(target),{recursive:true,mode:0o700});
   const pending=target+'.pending-'+randomUUID();
   const db=new DatabaseSync(source,{readOnly:true});
   try {
     verify(db);
+    // Reserve the temporary database privately BEFORE SQLite writes any bytes.
+    const reserved=await open(pending,'wx',0o600);
+    await reserved.close();
+    // Both backup and restore must include committed WAL pages. A file copy can
+    // silently restore an older, internally valid database while losing changes.
     await backup(db,pending);
-    await chmod(pending,0o600);
-    const check=new DatabaseSync(pending,{readOnly:true});
-    try{verify(check);}finally{check.close();}
+    const check=new DatabaseSync(pending);
+    try{
+      // Publish one self-contained file, without a temporary WAL/SHM dependency.
+      check.exec('PRAGMA journal_mode=DELETE');
+      verify(check);
+    }finally{check.close();}
     // Atomic no-clobber publication: existing backups cannot be replaced.
     await link(pending,target);
-    await chmod(target,0o600);
-    return {verified:true,destination:target,existingFileOverwritten:false};
+    return target;
   } finally {db.close();await rm(pending,{force:true});}
 }
+export async function backupSeva(sourcePath,destinationPath) {
+  const destination=await consistentCopy(sourcePath,destinationPath);
+  return {verified:true,destination,existingFileOverwritten:false};
+}
 export async function restoreSeva(backupPath,newDatabasePath) {
-  const source=privatePath(backupPath),target=privatePath(newDatabasePath);
-  if(source===target)throw Error('Restore target must differ from backup');
-  const old=new DatabaseSync(source,{readOnly:true});
-  try{verify(old);}finally{old.close();}
-  await mkdir(dirname(target),{recursive:true,mode:0o700});
-  // The destination must not exist: never overwrite the operating database.
-  await copyFile(source,target,constants.COPYFILE_EXCL);
-  try {
-    await chmod(target,0o600);
-    const restored=new DatabaseSync(target,{readOnly:true});
-    try{verify(restored);}finally{restored.close();}
-    return {verified:true,destination:target,existingDatabaseOverwritten:false};
-  }catch(err){await rm(target,{force:true});throw err;}
+  const destination=await consistentCopy(backupPath,newDatabasePath);
+  return {verified:true,destination,existingDatabaseOverwritten:false};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   const [command,src,dst]=process.argv.slice(2);

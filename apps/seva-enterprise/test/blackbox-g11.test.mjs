@@ -48,11 +48,13 @@ test('G.1.1 BLACK BOX: 2 signed-in tenants survive real Node process restart',as
   const {privateReceipt,publicEvidence}=await prepare(url,{allowLoopback:true});
   assert.equal(publicEvidence.result,'PASS');
   assert.equal(publicEvidence.accounts,2);
+  await assert.rejects(verifyAfterRestart(url,privateReceipt,{allowLoopback:true}),/RESTART_NOT_OBSERVED/);
   await stop(server);server=null;
   server=await launch(port,db);
   const result=await verifyAfterRestart(url,privateReceipt,{allowLoopback:true});
   assert.equal(result.result,'PASS');
   assert.match(result.observed,/isolated/);
+  assert.equal(result.processChanged,true);
  }finally{if(server)await stop(server);await rm(dir,{recursive:true,force:true});}
 });
 test('G.1.1 refuses accidental external plain HTTP or URL with credentials',()=>{

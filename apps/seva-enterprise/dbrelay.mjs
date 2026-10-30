@@ -30,6 +30,14 @@ export function installDBRelay(db) {
    INSERT INTO dbrelay_changes(user_id,resource,resource_id,action,created)
    VALUES (NEW.user_id,'campaign',NEW.id,'created',CAST(strftime('%s','now') AS INTEGER));
  END;
+ CREATE TRIGGER IF NOT EXISTS dbrelay_campaign_updated AFTER UPDATE ON campaign_drafts BEGIN
+   INSERT INTO dbrelay_changes(user_id,resource,resource_id,action,created)
+   VALUES (NEW.user_id,'campaign',NEW.id,'updated',CAST(strftime('%s','now') AS INTEGER));
+ END;
+ CREATE TRIGGER IF NOT EXISTS dbrelay_campaign_deleted AFTER DELETE ON campaign_drafts BEGIN
+   INSERT INTO dbrelay_changes(user_id,resource,resource_id,action,created)
+   VALUES (OLD.user_id,'campaign',OLD.id,'deleted',CAST(strftime('%s','now') AS INTEGER));
+ END;
  `);
 }
 function requireOwner(owner) {

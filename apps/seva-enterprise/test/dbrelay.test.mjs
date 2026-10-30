@@ -7,6 +7,35 @@ import {createStore} from '../core.mjs';
 import {dbrelayChanges,dbrelaySnapshot,dbrelayStatus} from '../dbrelay.mjs';
 
 const make=()=>{const s=createStore(':memory:');const a=s.register('relay-a@example.com','VerySecurePassword-123');const b=s.register('relay-b@example.com','VerySecurePassword-123');return {s,a,b};};
+test('DBRELAY campaign updates and deletion produce isolated tombstones',()=>{
+ const {s,a,b}=make();
+ try{
+  const id=s.saveCampaign(a.id,{months:1,marketingCents:0},{quorumTarget:2,deadlineIso:'2027-02-01T12:00:00Z'});
+  s.db.prepare('UPDATE campaign_drafts SET status=? WHERE id=?').run('cancelled',id);
+  s.db.prepare('DELETE FROM campaign_drafts WHERE id=?').run(id);
+  const feed=dbrelayChanges(s,a.id,0,100);
+  assert.deepEqual(feed.changes.map(x=>[x.resource,x.resourceId,x.action]),[
+   ['campaign',id,'created'],['campaign',id,'updated'],['campaign',id,'deleted']]);
+  assert.deepEqual(dbrelaySnapshot(s,a.id).campaigns,[]);
+  assert.deepEqual(dbrelayChanges(s,b.id,0,100).changes,[]);
+ }finally{s.db.close();}
+});
+test('DBRELAY cascaded subgoal deletion is complete and rolled-back writes never emit events',()=>{
+ const {s,a}=make();
+ try{
+  const parent=s.saveGoal(a.id,{title:'Parent'});
+  const child=s.saveGoal(a.id,{title:'Child',parent_id:parent});
+  const grandchild=s.saveGoal(a.id,{title:'Grandchild',parent_id:child});
+  const cursor=dbrelayStatus(s,a.id).cursor;
+  s.db.exec('BEGIN');s.saveGoal(a.id,{title:'Rolled back'});s.db.exec('ROLLBACK');
+  assert.equal(dbrelayStatus(s,a.id).cursor,cursor);
+  s.deleteGoal(a.id,parent);
+  const changes=dbrelayChanges(s,a.id,cursor,100).changes;
+  assert.deepEqual(new Set(changes.map(x=>x.resourceId)),new Set([parent,child,grandchild]));
+  assert.equal(changes.every(x=>x.action==='deleted'),true);
+  assert.deepEqual(dbrelaySnapshot(s,a.id).goals,[]);
+ }finally{s.db.close();}
+});
 test('DBRELAY initialized as same-origin with no external transfers',()=>{
  const {s,a}=make();const r=dbrelayStatus(s,a.id);
  assert.equal(r.database,'ready');assert.equal(r.persistent,false);
