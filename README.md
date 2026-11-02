@@ -1,5 +1,11 @@
 # URBAN ONE UNIVERSAL — v7.0.0 FINAL
 
+## SEVA · sito pubblico e risorse internazionali
+
+**[Apri SEVA](https://seva.karimkatlane0.chatgpt.site/#how)** · **[Termini](https://seva.karimkatlane0.chatgpt.site/terms)** · **[Privacy](https://seva.karimkatlane0.chatgpt.site/privacy)** · **[Collaborazioni](https://seva.karimkatlane0.chatgpt.site/partners)** · **[English](https://seva.karimkatlane0.chatgpt.site/?lang=en)**
+
+Workspace Base gratuito; pagine IT/EN, press kit e percorso sviluppatori. **I piani SEVA LIVE non sono acquistabili online**: il pagamento Enterprise verificato è TEST. [Pubblicazione verificata, limiti e come contribuire](SEVA_SITE_LAUNCH_2026-11-02.md). Il Site ha un proprio rilascio, distinto dalle altre applicazioni di questo repository.
+
 > **URBAN ONE · Servizi software a pagamento per imprese** — B&B e hospitality, workflow AI/dati e analisi PropTech. Sono disponibili richieste di preventivo e incarichi con perimetro, corrispettivo e condizioni concordati per iscritto. **Il cliente paga**, su richiesta e dopo l'accordo, tramite Stripe LIVE del fornitore; nessun rinnovo o addebito automatico è implicito. Le funzioni PSD2 bancarie, Booking.com e le integrazioni con provider terzi non vengono presentate come operative senza abilitazioni e prove specifiche. **[Richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Scrivi al referente commerciale](mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20-%20Richiesta%20preventivo%20servizi)**.
 
 Greenfield universal control plane for governed AI/data workflows, local-first Web/Android/iOS shells, consent, provenance, private contacts, real-estate search and public European spatial-data discovery.
