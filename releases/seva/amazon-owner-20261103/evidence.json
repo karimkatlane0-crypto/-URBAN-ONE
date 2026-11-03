@@ -1,0 +1,38 @@
+{
+  "checkedOn": "2026-11-03",
+  "site": {
+    "url": "https://seva.karimkatlane0.chatgpt.site",
+    "version": 26,
+    "sourceCommit": "94f271bbe87bc1fa7fd26e02b67bd46bdae473c2",
+    "deploymentId": "appgdep_6ae9ec8fc1b081919fc888410ca4cff6",
+    "deploymentStatus": "succeeded",
+    "environmentRevision": 5
+  },
+  "amazon": {
+    "publicGuide": "https://seva.karimkatlane0.chatgpt.site/amazon",
+    "ownerSetup": "https://seva.karimkatlane0.chatgpt.site/amazon/setup",
+    "affiliateID": "seva0a9-21",
+    "websiteListVerified": false,
+    "payoutsVerified": false,
+    "providerAPI": false,
+    "clicks": null,
+    "qualifyingOrders": null,
+    "commissionsEUR": null
+  },
+  "validation": {
+    "automatedTests": 128,
+    "failedTests": 0,
+    "build": "passed",
+    "workerESM": "passed",
+    "browserQA": "not-run-existing-browser-infrastructure-timeout",
+    "providerPayments": "not-executed"
+  },
+  "sourceSnapshot": {
+    "file": "seva-source-94f271b.tar.gz",
+    "sha256": "5e013e6bb39aa3828759bf1a76f30d8b5ba48517cb8ed9b1e1142b19f5c6a909",
+    "files": 82,
+    "includes": "application source, compiled Worker, tests, build scripts, schema/migrations, package files and owner alignment notes",
+    "excludes": "screenshots, historical provider records, private attachments, plugin submission packages"
+  },
+  "liveSubscriptionAvailable": false
+}
