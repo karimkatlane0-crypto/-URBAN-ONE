@@ -30,3 +30,22 @@ export function databaseReady(db) {
   try { db.prepare('SELECT id FROM users LIMIT 1').get();return true; }
   catch { return false; }
 }
+
+// Session lookup may be synchronous (SQLite) or asynchronous. Always resolve
+// it before testing identity; a Promise must never act as an authenticated user.
+export async function requireSessionUser(store,token) {
+  if(typeof token!=='string'||!token)
+    throw Object.assign(Error('Please sign in'),{status:401});
+  try {
+    const user=await store.fromSession(token);
+    if(user&&typeof user==='object'&&!Array.isArray(user)) {
+      const {id,email}=user;
+      if(typeof id==='string'&&id.trim()&&typeof email==='string'&&email.trim())
+        return {id,email};
+    }
+  } catch {
+    // The HTTP error handler logs messages: do not propagate database details.
+    throw Object.assign(Error('Authentication temporarily unavailable'),{status:503});
+  }
+  throw Object.assign(Error('Please sign in'),{status:401});
+}
