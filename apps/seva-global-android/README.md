@@ -48,7 +48,7 @@ gradle -p apps/seva-global-android :app:assembleDebug --no-daemon
 
 It inspects the resulting APK with `aapt`, checks `ai.seva.global.debug` and targetSdk 36, and retains the debug APK with metadata and SHA-256. A successful build establishes source and packaging validity; device installation, DAL, release signing and store distribution require their own evidence.
 
-The repository's separate `SEVA Global Public HTTP Smoke` workflow still targets the historical preview site. Its passing result does not verify the canonical Sites destination or this launcher. Use the canonical URLs above for SEVA checks.
+The repository's `SEVA Global Public HTTP Smoke` workflow checks the canonical `/superapp`, `/mobile`, `/account`, `/sw.js` and `/superapp.webmanifest` responses, including the manifest's exact identity and start URL. Its report leaves account sign-in, Android/iOS installation, DAL, release signing and provider activation explicitly untested. HTTP success is a separate result from the Android build and real-device checks.
 
 Official references:
 

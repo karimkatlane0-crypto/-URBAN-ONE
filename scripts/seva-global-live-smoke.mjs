@@ -4,15 +4,13 @@ import {writeFileSync, mkdirSync} from 'node:fs';
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
-export const PUBLIC_ORIGIN='https://seva-executive-studio-preview.vercel.app';
+export const PUBLIC_ORIGIN='https://seva.karimkatlane0.chatgpt.site';
 export const FRONTEND_ROUTES=[
-  {path:'/',type:'html',contains:'SEVA'},
-  {path:'/discover.html',type:'html',contains:'SEVA IS CALLED'},
-  {path:'/psdm.html',type:'html',contains:'Problem Solving'},
-  {path:'/mobile.html',type:'html',contains:'Android'},
-  {path:'/studio.js',type:'javascript',contains:'serverReady'},
-  {path:'/psdm-engine.js',type:'javascript',contains:'rankDecisions'},
-  {path:'/manifest-global.webmanifest',type:'manifest',contains:'SEVA'}
+  {path:'/superapp',type:'html',contains:'/superapp.webmanifest'},
+  {path:'/mobile',type:'html',contains:'/superapp.webmanifest'},
+  {path:'/account',type:'html',contains:'/account.webmanifest'},
+  {path:'/sw.js',type:'javascript',contains:'addEventListener'},
+  {path:'/superapp.webmanifest',type:'manifest',contains:'SEVA'}
 ];
 
 const approvedBackend=value=>{
@@ -38,7 +36,12 @@ export async function runSmoke({fetchImpl=fetch,backendOrigin=null,requestTimeou
    if(target.type==='html')matches=matches&&contentType.includes('text/html');
    if(target.type==='manifest'){
      let manifest;try{manifest=JSON.parse(body);}catch{manifest=null;}
-     matches=Boolean(manifest&&manifest.name&&manifest.display==='standalone'&&manifest.icons?.some(i=>i.sizes==='192x192')&&manifest.icons?.some(i=>i.sizes==='512x512'));
+     matches=Boolean(
+       (contentType.includes('application/manifest+json')||contentType.includes('application/json'))&&
+       typeof manifest?.name==='string'&&manifest.name.length>0&&manifest.short_name==='SEVA'&&
+       manifest.id==='/superapp'&&manifest.start_url==='/superapp'&&manifest.scope==='/'&&manifest.display==='standalone'&&
+       Array.isArray(manifest.icons)&&[192,512].every(size=>manifest.icons.some(i=>i?.sizes===size+'x'+size&&i.src==='/assets/seva-icon-'+size+'.png'&&i.type==='image/png'))
+     );
    }
    if(target.type==='javascript')matches=matches&&(contentType.includes('javascript')||contentType.includes('text/plain'));
    results.push({path:target.path,status:response.status,ok:response.status===200&&matches,
@@ -60,11 +63,15 @@ export async function runSmoke({fetchImpl=fetch,backendOrigin=null,requestTimeou
   schemaVersion:1,generatedAt:new Date().toISOString(),publicOrigin:PUBLIC_ORIGIN,
   frontend:{status:results.every(x=>x.ok)?'HTTP_SMOKE_PASS':'HTTP_SMOKE_FAIL',routes:results},
   backend:backendStatus,
+  accountSignIn:'NOT_TESTED',
   authenticatedOpenAI:'NOT_TESTED',
   bankCredits:'NOT_TESTED',
   androidDeviceInstall:'NOT_TESTED',
+  iOSDeviceInstall:'NOT_TESTED',
+  digitalAssetLinks:'NOT_TESTED',
+  releaseSigning:'NOT_TESTED',
   googlePlayPublication:'NOT_TESTED',
-  note:'Only public HTTP file responses and optional unauthenticated backend health are tested. No user login, AI response, bank payment, device install or Google Play publication is implied.'
+  note:'Only public HTTP responses from the canonical SEVA site, its install manifest identity and optional unauthenticated backend health are tested. User login, AI response, bank payment, Android/iOS installation, Digital Asset Links, release signing and Google Play publication are not verified.'
  };
 }
 
