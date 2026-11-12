@@ -1,4 +1,8 @@
 <resources>
- <string name="app_name">SEVA Global</string>
- <string name="launch_url">https://seva-executive-studio-preview.vercel.app/</string>
+ <string name="app_name" translatable="false">SEVA</string>
+ <string name="launch_url" translatable="false">https://seva.karimkatlane0.chatgpt.site/superapp</string>
+ <!-- App-to-web declaration only; the site must separately verify the real signing certificate. -->
+ <string name="asset_statements" translatable="false">
+  [{\"relation\":[\"delegate_permission/common.handle_all_urls\"],\"target\":{\"namespace\":\"web\",\"site\":\"https://seva.karimkatlane0.chatgpt.site\"}}]
+ </string>
 </resources>
