@@ -4,6 +4,14 @@
 
 **[Apri SEVA](https://seva.karimkatlane0.chatgpt.site/global)** · **[Termini](https://seva.karimkatlane0.chatgpt.site/terms)** · **[Privacy](https://seva.karimkatlane0.chatgpt.site/privacy)** · **[Collaborazioni](https://seva.karimkatlane0.chatgpt.site/partners)** · **[English](https://seva.karimkatlane0.chatgpt.site/global?lang=en)**
 
+### CMS gratuito e servizi — 12 novembre 2026
+
+**[Prova l’editor CMS gratuito](https://seva.karimkatlane0.chatgpt.site/cms)** → **[Richiedi un servizio CMS](https://seva.karimkatlane0.chatgpt.site/servizi)** → **[Comunicato IT/EN](https://zerounocms.wordpress.com/2026/11/12/seva-cms-gratuito-comunicato-stampa/)**
+
+L’editor gratuito consente di preparare una bozza locale, controllare l’anteprima ed esportare HTML. La pubblicazione sul proprio sito è un passaggio separato; eventuali servizi professionali si concordano su ambito, prezzo e condizioni prima di pagare.
+
+The free editor supports local drafts, previews and HTML export. Publishing on a website is a separate step; any professional services require an agreement on scope, price and terms before payment.
+
 **Checkpoint 4 novembre 2026:** Site SEVA v45 e plugin ChatGPT 1.0.2; kit e-commerce 1.4.0 con pacchetto WooCommerce 1.0.0. Sono attivi link Stripe LIVE una tantum da **50 € e 500 € esclusivamente per servizi già concordati**. Non provano incassi, abbonamenti con accesso automatico, ordini di negozi terzi o accrediti creator. L’installazione del pacchetto su un negozio reale e il collegamento Microsoft Power BI restano da verificare. [Stato verificato e storico](SEVA_SITE_LAUNCH_2026-11-02.md#checkpoint--4-november-2026). Il Site ha un proprio rilascio, distinto dalle altre applicazioni di questo repository.
 
 > **URBAN ONE · Servizi software a pagamento per imprese** — B&B e hospitality, workflow AI/dati e analisi PropTech. Sono disponibili richieste di preventivo e incarichi con perimetro, corrispettivo e condizioni concordati per iscritto. **Il cliente paga**, su richiesta e dopo l'accordo, tramite Stripe LIVE del fornitore; nessun rinnovo o addebito automatico è implicito. Le funzioni PSD2 bancarie, Booking.com e le integrazioni con provider terzi non vengono presentate come operative senza abilitazioni e prove specifiche. **[Richiedi un preventivo](docs/URBAN_ONE_B2B_SERVICE_OFFERS.md)** · **[Scrivi al referente commerciale](mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20-%20Richiesta%20preventivo%20servizi)**.
