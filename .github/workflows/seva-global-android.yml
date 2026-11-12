@@ -71,6 +71,7 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$apk" | tee SEVA-global-android-badging.txt
           grep -F "targetSdkVersion:'36'" SEVA-global-android-badging.txt
           grep -F "package: name='ai.seva.global.debug'" SEVA-global-android-badging.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" | tee SEVA-global-android-debug-signature.txt
           sha256sum "$apk" | tee SEVA-global-android-debug-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
@@ -79,5 +80,6 @@ jobs:
             apps/seva-global-android/app/build/outputs/apk/debug/app-debug.apk
             SEVA-global-android-badging.txt
             SEVA-global-android-debug-sha256.txt
+            SEVA-global-android-debug-signature.txt
           retention-days: 14
           if-no-files-found: error
