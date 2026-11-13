@@ -1,3 +1,4 @@
+import {metaPagesRoute} from './meta-pages-api.mjs';
 import {titansRoute} from './titans-command-center.mjs';
 import {globalMatchRoute} from './global-real-estate.mjs';
 import {realEstateRoute} from './real-estate-api.mjs';
@@ -128,6 +129,15 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    const result=globalMatchRoute({method,path,user:u,body});
    if(!result)return json(res,404,{error:'Global real estate route not found'});
    store.audit(u.id,'global_real_estate',method+' '+path);
+   return json(res,result.status,result.data);
+ }
+ if(path.startsWith('/api/v1/meta/pages/')){
+   rate(req,'meta-pages',8);
+   const u=auth(req);
+   const body=method==='POST'?JSON.parse(await rawBody(req,12000)):{};
+   const result=metaPagesRoute({method,path,user:u,body});
+   if(!result)return json(res,404,{error:'Meta Pages route not found'});
+   store.audit(u.id,'meta_pages_api',method+' '+path);
    return json(res,result.status,result.data);
  }
  if(path.startsWith('/api/v1/titans/')){

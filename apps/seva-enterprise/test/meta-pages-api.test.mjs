@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {metaPagesRoute} from '../meta-pages-api.mjs';
+const call=(path,body={},user={id:'u'},method='POST',env={})=>metaPagesRoute({method,path,user,body,env});
+test('authentication required',()=>assert.throws(()=>call('/api/v1/meta/pages/status',{},null,'GET'),{status:401}));
+test('status defaults disabled',()=>assert.equal(call('/api/v1/meta/pages/status',{}, {id:'u'},'GET').data.connected,false));
+test('preview does not publish',()=>assert.equal(call('/api/v1/meta/pages/post-preview',{message:'Hello'}).data.published,false));
+test('invalid HTTP link rejected',()=>assert.throws(()=>call('/api/v1/meta/pages/post-preview',{message:'Hello',link:'http://example.com'}),{status:400}));
+test('publish fails closed even if configured',()=>assert.equal(call('/api/v1/meta/pages/publish',{message:'Hello'},{id:'u'},'POST',{SEVA_META_PAGE_ID:'1',SEVA_META_PAGE_ACCESS_TOKEN:'secret',SEVA_META_PUBLISH_ENABLED:'true'}).status,503));
+test('status never leaks token',()=>assert.equal(JSON.stringify(call('/api/v1/meta/pages/status',{}, {id:'u'},'GET',{SEVA_META_PAGE_ID:'1',SEVA_META_PAGE_ACCESS_TOKEN:'secret'})).includes('secret'),false));
