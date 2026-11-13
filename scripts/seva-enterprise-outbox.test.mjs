@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {prepareFlow,approveFlow,createOutboxRecord,reconcileProviderResult,FLOW_STAGES} from './seva-enterprise-outbox.mjs';
+test('all seven trace stages',()=>assert.equal(FLOW_STAGES.length,7));
+test('deterministic idempotency',()=>{const a={tenantId:'a',actorId:'x',flowId:'f',action:'payment',payload:{n:1}};assert.equal(prepareFlow(a).idempotencyKey,prepareFlow(a).idempotencyKey)});
+for(const action of ['payment','message','booking','import']) test(action+' cannot execute without approval',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action});assert.equal(f.state,'AWAITING_APPROVAL');assert.throws(()=>createOutboxRecord(f))});
+test('cross tenant approval rejected',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action:'booking',providerVerified:true});assert.throws(()=>approveFlow(f,{actorId:'x',tenantId:'b',approvalRef:'r',approved:true}))});
+test('provider authorization required',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action:'payment'});assert.throws(()=>approveFlow(f,{actorId:'x',tenantId:'a',approvalRef:'r',approved:true}))});
+test('message requires consent',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action:'message',providerVerified:true});assert.throws(()=>approveFlow(f,{actorId:'x',tenantId:'a',approvalRef:'r',approved:true}))});
+test('authorized flow is pending, not executed',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action:'booking',providerVerified:true});const r=createOutboxRecord(approveFlow(f,{actorId:'x',tenantId:'a',approvalRef:'r',approved:true}));assert.equal(r.state,'PENDING_PROVIDER_EXECUTION');assert.throws(()=>reconcileProviderResult(r,{confirmed:false}))});
+test('provider event needed to confirm',()=>{const f=prepareFlow({tenantId:'a',actorId:'x',flowId:'f',action:'booking',providerVerified:true});const r=createOutboxRecord(approveFlow(f,{actorId:'x',tenantId:'a',approvalRef:'r',approved:true}));assert.equal(reconcileProviderResult(r,{confirmed:true,providerEventId:'evt-test'}).state,'PROVIDER_CONFIRMED')});
