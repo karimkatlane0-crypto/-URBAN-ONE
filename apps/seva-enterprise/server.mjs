@@ -1,3 +1,4 @@
+import {mlsRoute} from './mls-adapter.mjs';
 import {realEstateRoute} from './real-estate-api.mjs';
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {ownedStripeCustomer,portalGate} from './stripe-portal.mjs';
@@ -118,6 +119,12 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
      throw Object.assign(Error('Invalid Stripe portal URL'),{status:502});
    store.audit(u.id,'stripe_test_portal_session_created',session.id||'test');
    return json(res,200,{url:session.url});
+ }
+ if(path.startsWith('/api/v1/real-estate/mls/')){
+   rate(req,'real-estate-mls',20);
+   const u=auth(req);
+   const result=mlsRoute({method,path,user:u});
+   return result?json(res,result.status,result.data):json(res,404,{error:'MLS route not found'});
  }
  if(path.startsWith('/api/v1/real-estate/')){
    rate(req,'real-estate',20);
