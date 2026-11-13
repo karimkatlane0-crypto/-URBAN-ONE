@@ -1,3 +1,4 @@
+import {titansRoute} from './titans-command-center.mjs';
 import {globalMatchRoute} from './global-real-estate.mjs';
 import {realEstateRoute} from './real-estate-api.mjs';
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
@@ -127,6 +128,15 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    const result=globalMatchRoute({method,path,user:u,body});
    if(!result)return json(res,404,{error:'Global real estate route not found'});
    store.audit(u.id,'global_real_estate',method+' '+path);
+   return json(res,result.status,result.data);
+ }
+ if(path.startsWith('/api/v1/titans/')){
+   rate(req,'titans-command',12);
+   const u=auth(req);
+   const body=method==='POST'?JSON.parse(await rawBody(req,30000)):{};
+   const result=titansRoute({method,path,user:u,body});
+   if(!result)return json(res,404,{error:'TITANS route not found'});
+   store.audit(u.id,'titans_command',method+' '+path);
    return json(res,result.status,result.data);
  }
  if(path.startsWith('/api/v1/real-estate/')){
