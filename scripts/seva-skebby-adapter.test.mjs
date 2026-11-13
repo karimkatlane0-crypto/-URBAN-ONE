@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {prepareSkebbySms,acknowledgeSkebbyDelivery} from './seva-skebby-adapter.mjs';
+const base={tenantId:'t',recipients:['+393331234567'],text:'Messaggio di prova',consentRefs:['consent-1'],approved:true,providerConfigured:true};
+test('prepares but does not send',()=>{const r=prepareSkebbySms(base);assert.equal(r.networkExecuted,false);assert.equal(r.status,'PREPARED_NOT_SENT')});
+test('requires approval',()=>assert.throws(()=>prepareSkebbySms({...base,approved:false})));
+test('requires configured provider',()=>assert.throws(()=>prepareSkebbySms({...base,providerConfigured:false})));
+test('requires consent',()=>assert.throws(()=>prepareSkebbySms({...base,consentRefs:[]})));
+test('rejects duplicate recipients',()=>assert.throws(()=>prepareSkebbySms({...base,recipients:[base.recipients[0],base.recipients[0]],consentRefs:['c1','c2']})));
+test('rejects invalid number',()=>assert.throws(()=>prepareSkebbySms({...base,recipients:['3331234567']})));
+test('provider receipt requires id',()=>assert.throws(()=>acknowledgeSkebbyDelivery(prepareSkebbySms(base),{deliveryState:'DELIVERED'})));
