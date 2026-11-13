@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {realEstateRoute} from '../real-estate-api.mjs';
+const call=(method,path,body={},query='')=>realEstateRoute({method,path,url:new URL('http://localhost'+path+query),user:{id:'tenant-a'},body});
+test('unauthenticated requests rejected',()=>assert.throws(()=>realEstateRoute({method:'GET',path:'/api/v1/real-estate/properties',url:new URL('http://localhost/'),user:null}),{status:401}));
+test('catalog does not invent off-market inventory',()=>assert.deepEqual(call('GET','/api/v1/real-estate/properties').data.properties,[]));
+test('invalid search filter rejected',()=>assert.throws(()=>call('GET','/api/v1/real-estate/properties',{},'?visibility=secret'),{status:400}));
+test('migration requires authorization',()=>assert.throws(()=>call('POST','/api/v1/real-estate/imports/preview',{records:[]}),{status:403}));
+test('migration dry-run flags duplicate and writes nothing',()=>{const r=call('POST','/api/v1/real-estate/imports/preview',{authorized:true,records:[{externalId:'x',transaction:'sale'},{externalId:'x',transaction:'rental'}]}).data;assert.equal(r.written,0);assert.equal(r.records[1].duplicate,true);});
+test('risk score requires evidence review',()=>{const r=call('POST','/api/v1/real-estate/decisions/score',{price:110,benchmark:100}).data;assert.equal(r.deviationPct,10);assert.equal(r.requiresHumanReview,true);});
+test('agents fail closed until connected',()=>assert.equal(call('POST','/api/v1/real-estate/agents/tasks',{agent:'crm'}).status,503));
