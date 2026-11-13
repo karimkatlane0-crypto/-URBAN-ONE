@@ -1,4 +1,5 @@
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
+import {ownedStripeCustomer,portalGate} from './stripe-portal.mjs';
 import {createDeveloperApi} from './developer-api.mjs';
 import {developerAI} from './developer-ai.mjs';
 import {generateWithProvider,providerStatus,selectProvider} from './generative-ai.mjs';
@@ -106,6 +107,17 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     const event=JSON.parse(raw);const result=store.processStripeEvent(event);return json(res,200,{received:true,result});
  }
  if(path.startsWith('/api/')&&method!=='GET'&&!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+ if(path==='/api/billing/customer-portal'&&method==='POST'){
+   rate(req,'stripe-test-portal',5);
+   const u=auth(req);
+   const customer=ownedStripeCustomer(store.db,u.id);
+   const args=portalGate(process.env,customer);
+   const session=await stripe('POST','billing_portal/sessions',args);
+   if(typeof session.url!=='string'||!session.url.startsWith('https://billing.stripe.com/'))
+     throw Object.assign(Error('Invalid Stripe portal URL'),{status:502});
+   store.audit(u.id,'stripe_test_portal_session_created',session.id||'test');
+   return json(res,200,{url:session.url});
+ }
  if(path==='/api/v1/capabilities'&&method==='GET')return json(res,200,{
   product:'SEVA Developer API',apiVersion:'v1',billing:process.env.SEVA_PAYMENT_METHOD==='sepa'?'sepa_manual_operator_verified_only':'enterprise_monthly_stripe_verified_only',
   endpoints:['POST /api/v1/ai/plan'],rateLimit:'6 requests/minute/key',
