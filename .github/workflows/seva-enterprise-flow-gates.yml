@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/seva-enterprise-flow-registry*'
       - 'scripts/seva-one-ux-policy*'
+      - 'scripts/seva-enterprise-outbox*'
       - 'docs/SEVA_ENTERPRISE_72_NODE_RECONCILIATION.md'
       - '.github/workflows/seva-enterprise-flow-gates.yml'
   workflow_dispatch:
@@ -22,8 +23,9 @@ jobs:
         run: |
           node --check scripts/seva-enterprise-flow-registry.mjs
           node --check scripts/seva-one-ux-policy.mjs
+          node --check scripts/seva-enterprise-outbox.mjs
       - name: Test registry and authorization policies
-        run: node --test scripts/seva-enterprise-flow-registry.test.mjs scripts/seva-one-ux-policy.test.mjs
+        run: node --test scripts/seva-enterprise-flow-registry.test.mjs scripts/seva-one-ux-policy.test.mjs scripts/seva-enterprise-outbox.test.mjs
       - name: Validate registry output without publishing
         run: |
           node scripts/seva-enterprise-flow-registry.mjs > "$RUNNER_TEMP/seva-registry.json"
