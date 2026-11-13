@@ -1,3 +1,4 @@
+import {realEstateRoute} from './real-estate-api.mjs';
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {ownedStripeCustomer,portalGate} from './stripe-portal.mjs';
 import {createDeveloperApi} from './developer-api.mjs';
@@ -117,6 +118,15 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
      throw Object.assign(Error('Invalid Stripe portal URL'),{status:502});
    store.audit(u.id,'stripe_test_portal_session_created',session.id||'test');
    return json(res,200,{url:session.url});
+ }
+ if(path.startsWith('/api/v1/real-estate/')){
+   rate(req,'real-estate',20);
+   const u=auth(req);
+   const body=method==='POST'?JSON.parse(await rawBody(req,30000)):{};
+   const result=realEstateRoute({method,path,url,user:u,body});
+   if(!result)return json(res,404,{error:'Real estate route not found'});
+   store.audit(u.id,'real_estate_api',method+' '+path);
+   return json(res,result.status,result.data);
  }
  if(path==='/api/v1/capabilities'&&method==='GET')return json(res,200,{
   product:'SEVA Developer API',apiVersion:'v1',billing:process.env.SEVA_PAYMENT_METHOD==='sepa'?'sepa_manual_operator_verified_only':'enterprise_monthly_stripe_verified_only',
