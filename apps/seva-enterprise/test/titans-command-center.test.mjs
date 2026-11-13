@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {titansRoute} from '../titans-command-center.mjs';
+const call=(path,body={},user={id:'tenant1'},method='POST')=>titansRoute({method,path,user,body});
+test('requires login',()=>assert.throws(()=>call('/api/v1/titans/plan',{transaction:'sale',country:'IT'},null),{status:401}));
+test('plan is deterministic and does not execute',()=>{const r=call('/api/v1/titans/plan',{transaction:'sale',country:'IT'}).data;assert.equal(r.tasks.length,6);assert.equal(r.execution,'NOT_STARTED');});
+test('rejects invalid country',()=>assert.throws(()=>call('/api/v1/titans/plan',{transaction:'sale',country:'Italy'}),{status:400}));
+test('execution fails closed',()=>assert.equal(call('/api/v1/titans/execute').status,503));
+test('preview excludes unauthorized off-market',()=>{const r=call('/api/v1/titans/match-preview',{request:{transaction:'sale',country:'IT',currency:'EUR',maxPrice:100},properties:[{id:'a',transaction:'sale',country:'IT',currency:'EUR',price:50,visibility:'off_market'}]}).data;assert.equal(r.matches[0].eligible,false);assert.equal(r.agentsExecuted,0);});
+test('capabilities do not claim live services',()=>{const r=call('/api/v1/titans/capabilities',{}, {id:'x'},'GET').data;assert.equal(r.livePayments,false);assert.equal(r.mlsConnected,false);});
