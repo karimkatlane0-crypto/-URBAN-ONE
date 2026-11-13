@@ -1,3 +1,4 @@
+import {globalMatchRoute} from './global-real-estate.mjs';
 import {realEstateRoute} from './real-estate-api.mjs';
 import {readStudent,saveStudent,deleteStudent} from './students.mjs';
 import {ownedStripeCustomer,portalGate} from './stripe-portal.mjs';
@@ -118,6 +119,15 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
      throw Object.assign(Error('Invalid Stripe portal URL'),{status:502});
    store.audit(u.id,'stripe_test_portal_session_created',session.id||'test');
    return json(res,200,{url:session.url});
+ }
+ if(path.startsWith('/api/v1/real-estate/global/')){
+   rate(req,'global-real-estate',15);
+   const u=auth(req);
+   const body=method==='POST'?JSON.parse(await rawBody(req,30000)):{};
+   const result=globalMatchRoute({method,path,user:u,body});
+   if(!result)return json(res,404,{error:'Global real estate route not found'});
+   store.audit(u.id,'global_real_estate',method+' '+path);
+   return json(res,result.status,result.data);
  }
  if(path.startsWith('/api/v1/real-estate/')){
    rate(req,'real-estate',20);
