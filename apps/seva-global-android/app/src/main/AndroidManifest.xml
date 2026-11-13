@@ -7,6 +7,8 @@
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false"
         android:supportsRtl="true">
+        <meta-data android:name="asset_statements"
+            android:resource="@string/asset_statements" />
         <activity android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
             android:exported="true"
             android:alwaysRetainTaskState="true"

@@ -35,8 +35,28 @@ jobs:
         run: |
           set -euo pipefail
           grep -F 'targetSdk 36' apps/seva-global-android/app/build.gradle
-          grep -F 'https://seva-executive-studio-preview.vercel.app/' apps/seva-global-android/app/src/main/res/values/strings.xml
-          grep -F 'com.google.androidbrowserhelper.trusted.LauncherActivity' apps/seva-global-android/app/src/main/AndroidManifest.xml
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          module = Path('apps/seva-global-android/app/src/main')
+          resources = ET.parse(module / 'res/values/strings.xml').getroot()
+          values = {item.attrib['name']: (item.text or '').strip() for item in resources.findall('string')}
+          origin = 'https://seva.karimkatlane0.chatgpt.site'
+          assert values['launch_url'] == origin + '/superapp', 'Launch must match the canonical SEVA manifest start_url'
+          assert values['app_name'] == 'SEVA', 'Launcher name must match the SEVA manifest short_name'
+          statements = json.loads(values['asset_statements'].replace(r'\"', '"'))
+          assert statements == [{'relation': ['delegate_permission/common.handle_all_urls'], 'target': {'namespace': 'web', 'site': origin}}], 'App-to-web statement must use only the canonical HTTPS origin'
+          android = '{http://schemas.android.com/apk/res/android}'
+          app = ET.parse(module / 'AndroidManifest.xml').getroot().find('application')
+          assert app.get(android + 'usesCleartextTraffic') == 'false'
+          assert any(meta.get(android + 'name') == 'asset_statements' and meta.get(android + 'resource') == '@string/asset_statements' for meta in app.findall('meta-data'))
+          activity = app.find('activity')
+          assert activity.get(android + 'name') == 'com.google.androidbrowserhelper.trusted.LauncherActivity'
+          assert any(meta.get(android + 'name') == 'android.support.customtabs.trusted.DEFAULT_URL' and meta.get(android + 'value') == '@string/launch_url' for meta in activity.findall('meta-data'))
+          print('Canonical HTTPS launch, SEVA branding and app-to-web declaration validated; website DAL and signing remain separate release gates.')
+          PY
           if grep -R -n -E '(sk-proj-|sk-[A-Za-z0-9]{24,}|STRIPE_SECRET_KEY=|SEVA_BANK_IBAN=IT)' apps/seva-global-android; then
             echo 'ERROR: secret or payment details embedded in client source' >&2
             exit 1
@@ -51,6 +71,7 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$apk" | tee SEVA-global-android-badging.txt
           grep -F "targetSdkVersion:'36'" SEVA-global-android-badging.txt
           grep -F "package: name='ai.seva.global.debug'" SEVA-global-android-badging.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" | tee SEVA-global-android-debug-signature.txt
           sha256sum "$apk" | tee SEVA-global-android-debug-sha256.txt
       - uses: actions/upload-artifact@v4
         with:
@@ -59,5 +80,6 @@ jobs:
             apps/seva-global-android/app/build/outputs/apk/debug/app-debug.apk
             SEVA-global-android-badging.txt
             SEVA-global-android-debug-sha256.txt
+            SEVA-global-android-debug-signature.txt
           retention-days: 14
           if-no-files-found: error
