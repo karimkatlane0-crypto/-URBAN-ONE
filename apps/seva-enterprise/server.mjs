@@ -20,7 +20,7 @@ import {analyticsOverview} from './analytics.mjs';
 import {analyzeLastre} from './lastre.mjs';
 import {createNotificationCenter} from './notification-center.mjs';
 import {validateCommercialDraft,produceDraft} from './communications.mjs';
-import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
+import {validateRuntime,sameOrigin,databaseReady,requireSessionUser} from './runtime.mjs';
 import {bankConfig,BANK_PLAN_AMOUNTS} from './bank-transfer.mjs';
 
 validateRuntime();
@@ -36,7 +36,7 @@ const cookies=req=>Object.fromEntries((req.headers.cookie||'').split(';').map(x=
 const limiter=new Map();
 function rate(req,key,max=25){const now=Date.now();const id=key+':'+(req.socket.remoteAddress||'unknown');let row=limiter.get(id);if(!row||row.until<now){row={n:0,until:now+60000};limiter.set(id,row);}if(++row.n>max)throw Object.assign(Error('Rate limit reached'),{status:429});if(limiter.size>5000)for(const [k,v] of limiter)if(v.until<now)limiter.delete(k);}
 async function rawBody(req,max=100000){const chunks=[];let n=0;for await(const chunk of req){n+=chunk.length;if(n>max)throw Object.assign(Error('Request too large'),{status:413});chunks.push(chunk);}return Buffer.concat(chunks).toString('utf8');}
-function auth(req){const u=store.fromSession(cookies(req).seva_session);if(!u)throw Object.assign(Error('Please sign in'),{status:401});return u;}
+function auth(req){return requireSessionUser(store,cookies(req).seva_session);}
 function secureCookie(req){return process.env.NODE_ENV==='production'||req.headers['x-forwarded-proto']==='https'?'; Secure':'';}
 function setSession(res,req,token){res.setHeader('Set-Cookie',`seva_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureCookie(req)}`);}
 function status(){return {name:'SEVA',version:'2.4.1',edition:'Enterprise candidate',phases:['II','III'],aiConfigured:Boolean(process.env.OPENAI_API_KEY),generativeProviders:providerStatus(process.env),stripeConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_WEBHOOK_SECRET),salesEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&Boolean(process.env.SEVA_MONTHLY_PRICE_ID),salesPrice:'€50/mese',salesPlan:'MONTHLY_ONLY',annualCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true'&&process.env.SEVA_ANNUAL_SALES_ENABLED==='true',annualPlans:[{id:'buyer',price:'€50/anno'},{id:'ecommerce',price:'€500/anno'}],checkoutVerified:false,automaticRefundsEnabled:false,bankTransfer:bankConfig().status,bankOrderPrices:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents})),rewards:'ledger only; payout disabled until separate agreement'};}
@@ -112,13 +112,13 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   provider:'configured OpenAI Responses API only',claudeGemini:false,
   publicCheckoutEnabled:process.env.SEVA_PAYMENT_METHOD!=='sepa'&&process.env.SEVA_SALES_ENABLED==='true',status:'GATED'
  });
- if(path==='/api/developer/keys'&&method==='GET'){const u=auth(req);return json(res,200,{keys:developerApi.listKeys(u.id)});}
+ if(path==='/api/developer/keys'&&method==='GET'){const u=await auth(req);return json(res,200,{keys:developerApi.listKeys(u.id)});}
  if(path==='/api/developer/keys'&&method==='POST'){
-   rate(req,'developer-keys',5);const u=auth(req);const b=JSON.parse(await rawBody(req,300));
+   rate(req,'developer-keys',5);const u=await auth(req);const b=JSON.parse(await rawBody(req,300));
    return json(res,201,developerApi.issueKey(u.id,b.name));
  }
  if(path.startsWith('/api/developer/keys/')&&method==='DELETE'){
-   rate(req,'developer-revoke',10);const u=auth(req);
+   rate(req,'developer-revoke',10);const u=await auth(req);
    return json(res,200,developerApi.revokeKey(u.id,path.slice('/api/developer/keys/'.length)));
  }
  if(path==='/api/v1/ai/plan'&&method==='POST'){
@@ -128,7 +128,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
 
  if(path==='/api/communications/draft'&&method==='POST'){
   rate(req,'ai-communications',5);
-  const u=auth(req);
+  const u=await auth(req);
   const data=validateCommercialDraft(JSON.parse(await rawBody(req,2200)));
   if(!store.hasAccess(u.id)&&!(process.env.SEVA_ADMIN_EMAIL&&u.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))
    throw Object.assign(Error('Active SEVA plan required'),{status:402});
@@ -140,12 +140,12 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   store.audit(u.id,'communications_draft',result.id||'draft');
   return json(res,200,{...result,requiresHumanApproval:true,pricingVerified:false});
  }
- if(path==='/api/analytics/overview'&&method==='GET'){rate(req,'analytics-overview',40);const u=auth(req);return json(res,200,analyticsOverview(store,u.id));}
- if(path==='/api/lastre/intents'&&method==='GET'){rate(req,'lastre-list',40);const u=auth(req);return json(res,200,{intents:store.listIntents(u.id),photosStored:false});}
- if(path==='/api/lastre/intents'&&method==='POST'){rate(req,'lastre-create',12);const u=auth(req);return json(res,201,{id:store.createIntent(u.id,JSON.parse(await rawBody(req,6000))),photosStored:false});}
- if(path.startsWith('/api/lastre/intents/')&&method==='DELETE'){rate(req,'lastre-delete',20);const u=auth(req);return json(res,200,{deleted:store.deleteIntent(u.id,path.slice('/api/lastre/intents/'.length))});}
+ if(path==='/api/analytics/overview'&&method==='GET'){rate(req,'analytics-overview',40);const u=await auth(req);return json(res,200,analyticsOverview(store,u.id));}
+ if(path==='/api/lastre/intents'&&method==='GET'){rate(req,'lastre-list',40);const u=await auth(req);return json(res,200,{intents:store.listIntents(u.id),photosStored:false});}
+ if(path==='/api/lastre/intents'&&method==='POST'){rate(req,'lastre-create',12);const u=await auth(req);return json(res,201,{id:store.createIntent(u.id,JSON.parse(await rawBody(req,6000))),photosStored:false});}
+ if(path.startsWith('/api/lastre/intents/')&&method==='DELETE'){rate(req,'lastre-delete',20);const u=await auth(req);return json(res,200,{deleted:store.deleteIntent(u.id,path.slice('/api/lastre/intents/'.length))});}
  if(path==='/api/lastre/analyze'&&method==='POST'){
-  rate(req,'lastre-vision',3);const u=auth(req);
+  rate(req,'lastre-vision',3);const u=await auth(req);
   if(!process.env.OPENAI_API_KEY)throw Object.assign(Error('OpenAI server key not configured'),{status:503});
   if(!store.hasAccess(u.id)&&!(process.env.SEVA_ADMIN_EMAIL&&u.email===process.env.SEVA_ADMIN_EMAIL.toLowerCase()))throw Object.assign(Error('Active SEVA plan required'),{status:402});
   const payload=JSON.parse(await rawBody(req,1800000));
@@ -154,45 +154,45 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   return json(res,200,result);
  }
  if(path==='/api/notifications/preferences'&&method==='GET'){
-  const u=auth(req);return json(res,200,{preferences:notifications.prefs(u.id)});
+  const u=await auth(req);return json(res,200,{preferences:notifications.prefs(u.id)});
  }
  if(path==='/api/notifications/preferences'&&method==='PUT'){
-  rate(req,'notification-preferences',12);const u=auth(req);
+  rate(req,'notification-preferences',12);const u=await auth(req);
   const body=JSON.parse(await rawBody(req,500));
   return json(res,200,{preferences:notifications.setPrefs(u.id,body)});
  }
  if(path==='/api/notifications'&&method==='GET'){
-  rate(req,'notification-list',60);const u=auth(req);
+  rate(req,'notification-list',60);const u=await auth(req);
   return json(res,200,notifications.list(u.id));
  }
  if(path==='/api/notifications/read'&&method==='POST'){
-  rate(req,'notification-read',50);const u=auth(req);
+  rate(req,'notification-read',50);const u=await auth(req);
   const body=JSON.parse(await rawBody(req,500));
   return json(res,200,notifications.acknowledge(u.id,body.id));
  }
  if(path==='/api/notifications'&&method==='DELETE'){
-  rate(req,'notification-delete',6);const u=auth(req);
+  rate(req,'notification-delete',6);const u=await auth(req);
   return json(res,200,notifications.erase(u.id));
  }
  if(path==='/api/commerce/catalog'&&method==='GET')return json(res,200,{products:commerce.catalog(),pricingVerified:false});
- if(path==='/api/commerce/affiliate/opportunities'&&method==='GET'){const u=auth(req);return json(res,200,{opportunities:affiliateLedger.list(u.id),incomePaidCents:0,settlementExecuted:false,notice:'Internal audit candidates only; no partner payout, no automatic commission or charge on incomplete purchases.'});}
- if(path==='/api/commerce/profile'&&method==='GET'){const u=auth(req);return json(res,200,{profile:commerce.profile(u.id)});}
- if(path==='/api/commerce/profile'&&method==='PUT'){rate(req,'profile',20);const u=auth(req);return json(res,200,{profile:commerce.saveProfile(u.id,JSON.parse(await rawBody(req,3000)))});}
- if(path==='/api/commerce/profile'&&method==='DELETE'){rate(req,'eraseprofile',10);const u=auth(req);return json(res,200,commerce.deleteProfile(u.id));}
- if(path==='/api/commerce/student'&&method==='GET'){const u=auth(req);return json(res,200,{student:commerce.student(u.id)});}
- if(path==='/api/commerce/student/apply'&&method==='POST'){rate(req,'student-apply',3);const u=auth(req);return json(res,202,{student:commerce.applyStudent(u.id,JSON.parse(await rawBody(req,3000)))});}
- if(path==='/api/commerce/cart'&&method==='GET'){const u=auth(req);return json(res,200,{cart:commerce.getCart(u.id)});}
- if(path==='/api/commerce/cart'&&method==='PUT'){rate(req,'cart',40);const u=auth(req);return json(res,200,{cart:commerce.saveCart(u.id,JSON.parse(await rawBody(req,3000)))});}
- if(path==='/api/commerce/requests'&&method==='GET'){const u=auth(req);return json(res,200,{requests:commerce.quoteRequests(u.id)});}
- if(path==='/api/commerce/requests'&&method==='POST'){rate(req,'quote-request',10);const u=auth(req);return json(res,201,{request:commerce.requestQuote(u.id,JSON.parse(await rawBody(req,4000)))});}
+ if(path==='/api/commerce/affiliate/opportunities'&&method==='GET'){const u=await auth(req);return json(res,200,{opportunities:affiliateLedger.list(u.id),incomePaidCents:0,settlementExecuted:false,notice:'Internal audit candidates only; no partner payout, no automatic commission or charge on incomplete purchases.'});}
+ if(path==='/api/commerce/profile'&&method==='GET'){const u=await auth(req);return json(res,200,{profile:commerce.profile(u.id)});}
+ if(path==='/api/commerce/profile'&&method==='PUT'){rate(req,'profile',20);const u=await auth(req);return json(res,200,{profile:commerce.saveProfile(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/profile'&&method==='DELETE'){rate(req,'eraseprofile',10);const u=await auth(req);return json(res,200,commerce.deleteProfile(u.id));}
+ if(path==='/api/commerce/student'&&method==='GET'){const u=await auth(req);return json(res,200,{student:commerce.student(u.id)});}
+ if(path==='/api/commerce/student/apply'&&method==='POST'){rate(req,'student-apply',3);const u=await auth(req);return json(res,202,{student:commerce.applyStudent(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/cart'&&method==='GET'){const u=await auth(req);return json(res,200,{cart:commerce.getCart(u.id)});}
+ if(path==='/api/commerce/cart'&&method==='PUT'){rate(req,'cart',40);const u=await auth(req);return json(res,200,{cart:commerce.saveCart(u.id,JSON.parse(await rawBody(req,3000)))});}
+ if(path==='/api/commerce/requests'&&method==='GET'){const u=await auth(req);return json(res,200,{requests:commerce.quoteRequests(u.id)});}
+ if(path==='/api/commerce/requests'&&method==='POST'){rate(req,'quote-request',10);const u=await auth(req);return json(res,201,{request:commerce.requestQuote(u.id,JSON.parse(await rawBody(req,4000)))});}
  if(path==='/api/commerce/checkout'&&method==='POST'){
-   rate(req,'commerce-checkout',6);const u=auth(req);const cart=commerce.getCart(u.id);
+   rate(req,'commerce-checkout',6);const u=await auth(req);const cart=commerce.getCart(u.id);
    if(cart.items.length!==1||cart.items[0]?.sku!=='enterprise-monthly')throw Object.assign(Error('Unpriced or student cart requires a quote and verification'),{status:409});
    return json(res,200,await createCheckout(u));
  }
  if(path==='/api/commerce/assist'&&method==='POST'){
   rate(req,'commerce-assist',5);
-  const u=auth(req);
+  const u=await auth(req);
   const b=JSON.parse(await rawBody(req,2500));
   const intent=typeof b.intent==='string'?b.intent.trim():'';
   if(!intent||intent.length>900)return json(res,400,{error:'Provide a commerce intent of 1 to 900 characters'});
@@ -210,13 +210,13 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  }
  if(path==='/api/commercial/quote'&&method==='POST'){rate(req,'commercial',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{quote:quoteSEVA(body),checkoutEnabled:false});}
  if(path==='/api/commercial/redemption-preview'&&method==='POST'){rate(req,'redemption',30);const body=JSON.parse(await rawBody(req,12000));return json(res,200,{redemption:evaluateMarketingRedemption(body),paymentExecuted:false});}
- if(path==='/api/commercial/campaigns'&&method==='GET'){const u=auth(req);return json(res,200,{campaigns:store.listCampaigns(u.id)});}
- if(path==='/api/commercial/campaigns'&&method==='POST'){rate(req,'campaign-draft',12);const u=auth(req);const body=JSON.parse(await rawBody(req,12000));const quote=quoteSEVA(body.quote||{});const terms=body.terms||{};if(quote.marketingCents>0&&!terms.marketingConsentConfirmed)throw Object.assign(Error('Explicit marketing consent required'),{status:400});const id=store.saveCampaign(u.id,quote,terms);return json(res,201,{id,status:'draft',paymentExecuted:false});}
+ if(path==='/api/commercial/campaigns'&&method==='GET'){const u=await auth(req);return json(res,200,{campaigns:store.listCampaigns(u.id)});}
+ if(path==='/api/commercial/campaigns'&&method==='POST'){rate(req,'campaign-draft',12);const u=await auth(req);const body=JSON.parse(await rawBody(req,12000));const quote=quoteSEVA(body.quote||{});const terms=body.terms||{};if(quote.marketingCents>0&&!terms.marketingConsentConfirmed)throw Object.assign(Error('Explicit marketing consent required'),{status:400});const id=store.saveCampaign(u.id,quote,terms);return json(res,201,{id,status:'draft',paymentExecuted:false});}
  if(path==='/api/auth/register'&&method==='POST'){rate(req,'reg',5);const body=JSON.parse(await rawBody(req));const u=store.register(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,201,{user:u});}
  if(path==='/api/auth/login'&&method==='POST'){rate(req,'login',10);const body=JSON.parse(await rawBody(req));const u=store.login(body.email,body.password);setSession(res,req,store.newSession(u.id));return json(res,200,{user:u});}
  if(path==='/api/auth/logout'&&method==='POST'){const token=cookies(req).seva_session;if(token)store.db.prepare('DELETE FROM sessions WHERE token=?').run(token);res.setHeader('Set-Cookie',`seva_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secureCookie(req)}`);return json(res,200,{ok:true});}
  if(path==='/api/student'){
-  const u=auth(req),db=studentDatabase(store.db);
+  const u=await auth(req),db=studentDatabase(store.db);
   if(method==='GET')return json(res,200,{profile:await readStudent(db,u.id)});
   if(!['PUT','DELETE'].includes(method))return json(res,405,{error:'Method not allowed'});
   rate(req,'student-profile',20);
@@ -225,14 +225,14 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
   if(method==='PUT')return json(res,200,{profile:await saveStudent(db,u.id,b)});
   return json(res,200,await deleteStudent(db,u.id,b?.version));
  }
- if(path==='/api/me'&&method==='GET'){const u=auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id),activePlans:store.activePlans(u.id)});}
- if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=auth(req);return json(res,200,dbrelayStatus(store,u.id));}
- if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
- if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
- if(path==='/api/goals'&&method==='GET'){const u=auth(req);return json(res,200,{goals:store.listGoals(u.id)});}
- if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=auth(req);const body=JSON.parse(await rawBody(req));const id=store.saveGoal(u.id,body);notifications.publishGoal(u.id,id,body.status);return json(res,201,{id});}
- if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
- if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt,b.consent,b.provider));}
+ if(path==='/api/me'&&method==='GET'){const u=await auth(req);return json(res,200,{user:u,access:store.hasAccess(u.id),activePlans:store.activePlans(u.id)});}
+ if(path==='/api/dbrelay/status'&&method==='GET'){rate(req,'dbrelay-status',60);const u=await auth(req);return json(res,200,dbrelayStatus(store,u.id));}
+ if(path==='/api/dbrelay/snapshot'&&method==='GET'){rate(req,'dbrelay-snapshot',30);const u=await auth(req);return json(res,200,dbrelaySnapshot(store,u.id));}
+ if(path==='/api/dbrelay/changes'&&method==='GET'){rate(req,'dbrelay-changes',60);const u=await auth(req);return json(res,200,dbrelayChanges(store,u.id,url.searchParams.get('after')??'0',url.searchParams.get('limit')??'50'));}
+ if(path==='/api/goals'&&method==='GET'){const u=await auth(req);return json(res,200,{goals:store.listGoals(u.id)});}
+ if(path==='/api/goals'&&method==='POST'){rate(req,'goals',60);const u=await auth(req);const body=JSON.parse(await rawBody(req));const id=store.saveGoal(u.id,body);notifications.publishGoal(u.id,id,body.status);return json(res,201,{id});}
+ if(path.startsWith('/api/goals/')&&['PUT','DELETE'].includes(method)){const u=await auth(req);const id=path.slice('/api/goals/'.length);if(!/^[0-9a-f-]{36}$/.test(id))return json(res,400,{error:'Invalid goal ID'});if(method==='DELETE'){store.deleteGoal(u.id,id);return json(res,200,{ok:true});}const previous=store.listGoals(u.id).find(x=>x.id===id);const b=JSON.parse(await rawBody(req));const updated=store.saveGoal(u.id,b,id);if(previous?.status!==b.status)notifications.publishGoal(u.id,id,b.status);return json(res,200,{id:updated});}
+ if(path==='/api/ai/generate'&&method==='POST'){rate(req,'ai',6);const u=await auth(req);const b=JSON.parse(await rawBody(req,6000));return json(res,200,await aiPlan(u,b.prompt,b.consent,b.provider));}
  if(path==='/api/bank/status'&&method==='GET'){
   const cfg=bankConfig();const durable=store.persistent&&isAbsolute(process.env.SEVA_DB_PATH||'');
   const enabled=Boolean(cfg.enabled&&durable);
@@ -241,18 +241,18 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
     bankApiConnected:false,automaticDebit:false,accessOnScreenshot:false,
     plans:Object.entries(BANK_PLAN_AMOUNTS).map(([plan,v])=>({plan,amountCents:v.amountCents,currency:'EUR'}))});
  }
- if(path==='/api/bank/orders'&&method==='GET'){rate(req,'bank-list',20);const u=auth(req);return json(res,200,{orders:store.bank.list(u.id)});}
+ if(path==='/api/bank/orders'&&method==='GET'){rate(req,'bank-list',20);const u=await auth(req);return json(res,200,{orders:store.bank.list(u.id)});}
  if(path==='/api/bank/orders'&&method==='POST'){
-  rate(req,'bank-order',3);const u=auth(req);
+  rate(req,'bank-order',3);const u=await auth(req);
   if(!store.persistent||!isAbsolute(process.env.SEVA_DB_PATH||''))return json(res,503,{error:'Persistent absolute-path database required'});
   if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
   const b=JSON.parse(await rawBody(req,1000));
   const order=store.bank.place(u.id,b.plan,b.termsAccepted);
   return json(res,201,{order});
  }
- if(path==='/api/billing/checkout'&&method==='POST'){rate(req,'checkout',6);const u=auth(req);return json(res,200,await createCheckout(u));}
- if(path==='/api/billing/checkout/annual'&&method==='POST'){rate(req,'checkout-annual',6);const u=auth(req);const body=JSON.parse(await rawBody(req,2000));return json(res,200,await createAnnualCheckout(u,body.plan));}
- if(path==='/api/rewards'&&method==='GET'){const u=auth(req);return json(res,200,{rewards:store.rewards(u.id),payoutsEnabled:false});}
+ if(path==='/api/billing/checkout'&&method==='POST'){rate(req,'checkout',6);const u=await auth(req);return json(res,200,await createCheckout(u));}
+ if(path==='/api/billing/checkout/annual'&&method==='POST'){rate(req,'checkout-annual',6);const u=await auth(req);const body=JSON.parse(await rawBody(req,2000));return json(res,200,await createAnnualCheckout(u,body.plan));}
+ if(path==='/api/rewards'&&method==='GET'){const u=await auth(req);return json(res,200,{rewards:store.rewards(u.id),payoutsEnabled:false});}
  if(path.startsWith('/api/'))return json(res,404,{error:'Not found'});
  if(method!=='GET'&&method!=='HEAD')return json(res,405,{error:'Method not allowed'});
  const file=path==='/'?'/index.html':path;const full=resolve(root,'.'+file);if(!full.startsWith(root+'/')&&full!==root)return json(res,403,{error:'Denied'});
