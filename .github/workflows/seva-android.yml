@@ -48,6 +48,8 @@ jobs:
           print('Source assertions PASS: goals, KPI, Lastre CRM, marketing preview, WhatsApp manual, backups, CSP')
           PY
           node --check /tmp/seva-offline.js
+      - name: Compile optional Kotlin diagnostics (source library only, not linked into offline APK)
+        run: gradle -p apps/seva-android/online-diagnostics --no-daemon assembleDebug
       - name: Build SEVA app
         run: gradle -p apps/seva-android --no-daemon assembleDebug
       - name: Verify APK package and targets
