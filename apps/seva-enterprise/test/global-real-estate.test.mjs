@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {globalMatchRoute} from '../global-real-estate.mjs';
+const path='/api/v1/real-estate/global/match';
+const request={transaction:'sale',country:'IT',currency:'EUR',maxPrice:300000};
+const p={id:'x',transaction:'sale',country:'IT',currency:'EUR',price:200000};
+const run=(properties)=>globalMatchRoute({method:'POST',path,user:{id:'agent-1'},body:{request,properties}}).data;
+test('requires authentication',()=>assert.throws(()=>globalMatchRoute({method:'GET',path:'/api/v1/real-estate/global/capabilities',user:null}),{status:401}));
+test('public compatible listing matches',()=>assert.equal(run([p]).matches[0].eligible,true));
+test('off-market listing without grants denied',()=>assert.equal(run([{...p,visibility:'off_market'}]).matches[0].reason,'restricted_listing'));
+test('off-market all explicit grants required',()=>assert.equal(run([{...p,visibility:'off_market',ownerAuthorized:true,agentAccessGranted:true,embargoAllowsSharing:true}]).matches[0].eligible,true));
+test('cross currency cannot match without FX',()=>assert.equal(run([{...p,currency:'USD'}]).matches[0].eligible,false));
+test('capabilities disclose inactive monetization',()=>assert.equal(globalMatchRoute({method:'GET',path:'/api/v1/real-estate/global/capabilities',user:{id:'agent-1'}}).data.features.payouts,'not_enabled'));
