@@ -1,86 +1,86 @@
-# SEVA Enterprise — 72-node reconciliation
-Date: 2026-11-13
-Status: inventory scaffold; no individual node certified. No LIVE deployment.
+# SEVA Enterprise — 72 named audit checkpoints
+2026-11-13. Audit targets, not verified operational nodes. No LIVE changes.
 
-Evidence: PR #143 TITANS; #146 ML draft; #139 KKUBERA API; #141 MLS gated; #121 AI provider.
+Related code PRs: #139, #143, #146, #141, #121. Merge does not establish runtime success.
 
-| ID | Area | Component / scope | Dependencies | Commit | Test | CI evidence | Owner | Status |
-|---|---|---|---|---|---|---|---|---|
-| NODE-001 | TITANS orchestration | To identify (1/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-002 | TITANS orchestration | To identify (2/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-003 | TITANS orchestration | To identify (3/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-004 | TITANS orchestration | To identify (4/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-005 | TITANS orchestration | To identify (5/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-006 | TITANS orchestration | To identify (6/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-007 | TITANS orchestration | To identify (7/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-008 | TITANS orchestration | To identify (8/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-009 | TITANS orchestration | To identify (9/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-010 | TITANS orchestration | To identify (10/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-011 | TITANS orchestration | To identify (11/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-012 | TITANS orchestration | To identify (12/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-013 | AI ML LLM MLOps | To identify (1/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-014 | AI ML LLM MLOps | To identify (2/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-015 | AI ML LLM MLOps | To identify (3/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-016 | AI ML LLM MLOps | To identify (4/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-017 | AI ML LLM MLOps | To identify (5/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-018 | AI ML LLM MLOps | To identify (6/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-019 | AI ML LLM MLOps | To identify (7/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-020 | AI ML LLM MLOps | To identify (8/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-021 | AI ML LLM MLOps | To identify (9/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-022 | AI ML LLM MLOps | To identify (10/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-023 | AI ML LLM MLOps | To identify (11/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-024 | AI ML LLM MLOps | To identify (12/12) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-025 | KKUBERA GMAS MLS | To identify (1/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-026 | KKUBERA GMAS MLS | To identify (2/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-027 | KKUBERA GMAS MLS | To identify (3/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-028 | KKUBERA GMAS MLS | To identify (4/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-029 | KKUBERA GMAS MLS | To identify (5/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-030 | KKUBERA GMAS MLS | To identify (6/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-031 | KKUBERA GMAS MLS | To identify (7/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-032 | KKUBERA GMAS MLS | To identify (8/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-033 | KKUBERA GMAS MLS | To identify (9/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-034 | KKUBERA GMAS MLS | To identify (10/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-035 | CRM telecommunications | To identify (1/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-036 | CRM telecommunications | To identify (2/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-037 | CRM telecommunications | To identify (3/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-038 | CRM telecommunications | To identify (4/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-039 | CRM telecommunications | To identify (5/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-040 | CRM telecommunications | To identify (6/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-041 | CRM telecommunications | To identify (7/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-042 | CRM telecommunications | To identify (8/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-043 | CRM telecommunications | To identify (9/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-044 | CRM telecommunications | To identify (10/10) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-045 | Stripe payments commissions | To identify (1/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-046 | Stripe payments commissions | To identify (2/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-047 | Stripe payments commissions | To identify (3/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-048 | Stripe payments commissions | To identify (4/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-049 | Stripe payments commissions | To identify (5/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-050 | Stripe payments commissions | To identify (6/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-051 | Stripe payments commissions | To identify (7/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-052 | Stripe payments commissions | To identify (8/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-053 | Database DBRELAY backup | To identify (1/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-054 | Database DBRELAY backup | To identify (2/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-055 | Database DBRELAY backup | To identify (3/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-056 | Database DBRELAY backup | To identify (4/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-057 | Database DBRELAY backup | To identify (5/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-058 | Database DBRELAY backup | To identify (6/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-059 | Database DBRELAY backup | To identify (7/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-060 | Database DBRELAY backup | To identify (8/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-061 | DevSecOps CI observability | To identify (1/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-062 | DevSecOps CI observability | To identify (2/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-063 | DevSecOps CI observability | To identify (3/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-064 | DevSecOps CI observability | To identify (4/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-065 | DevSecOps CI observability | To identify (5/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-066 | DevSecOps CI observability | To identify (6/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-067 | DevSecOps CI observability | To identify (7/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-068 | DevSecOps CI observability | To identify (8/8) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-069 | Web Android iOS release | To identify (1/4) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-070 | Web Android iOS release | To identify (2/4) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-071 | Web Android iOS release | To identify (3/4) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
-| NODE-072 | Web Android iOS release | To identify (4/4) | TBD | TBD | TBD | TBD | Unassigned | NOT VERIFIED |
+| ID | Area | Checkpoint | Evidence | Owner / dependency | Status |
+|---|---|---|---|---|---|
+| NODE-001 | TITANS | Capabilities endpoint | Not linked | To establish | NOT VERIFIED |
+| NODE-002 | TITANS | Plan endpoint | Not linked | To establish | NOT VERIFIED |
+| NODE-003 | TITANS | Match preview | Not linked | To establish | NOT VERIFIED |
+| NODE-004 | TITANS | Execute fail closed | Not linked | To establish | NOT VERIFIED |
+| NODE-005 | TITANS | Six agent roles | Not linked | To establish | NOT VERIFIED |
+| NODE-006 | TITANS | Authentication | Not linked | To establish | NOT VERIFIED |
+| NODE-007 | TITANS | Tenant boundary | Not linked | To establish | NOT VERIFIED |
+| NODE-008 | TITANS | Audit events | Not linked | To establish | NOT VERIFIED |
+| NODE-009 | TITANS | Rate limiting | Not linked | To establish | NOT VERIFIED |
+| NODE-010 | TITANS | Human approval | Not linked | To establish | NOT VERIFIED |
+| NODE-011 | TITANS | Session lifecycle | Not linked | To establish | NOT VERIFIED |
+| NODE-012 | TITANS | Real execution | Not linked | To establish | NOT VERIFIED |
+| NODE-013 | AI ML | ML readiness | Not linked | To establish | NOT VERIFIED |
+| NODE-014 | AI ML | Offline ML tests | Not linked | To establish | NOT VERIFIED |
+| NODE-015 | AI ML | Model registry | Not linked | To establish | NOT VERIFIED |
+| NODE-016 | AI ML | Dataset provenance | Not linked | To establish | NOT VERIFIED |
+| NODE-017 | AI ML | Training consent | Not linked | To establish | NOT VERIFIED |
+| NODE-018 | AI ML | Inference authentication | Not linked | To establish | NOT VERIFIED |
+| NODE-019 | AI ML | OpenAI quota | Not linked | To establish | NOT VERIFIED |
+| NODE-020 | AI ML | OpenAI inference | Not linked | To establish | NOT VERIFIED |
+| NODE-021 | AI ML | Gemini opt in | Not linked | To establish | NOT VERIFIED |
+| NODE-022 | AI ML | Gemini inference | Not linked | To establish | NOT VERIFIED |
+| NODE-023 | AI ML | Model monitoring | Not linked | To establish | NOT VERIFIED |
+| NODE-024 | AI ML | MLOps rollback | Not linked | To establish | NOT VERIFIED |
+| NODE-025 | KKUBERA | REST OpenAPI | Not linked | To establish | NOT VERIFIED |
+| NODE-026 | KKUBERA | Catalog authorization | Not linked | To establish | NOT VERIFIED |
+| NODE-027 | KKUBERA | Off market grants | Not linked | To establish | NOT VERIFIED |
+| NODE-028 | KKUBERA | Sale scoring | Not linked | To establish | NOT VERIFIED |
+| NODE-029 | KKUBERA | Rental scoring | Not linked | To establish | NOT VERIFIED |
+| NODE-030 | KKUBERA | Country validation | Not linked | To establish | NOT VERIFIED |
+| NODE-031 | KKUBERA | Currency validation | Not linked | To establish | NOT VERIFIED |
+| NODE-032 | KKUBERA | MLS license | Not linked | To establish | NOT VERIFIED |
+| NODE-033 | KKUBERA | MLS ingestion | Not linked | To establish | NOT VERIFIED |
+| NODE-034 | KKUBERA | CRM import preview | Not linked | To establish | NOT VERIFIED |
+| NODE-035 | CRM Telecom | Contact schema | Not linked | To establish | NOT VERIFIED |
+| NODE-036 | CRM Telecom | Import consent | Not linked | To establish | NOT VERIFIED |
+| NODE-037 | CRM Telecom | Deduplication | Not linked | To establish | NOT VERIFIED |
+| NODE-038 | CRM Telecom | Tenant isolation | Not linked | To establish | NOT VERIFIED |
+| NODE-039 | CRM Telecom | Lead lifecycle | Not linked | To establish | NOT VERIFIED |
+| NODE-040 | CRM Telecom | Activity audit | Not linked | To establish | NOT VERIFIED |
+| NODE-041 | CRM Telecom | Skebby credentials | Not linked | To establish | NOT VERIFIED |
+| NODE-042 | CRM Telecom | Skebby callback | Not linked | To establish | NOT VERIFIED |
+| NODE-043 | CRM Telecom | WhatsApp authorization | Not linked | To establish | NOT VERIFIED |
+| NODE-044 | CRM Telecom | Meta permissions | Not linked | To establish | NOT VERIFIED |
+| NODE-045 | Payments | Stripe TEST prices | Not linked | To establish | NOT VERIFIED |
+| NODE-046 | Payments | Checkout TEST | Not linked | To establish | NOT VERIFIED |
+| NODE-047 | Payments | Signed webhook | Not linked | To establish | NOT VERIFIED |
+| NODE-048 | Payments | Idempotency | Not linked | To establish | NOT VERIFIED |
+| NODE-049 | Payments | Renewal | Not linked | To establish | NOT VERIFIED |
+| NODE-050 | Payments | Cancellation | Not linked | To establish | NOT VERIFIED |
+| NODE-051 | Payments | Commission reconciliation | Not linked | To establish | NOT VERIFIED |
+| NODE-052 | Payments | LIVE prohibition | Not linked | To establish | NOT VERIFIED |
+| NODE-053 | Database | PostgreSQL inventory | Not linked | To establish | NOT VERIFIED |
+| NODE-054 | Database | SQLite inventory | Not linked | To establish | NOT VERIFIED |
+| NODE-055 | Database | D1 inventory | Not linked | To establish | NOT VERIFIED |
+| NODE-056 | Database | DBRELAY connectivity | Not linked | To establish | NOT VERIFIED |
+| NODE-057 | Database | Migrations | Not linked | To establish | NOT VERIFIED |
+| NODE-058 | Database | Tenant isolation | Not linked | To establish | NOT VERIFIED |
+| NODE-059 | Database | Backup | Not linked | To establish | NOT VERIFIED |
+| NODE-060 | Database | Restore | Not linked | To establish | NOT VERIFIED |
+| NODE-061 | DevSecOps | Node syntax | Not linked | To establish | NOT VERIFIED |
+| NODE-062 | DevSecOps | Node tests | Not linked | To establish | NOT VERIFIED |
+| NODE-063 | DevSecOps | GitHub CI | Not linked | To establish | NOT VERIFIED |
+| NODE-064 | DevSecOps | Dependency scan | Not linked | To establish | NOT VERIFIED |
+| NODE-065 | DevSecOps | Secret scan | Not linked | To establish | NOT VERIFIED |
+| NODE-066 | DevSecOps | Runtime logs | Not linked | To establish | NOT VERIFIED |
+| NODE-067 | DevSecOps | SLO alerting | Not linked | To establish | NOT VERIFIED |
+| NODE-068 | DevSecOps | Release approval | Not linked | To establish | NOT VERIFIED |
+| NODE-069 | Web Mobile | Web smoke test | Not linked | To establish | NOT VERIFIED |
+| NODE-070 | Web Mobile | Android physical test | Not linked | To establish | NOT VERIFIED |
+| NODE-071 | Web Mobile | iOS parity | Not linked | To establish | NOT VERIFIED |
+| NODE-072 | Web Mobile | Production release gate | Not linked | To establish | NOT VERIFIED |
 
-## Gates
-- Record real component and provenance for each node before marking PASS.
-- Verify auth, tenant isolation, provider credentials, database restore, Stripe TEST and agent execution separately.
-- Require CI and end-to-end evidence before review or merge.
-- Production and Stripe LIVE remain disabled. Human approval required for release.
+## Rules
+Each PASS requires exact code path, commit, named test, CI run and where applicable provider end-to-end evidence.
+BLOCKED requires a dependency; FAIL a reproduced defect. A merged PR alone is not PASS.
+No merge or LIVE deployment before review, verification and explicit release approval.
+
+**Scope reconciliation: 72/72 named. Technical certification: 0/72 PASS.**
