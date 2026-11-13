@@ -1,0 +1,45 @@
+openapi: 3.1.0
+info:
+  title: SEVA KKUBERA Real Estate Agent API
+  version: 0.1.0-draft
+  description: Proposed contract only; routes are not deployed. Off-market data requires explicit owner authorization and tenant-scoped grants.
+servers:
+  - url: https://example.invalid
+    description: Placeholder, not a live endpoint
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/real-estate/properties:
+    get:
+      summary: Search authorized sale and rental inventory
+      parameters:
+        - in: query
+          name: transaction
+          schema: {type: string, enum: [sale, rental]}
+        - in: query
+          name: visibility
+          schema: {type: string, enum: [public, off_market]}
+      responses:
+        '200':
+          description: Tenant-filtered inventory, embargo and grants enforced
+        '403':
+          description: Unauthorized
+  /api/v1/real-estate/imports/preview:
+    post:
+      summary: Preview authorized CRM migration without writing
+      responses:
+        '200': {description: Mapping and deduplication preview}
+        '403': {description: Unauthorized}
+  /api/v1/real-estate/decisions/score:
+    post:
+      summary: Explainable, non-binding risk and opportunity score
+      responses:
+        '200': {description: Evidence and human-review requirements}
+  /api/v1/real-estate/agents/tasks:
+    post:
+      summary: Submit auditable task to SEVA orchestrator
+      responses:
+        '202': {description: Accepted for authorized processing}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
