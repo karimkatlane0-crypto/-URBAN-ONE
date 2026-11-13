@@ -94,7 +94,7 @@ test('OpenAI adapter remains the default and uses its original consented payload
   OPENAI_API_KEY:'synthetic-openai-key',OPENAI_MODEL:'synthetic-model'
  },async(url,options)=>{
   called={url,options};return {ok:true,json:async()=>({
-   id:'resp_synthetic',model:'synthetic-model',output_text:'Mock reply'
+   id:'resp_synthetic',status:'completed',model:'synthetic-model',output_text:'Mock reply'
   })};
  });
  assert.equal(result.provider,'OpenAI');
