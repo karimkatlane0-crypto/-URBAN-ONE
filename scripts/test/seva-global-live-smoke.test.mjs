@@ -14,7 +14,7 @@ function mockFetch({failPath=null,unreachable=false,manifestPatch={},manifestTyp
   if(target.path===redirectPath)return new Response(null,{status:302,headers:{location:'https://historical-preview.example/'}});
   const type=target.type==='html'?'text/html':target.type==='manifest'?manifestType:'text/javascript';
   const body=target.type==='manifest'
-   ?JSON.stringify({id:'/superapp',name:'SEVA Intelligence Studio · Enterprise',short_name:'SEVA',start_url:'/superapp',scope:'/',display:'standalone',icons:[192,512].map(size=>({src:'/assets/seva-icon-'+size+'.png',sizes:size+'x'+size,type:'image/png'})),...manifestPatch})
+   ?JSON.stringify({id:'/superapp',name:'SYNAPSY · SEVA Intelligence Studio',short_name:'SYNAPSY',start_url:'/app?section=home',scope:'/',display:'standalone',icons:[192,512].map(size=>({src:'/assets/seva-icon-'+size+'.png',sizes:size+'x'+size,type:'image/png'})),...manifestPatch})
    :'<html> '+target.contains+' test static response </html>';
   return new Response(body,{status:200,headers:{'content-type':type}});
  };
@@ -43,8 +43,8 @@ test('Every public request checks the canonical Sites destination without follow
   assert.equal(options.headers,undefined);
  }
 });
-test('A different PWA identity, start page, icon origin or content type cannot pass as the SEVA app',async()=>{
- for(const manifestPatch of [{id:'/global'},{start_url:'/account'},{scope:'/other/'},{short_name:'Other app'},{icons:[{sizes:'192x192',src:'https://other.example/icon.png',type:'image/png'},{sizes:'512x512',src:'/assets/seva-icon-512.png',type:'image/png'}]}]){
+test('A different PWA identity, start page, icon origin or content type cannot pass as the current SYNAPSY app',async()=>{
+ for(const manifestPatch of [{id:'/global'},{start_url:'/account'},{start_url:'/superapp'},{scope:'/other/'},{short_name:'Other app'},{short_name:'SEVA'},{icons:[{sizes:'192x192',src:'https://other.example/icon.png',type:'image/png'},{sizes:'512x512',src:'/assets/seva-icon-512.png',type:'image/png'}]}]){
   const r=await runSmoke({fetchImpl:mockFetch({manifestPatch})});
   assert.equal(r.frontend.status,'HTTP_SMOKE_FAIL');
   assert.deepEqual(r.frontend.routes.filter(x=>!x.ok).map(x=>x.path),['/superapp.webmanifest']);

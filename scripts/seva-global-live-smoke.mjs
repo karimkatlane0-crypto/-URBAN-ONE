@@ -10,7 +10,7 @@ export const FRONTEND_ROUTES=[
   {path:'/mobile',type:'html',contains:'/superapp.webmanifest'},
   {path:'/account',type:'html',contains:'/account.webmanifest'},
   {path:'/sw.js',type:'javascript',contains:'addEventListener'},
-  {path:'/superapp.webmanifest',type:'manifest',contains:'SEVA'}
+  {path:'/superapp.webmanifest',type:'manifest',contains:'SYNAPSY'}
 ];
 
 const approvedBackend=value=>{
@@ -38,8 +38,8 @@ export async function runSmoke({fetchImpl=fetch,backendOrigin=null,requestTimeou
      let manifest;try{manifest=JSON.parse(body);}catch{manifest=null;}
      matches=Boolean(
        (contentType.includes('application/manifest+json')||contentType.includes('application/json'))&&
-       typeof manifest?.name==='string'&&manifest.name.length>0&&manifest.short_name==='SEVA'&&
-       manifest.id==='/superapp'&&manifest.start_url==='/superapp'&&manifest.scope==='/'&&manifest.display==='standalone'&&
+       typeof manifest?.name==='string'&&manifest.name.length>0&&manifest.short_name==='SYNAPSY'&&
+       manifest.id==='/superapp'&&manifest.start_url==='/app?section=home'&&manifest.scope==='/'&&manifest.display==='standalone'&&
        Array.isArray(manifest.icons)&&[192,512].every(size=>manifest.icons.some(i=>i?.sizes===size+'x'+size&&i.src==='/assets/seva-icon-'+size+'.png'&&i.type==='image/png'))
      );
    }
