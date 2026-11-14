@@ -1,3 +1,4 @@
+import {createMobileUiHandler} from './mobile-sync-ui.mjs';
 import {createServer} from 'node:http';
 import {createStore} from './core.mjs';
 import {createMobileHandler} from './mobile-sync-api.mjs';
@@ -16,8 +17,10 @@ const port=Number(process.env.SEVA_MOBILE_PORT||3001);
 if(!Number.isInteger(port)||port<1024||port>65535)throw Error('Invalid mobile port');
 const store=createStore(process.env.SEVA_DB_PATH);
 const handler=createMobileHandler({db:store.db,authenticate:mobileSessionAuthenticator(store),
-  enabled:true,signingKey:key,allowedOrigin:origin.origin});
+  enabled:true,signingKey:key,allowedOrigin:origin.origin,requireScopeBinding:true});
+const serveUi=createMobileUiHandler();
 const server=createServer(async(req,res)=>{
+  if(serveUi(req,res))return;
   if(!await handler(req,res)){res.writeHead(404,{'Cache-Control':'no-store'});res.end();}
 });
 server.requestTimeout=15000;server.headersTimeout=10000;
