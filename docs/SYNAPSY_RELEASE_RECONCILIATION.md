@@ -9,7 +9,9 @@ per un rilascio operativo. La revisione riguarda gli allegati Python, Docker,
 Kotlin e JavaScript, il registro delle ricevute e lo script `deploy_all.sh`
 recuperato separatamente. Lo ZIP originale `synapsy-urban-one-turnkey-v2.zip` e
 il verificatore originale `verify_all_integrations.py` non sono stati reperiti.
-Non si attribuiscono loro contenuti o risultati non osservati.
+Non si attribuiscono loro contenuti o risultati non osservati. Il nuovo file
+con questo nome, aggiunto alla radice nella continuazione della PR #162, è
+un entry point di compatibilità per il verificatore offline esistente.
 
 Questa modifica aggiunge un controllo preventivo offline e corregge lo scanner
 HTTP. Non integra il gateway Python nel runtime Node del repository e non
@@ -71,6 +73,64 @@ Senza `--output`, il JSON viene stampato su standard output.
 
 Le euristiche sono mirate ai file esaminati e non costituiscono un audit di
 sicurezza esaustivo. Il verificatore non dispone di un esito automatico GO LIVE.
+
+## Comando richiesto: verifica obbligatoria prima del rilascio
+
+La radice del repository ora include `verify_all_integrations.py` e
+`deploy_all.sh`. Il primo richiama `scripts/verify_synapsy_release.py` senza
+duplicarne l'analisi. Il secondo esegue sempre il primo prima di qualsiasi
+possibile rilascio. Entrambi propagano gli esiti negativi e impediscono che
+un risultato inatteso zero del verificatore venga interpretato come GO LIVE.
+
+Il comando è:
+
+```bash
+chmod +x deploy_all.sh
+./deploy_all.sh --source-dir /percorso/allegati
+```
+
+Se si vuole rendere esplicito anche il controllo iniziale:
+
+```bash
+python3 verify_all_integrations.py --source-dir /percorso/allegati &&
+chmod +x deploy_all.sh &&
+./deploy_all.sh --source-dir /percorso/allegati
+```
+
+Gli `&&` sono necessari: la concatenazione
+`verify_all_integrations.pychmod` non è un comando valido. L'invocazione
+diretta dello script shell mantiene comunque il controllo obbligatorio.
+
+I percorsi espliciti sono risolti rispetto alla directory del chiamante.
+Senza `--source-dir` vengono ispezionati i file accanto al nuovo entry point;
+file mancanti restano `MISSING`, con esito `NOT_VERIFIED`. Se presente nella
+directory sorgente, `synapsy_verification_receipts.json` viene letto
+automaticamente. `--receipts` permette di scegliere un file diverso.
+Per default viene ispezionato lo script shell accanto all'entry point;
+`--deploy-script` permette di analizzare un diverso script come dato.
+Il checkout che contiene gli entry point viene osservato automaticamente,
+quando presente, e il suo contenuto è protetto dall'output del rapporto.
+
+Per salvare il rapporto si può aggiungere
+`--output /percorso/esterno/nuovo-rapporto.json`. Il file deve essere nuovo;
+il suo salvataggio non trasforma il codice di uscita negativo in un successo.
+Non usare due volte lo stesso percorso di output nella sequenza a due
+verifiche. `--help` descrive i parametri e non esegue alcun controllo.
+
+Questi entry point non copiano allegati nei file di produzione, non mettono
+intere directory in staging e non eseguono commit o push. Conservano il
+Dockerfile Node, il workflow corretto, il reporter e la configurazione mobile.
+Python mancante, verificatore mancante, input invalido e timeout bloccano la
+procedura. Gli input Python e shell vengono letti come dati.
+
+**Limite operativo:** il nome `deploy_all.sh` viene mantenuto per compatibilità,
+ma questa versione realizza il controllo preventivo e il blocco del rilascio.
+Non contiene un adattatore di deploy del gateway Python, che non è ancora
+integrato nel runtime Node. L'assenza di questo percorso è dichiarata e
+blocca la procedura anche se un futuro verificatore dovesse restituire zero.
+Per consentire il rilascio serviranno un percorso provider concreto, una
+versione candidata identificata, i controlli pertinenti e la verifica della
+versione effettivamente distribuita; non è previsto un flag per saltarli.
 
 ## Impronta del registro: cosa è verificato
 
@@ -152,6 +212,7 @@ e il confronto di run/commit nel sito. La procedura esistente è in
 
 ```bash
 node --test tests/synapsy-route-audit.test.mjs tests/synapsy-release-preflight.test.mjs
+node --test tests/synapsy-deploy-entrypoint.test.mjs
 npm test
 ```
 
