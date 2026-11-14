@@ -4,6 +4,8 @@ on:
     paths:
       - 'apps/seva-enterprise/mobile-sync-*.mjs'
       - 'apps/seva-enterprise/test/mobile-sync-*.test.mjs'
+      - 'apps/seva-enterprise/test/helpers/mobile-workspace-fixture.mjs'
+      - 'apps/seva-enterprise/mobile-crm/**'
       - '.github/workflows/mobile-sync-security.yml'
 permissions:
   contents: read
@@ -18,6 +20,6 @@ jobs:
           node-version: '22'
       - name: Syntax checks
         run: |
-          for f in apps/seva-enterprise/mobile-sync-*.mjs; do node --check "$f"; done
+          for f in apps/seva-enterprise/mobile-sync-*.mjs apps/seva-enterprise/mobile-crm/*.mjs; do node --check "$f"; done
       - name: HTTP, tenant, replay, audit and encrypted restore tests
         run: node --experimental-sqlite --test apps/seva-enterprise/test/mobile-sync-*.test.mjs

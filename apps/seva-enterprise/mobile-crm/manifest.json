@@ -1,0 +1,46 @@
+{
+  "schema": "seva-crm-executive-build/v1",
+  "buildDate": "2026-11-14",
+  "basis": "PR #157 merged; repository base b89a51e248f785302533c972740f1e3af46ce4ab",
+  "mode": "staging_candidate",
+  "productionVerified": false,
+  "paymentConfigurationChanged": false,
+  "automaticCharges": false,
+  "automaticBroadcasts": false,
+  "agentExecutionEnabled": false,
+  "publicUiPath": "/mobile-crm/",
+  "apiPrefix": "/api/v1/mobile",
+  "browserPersistence": "memory_only_with_explicit_encrypted_outbox_export",
+  "database": "existing_mobile_sync_sqlite",
+  "scopeBinding": "server_signed_subject_tenant_role_15_minutes",
+  "frontOffice": "internal_operational_register_not_OTA_or_authority_filing",
+  "remainingGates": [
+    "hosted_login_https_proxy",
+    "physical_android_ios",
+    "production_database_and_restore",
+    "external_audit_anchor",
+    "separate_provider_and_payment_e2e"
+  ],
+  "verification": {
+    "nodeHttpSqliteTests": {
+      "pass": 51,
+      "fail": 0,
+      "skip": 0
+    },
+    "offlineDomComponentChecks": {
+      "pass": 20,
+      "fail": 0,
+      "transport": "synthetic"
+    },
+    "browserHttpEndToEnd": "BLOCKED_BY_ADMINISTRATOR",
+    "viewportsCssPx": [
+      320,
+      360,
+      390,
+      768,
+      1024,
+      1440
+    ],
+    "newCommitCi": "PENDING"
+  }
+}

@@ -1,3 +1,4 @@
+import {stayFields,validateStay} from './mobile-sync-stay.mjs';
 import {createHash, createHmac, timingSafeEqual} from 'node:crypto';
 
 // Additive, disabled-by-default API. Provision subjects/sources OUTSIDE this API.
@@ -54,6 +55,7 @@ function keys(value, allowed) {
   if(Object.keys(value).some(k=>!allowed.includes(k))) throw fault(400,'unexpected_field');
 }
 const fields = {
+  stay:stayFields,
   crm:['displayName','email','phone','company','country','region','province','municipality'],
   partner:['organization','contactEmail','country'],
   task:['title','status'], evidence:['title','reference'], device:['label','platform']
@@ -115,7 +117,7 @@ async function body(req) {
 }
 
 export function createMobileHandler({db,authenticate,enabled=false,signingKey,
-  allowedOrigin,now=Date.now,rateLimit=120}={}) {
+  allowedOrigin,now=Date.now,rateLimit=120,requireScopeBinding=false}={}) {
   if(!db || typeof authenticate!=='function') throw new TypeError('db and authenticate required');
   initMobileSchema(db);
   const keyOK=Buffer.isBuffer(signingKey)&&signingKey.length>=32;
@@ -136,6 +138,20 @@ export function createMobileHandler({db,authenticate,enabled=false,signingKey,
     if(value.tenant!==tenant)throw fault(403,'cursor_scope_mismatch');
     if(!Number.isSafeInteger(value.expires)||value.expires<now())throw fault(410,'cursor_expired');
     return value.after;
+  }
+  function scopeToken(principal) {
+    const text=Buffer.from(JSON.stringify({subject:principal.subject,tenant:principal.tenant,
+      role:principal.role,expires:now()+900000})).toString('base64url');
+    return text+'.'+mac(signingKey,'browser-scope',text);
+  }
+  function checkScope(token,principal) {
+    if(typeof token!=='string'||token.length>2048)throw fault(403,'scope_binding_required');
+    const [text,signature,...extra]=token.split('.');
+    if(extra.length||!equal(signature,mac(signingKey,'browser-scope',text)))throw fault(403,'scope_binding_invalid');
+    let value;try{value=JSON.parse(Buffer.from(text,'base64url').toString());}catch{throw fault(403,'scope_binding_invalid');}
+    if(!value||value.subject!==principal.subject||value.tenant!==principal.tenant||value.role!==principal.role)
+      throw fault(403,'scope_binding_changed');
+    if(!Number.isSafeInteger(value.expires)||value.expires<now())throw fault(403,'scope_binding_expired');
   }
   function apply(principal, sourceId, operations, action='mobile_sync') {
     return transaction(db,()=>{
@@ -163,6 +179,7 @@ export function createMobileHandler({db,authenticate,enabled=false,signingKey,
           || (current&&current.kind!==op.kind) || (!current&&op.operation==='delete')) {
           result={operationId:op.operationId,recordId:op.recordId,status:'conflict',currentVersion:current?.version||0};
         } else {
+          if(op.kind==='stay')validateStay(current?JSON.parse(current.payload):null,op.payload,op.operation);
           const version=(current?.version||0)+1, deleted=Number(op.operation==='delete');
           const text=JSON.stringify(deleted?{}:op.payload), at=new Date(now()).toISOString();
           db.prepare(`INSERT INTO mobile_records VALUES(?,?,?,?,?,?,?)
@@ -198,6 +215,8 @@ export function createMobileHandler({db,authenticate,enabled=false,signingKey,
       if(!user||!id(user.id))throw fault(401,'authentication_required');
       const principal=db.prepare('SELECT * FROM mobile_subjects WHERE subject=? AND active=1').get(user.id);
       if(!principal)throw fault(403,'membership_required');
+      if(req.headers['x-seva-mobile-scope']!==undefined||(requireScopeBinding&&req.method==='POST'))
+        checkScope(req.headers['x-seva-mobile-scope'],principal);
       const time=now();
       for(const [k,v] of limits)if(v.until<=time)limits.delete(k);
       let window=limits.get(principal.subject);
@@ -209,7 +228,7 @@ export function createMobileHandler({db,authenticate,enabled=false,signingKey,
       if(req.method==='GET'&&url.pathname==='/api/v1/mobile/me') {
         const data=transaction(db,()=>{
           audit(db,signingKey,principal,'mobile_identity_read',{},now);
-          return {subject:principal.subject,tenant:principal.tenant,role:principal.role,mode:'staging',livePayments:false};
+          return {subject:principal.subject,tenant:principal.tenant,role:principal.role,scopeToken:scopeToken(principal),mode:'staging',livePayments:false};
         });return reply(200,data);
       }
       if(req.method==='GET'&&url.pathname==='/api/v1/mobile/sync') {
