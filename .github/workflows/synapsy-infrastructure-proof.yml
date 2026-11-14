@@ -1,0 +1,68 @@
+name: SYNAPSY Infrastructure Proofs
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/synapsy-infrastructure-proof.yml'
+      - 'scripts/synapsy-infrastructure-proof.mjs'
+      - 'tests/synapsy-infrastructure-proof.test.mjs'
+  push:
+    branches: ['main-@URBAN-ONE']
+    paths:
+      - '.github/workflows/synapsy-infrastructure-proof.yml'
+      - 'scripts/synapsy-infrastructure-proof.mjs'
+      - 'tests/synapsy-infrastructure-proof.test.mjs'
+  workflow_run:
+    workflows: ['ci']
+    types: [completed]
+    branches: ['main-@URBAN-ONE']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test signed CI reporting without provider credentials
+        run: node --test tests/synapsy-infrastructure-proof.test.mjs
+
+  report:
+    # workflow_run has access to secrets. Never execute its head commit or artifacts.
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.repository == 'karimkatlane0-crypto/-URBAN-ONE' &&
+      github.event.action == 'completed' &&
+      github.event.repository.default_branch == 'main-@URBAN-ONE' &&
+      github.event.workflow_run.name == 'ci' &&
+      (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') &&
+      github.event.workflow_run.status == 'completed' &&
+      github.event.workflow_run.head_branch == 'main-@URBAN-ONE' &&
+      github.event.workflow_run.head_repository.full_name == 'karimkatlane0-crypto/-URBAN-ONE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read reporter from the trusted default branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'main-@URBAN-ONE'
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/synapsy-infrastructure-proof.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Deliver the actual completed CI result
+        env:
+          SYNAPSY_WEBHOOK_SECRET: ${{ secrets.SYNAPSY_WEBHOOK_SECRET }}
+        run: node scripts/synapsy-infrastructure-proof.mjs
+
