@@ -1,0 +1,29 @@
+name: svaiam-security
+on:
+  push:
+    branches: [feature/seva-svaiam-sovereign-enterprise]
+    paths:
+      - 'apps/seva-enterprise/svaiam-sovereign-policy.mjs'
+      - 'apps/seva-enterprise/test/svaiam-sovereign-policy.test.mjs'
+      - '.github/workflows/svaiam-security.yml'
+  pull_request:
+    paths:
+      - 'apps/seva-enterprise/svaiam-sovereign-policy.mjs'
+      - 'apps/seva-enterprise/test/svaiam-sovereign-policy.test.mjs'
+      - '.github/workflows/svaiam-security.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sovereign-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check apps/seva-enterprise/svaiam-sovereign-policy.mjs
+      - name: RBAC, tenant, audit, RAG fail-closed tests
+        run: node --test apps/seva-enterprise/test/svaiam-sovereign-policy.test.mjs
