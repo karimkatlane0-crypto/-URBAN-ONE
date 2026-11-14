@@ -1,8 +1,10 @@
 package ai.seva.enterprise.diagnostics
 
+import ai.seva.enterprise.config.SynapsyProdConfig
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -54,6 +57,7 @@ fun MainDashboardScreen(
     ) {
         ErrorSummaryWidget(stats = stats, onCardClick = navigateToDiagnostics)
         NotificationPermissionAction()
+        SynapsySiteAction()
         // Compose the remainder of the ONLINE dashboard here.
     }
 }
@@ -83,5 +87,24 @@ fun NotificationPermissionAction() {
     ) { /* Honor denial: no repeated automatic prompt. */ }
     Button(onClick = { launcher.launch(Manifest.permission.POST_NOTIFICATIONS) }) {
         Text("Abilita notifiche diagnostiche")
+    }
+}
+
+/**
+ * Explicit navigation only. The browser owns its session; no app credentials,
+ * diagnostics records or offline operations are copied into the Site.
+ */
+@Composable
+fun SynapsySiteAction() {
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Button(onClick = {
+            runCatching { uriHandler.openUri(SynapsyProdConfig.BASE_URL) }
+                .onFailure { Toast.makeText(context, "Nessun browser disponibile.", Toast.LENGTH_LONG).show() }
+        }) {
+            Text("Apri SYNAPSY nel browser")
+        }
+        Text("La sincronizzazione automatica non è attiva. L’accesso avviene nel browser.")
     }
 }

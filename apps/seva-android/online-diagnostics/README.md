@@ -43,3 +43,34 @@ This directory is optional source for a future connected SEVA Enterprise Android
 
 Verification level: candidate source only; NOT a compiled Kotlin module, NOT published to mobile devices, NOT Play approved.
 Rollback: close the draft PR without merging; shipping offline app remains unchanged.
+
+## SYNAPSY configuration attachment — 14 November 2026
+
+The supplied `SynapsyProdConfig.kt` is integrated in this Kotlin library under
+`ai.seva.enterprise.config`, matching the existing Android namespace family.
+The original attachment's SHA-256 is
+`b376eb3dfe5118c16d217212403e46154355b2431bbe07581c027fc8496f065c`.
+
+- `BASE_URL` is consumed by an explicit **Apri SYNAPSY nel browser** action in
+  `MainDashboardScreen`. It opens only the canonical Site origin. The installed
+  browser owns authentication; no JavaScript bridge, cookies, diagnostics records
+  or app credentials are sent by this action.
+- `SYNC_GATEWAY_URL` records the same-origin `/api/synapsy/` contract. This
+  library does not call it, infer a connected account or start a sync job.
+- `ENABLE_OFFLINE_ROOM_QUEUE` is `false`. The existing Room error log is not an
+  authenticated outbox. Changing the flag alone cannot implement delivery,
+  deduplication, conflict handling or an account boundary.
+- `RESPECT_SYSTEM_SCREEN_READER` is a declared policy only. This library has no
+  internal TTS engine or runtime screen-reader adapter. It does not suppress
+  TalkBack or claim a handset accessibility test.
+
+The source is part of the optional AAR build, not an installed Android app.
+The existing `apps/seva-global-android` TWA continues to read its canonical
+`/superapp` launch URL from Android resources. The existing offline Java APK
+retains its network block and local data. No Room synchronization, automatic
+payments or messaging, production signing, DAL verification or Play release is
+activated by this attachment integration.
+
+Validation for this change must distinguish the Kotlin AAR build from installation
+and real-device tests. Neither a configuration constant nor a successful HTTP
+response certifies either device execution or provider delivery.
