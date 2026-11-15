@@ -1,0 +1,57 @@
+{
+  "schema": "synapsy-public-release-evidence",
+  "version": 1,
+  "siteVersion": 283,
+  "sourceCommit": "d1c9874fe298fca26d7be11a6fbbd9acbb7be45f",
+  "baselineSiteVersion": 282,
+  "baselineSourceCommit": "82a5b7e86c00c514b7aff2927572ccb2c97147df",
+  "githubParent": "b56b181b5b98eb83df94e0d4b4691f34bb914dda",
+  "canonicalOrigin": "https://seva.karimkatlane0.chatgpt.site",
+  "deployment": {
+    "id": "appgdep_6af9a852294081919876fe2a8a83004a",
+    "status": "SUCCEEDED",
+    "completedAt": "2026-11-15T12:41:04.733108Z",
+    "environmentRevision": 18,
+    "hasMcp": true
+  },
+  "sitesGate": {
+    "tests": 2139,
+    "passed": 2138,
+    "failed": 0,
+    "skipped": 1,
+    "pages": 153,
+    "links": 21022,
+    "anchors": 1715,
+    "scripts": 1495,
+    "linkFailures": 0,
+    "dependencyVulnerabilities": 0
+  },
+  "targetedVerification": {
+    "sitemapLocations": 97,
+    "sitemapHttpLanguageCanonicalFailures": 0,
+    "providerFetchesDuringPublicRendering": 0,
+    "serviceFirstLinksVerified": 97,
+    "finalTargetedTests": 32,
+    "finalTargetedPassed": 32,
+    "finalTargetedFailed": 0
+  },
+  "publicSelection": {
+    "sourceFiles": 19,
+    "exactSourceCopies": true,
+    "prefix": "docs/synapsy-site/v283/",
+    "standaloneBuild": false,
+    "compiledWorkerIncluded": false,
+    "runtimeDataIncluded": false,
+    "privateReportIncluded": false,
+    "credentialsIncluded": false
+  },
+  "scope": "Sites gate and deployment evidence reported by the release coordinator; targeted SEO, public navigation and exact-source selection independently checked. Host repository CI is a separate run and scope.",
+  "claimsNotEstablished": [
+    "search engine indexing or ranking",
+    "custom domain ownership or HTTPS readiness",
+    "bank account ownership or available credit",
+    "a payout, transfer or charge",
+    "external organisation partnership or housing availability",
+    "app-store distribution"
+  ]
+}

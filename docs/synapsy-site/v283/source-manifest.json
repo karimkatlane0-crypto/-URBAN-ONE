@@ -1,0 +1,156 @@
+{
+  "schema": "synapsy-selected-source-manifest",
+  "version": 1,
+  "siteVersion": 283,
+  "sourceCommit": "d1c9874fe298fca26d7be11a6fbbd9acbb7be45f",
+  "baselineSourceCommit": "82a5b7e86c00c514b7aff2927572ccb2c97147df",
+  "repositoryPrefix": "docs/synapsy-site/v283/",
+  "selection": "All 19 changed source, build-script and test files; generated worker excluded.",
+  "exactSourceCopies": true,
+  "fileCount": 19,
+  "totalBytes": 547405,
+  "files": [
+    {
+      "path": "source/scripts/check-links.mjs",
+      "originalPath": "scripts/check-links.mjs",
+      "bytes": 3439,
+      "sha256": "57de88b1ac469f85803b4ce989d144fc687ade46f1b80b53dca566b501c600f7",
+      "gitBlobSha": "4e8bce8df84e326ce354a546fb4b33e68f2d7ef6"
+    },
+    {
+      "path": "source/scripts/compile.mjs",
+      "originalPath": "scripts/compile.mjs",
+      "bytes": 39980,
+      "sha256": "93ba32505d769a8ba5d69d9622493da31e5ec99c619a5fa0497f8d580d1044cd",
+      "gitBlobSha": "343755d9f7c6ccf35c0d05b2b1cf43e3c3d46610"
+    },
+    {
+      "path": "source/src/account.js",
+      "originalPath": "src/account.js",
+      "bytes": 28849,
+      "sha256": "2347d800777ed573e1a11d74f7a37925bbfde25a1315735873f0d435eb4a84b1",
+      "gitBlobSha": "b1d05a8a5a03419a57e602689db93830ffc14d5f"
+    },
+    {
+      "path": "source/src/europe-directory.js",
+      "originalPath": "src/europe-directory.js",
+      "bytes": 24278,
+      "sha256": "663eba26a21c0685e472648756864e8529218c7a7d1b82b438eca795a9924a83",
+      "gitBlobSha": "80ee66463ee3dfcf5a5410469ff0d22de06274a8"
+    },
+    {
+      "path": "source/src/europe-sources.js",
+      "originalPath": "src/europe-sources.js",
+      "bytes": 25934,
+      "sha256": "5e4103200ec79db3e3996104b7a20feec304f10a5dfb33b5ebadd31a4afc4179",
+      "gitBlobSha": "8b503dfca6788b454825b021131a796ecbeda03a"
+    },
+    {
+      "path": "source/src/experience.js",
+      "originalPath": "src/experience.js",
+      "bytes": 67612,
+      "sha256": "266868813127266ffb87eb021f077ea2b2d76b0095595d0acbad209f5fb3952b",
+      "gitBlobSha": "2dc885515563e82e360e82173a87452f826c379a"
+    },
+    {
+      "path": "source/src/navigation.js",
+      "originalPath": "src/navigation.js",
+      "bytes": 6256,
+      "sha256": "cd60dbe83369bd53636e7318dd12c598d917b15341ec53e4c488dc08f6807994",
+      "gitBlobSha": "9fe8d8353b3658999092adff654a8fcdfebfdae6"
+    },
+    {
+      "path": "source/src/public-content.js",
+      "originalPath": "src/public-content.js",
+      "bytes": 167011,
+      "sha256": "0877877333e2158bb78e722f9348fe36c28115fd9fe8b5f4b02994d0f94b1333",
+      "gitBlobSha": "9e2a0fac8f22ba1c287956f9884711d1e833b457"
+    },
+    {
+      "path": "source/src/seo.js",
+      "originalPath": "src/seo.js",
+      "bytes": 6100,
+      "sha256": "cfec5ec9516d64ad580dd052aa4258c057b9fff1ec2dd530d71f90565eaac9d5",
+      "gitBlobSha": "cc3cc4bf13b6d19d548525e959a32bfe6ffe4c87"
+    },
+    {
+      "path": "source/src/server.js",
+      "originalPath": "src/server.js",
+      "bytes": 71620,
+      "sha256": "a2fe2a04152f48a6fad66e8c680d2cba027df4af7a2a437b164a4bffb183b6dc",
+      "gitBlobSha": "0f6412e17cb74a9d252e8d18404cbc9e09a0028f"
+    },
+    {
+      "path": "source/src/site-search.js",
+      "originalPath": "src/site-search.js",
+      "bytes": 30035,
+      "sha256": "1c748156df72c974333b75862ad12b44aea6f7426870909bdc0c60ecb77387ef",
+      "gitBlobSha": "5796ae2bf33f5c8e711dd80a4ea31b3424ef1b4b"
+    },
+    {
+      "path": "source/src/synapsy-home.js",
+      "originalPath": "src/synapsy-home.js",
+      "bytes": 16114,
+      "sha256": "a7114501603f595b5ef6e1fa29eca4c8b7ca7fec642e085eb3e6893bad7bb6db",
+      "gitBlobSha": "14e1b9a26ef908339d71802e199aa083c34efcb3"
+    },
+    {
+      "path": "source/tests/account-hub.test.mjs",
+      "originalPath": "tests/account-hub.test.mjs",
+      "bytes": 7231,
+      "sha256": "c8def8bef203afdedaf088f9914e8f500df35d951cd0acaa3e49845fe86f26a9",
+      "gitBlobSha": "4dc74c4d4d804440c66aecb203a81d0aceeae8f5"
+    },
+    {
+      "path": "source/tests/account-receiving.test.mjs",
+      "originalPath": "tests/account-receiving.test.mjs",
+      "bytes": 12702,
+      "sha256": "9317188bdf377d35a6ee7f4ccfb50b1cacee2c563db3f146c2a9e08fdb7ff3e8",
+      "gitBlobSha": "a499fc429a29b7f5bfb5e6d187a2c67ac99aa47a"
+    },
+    {
+      "path": "source/tests/account.test.mjs",
+      "originalPath": "tests/account.test.mjs",
+      "bytes": 8578,
+      "sha256": "611218c95715d31b9d328b0d8a8f93049eb429e3b7757f117bda1af0c4fc19cb",
+      "gitBlobSha": "4bf7aa5979f0c7599581e342d85feebdc13bb7c1"
+    },
+    {
+      "path": "source/tests/europe-directory.test.mjs",
+      "originalPath": "tests/europe-directory.test.mjs",
+      "bytes": 9734,
+      "sha256": "73c0f871d59915336b8ce2a1207e2914e3690bb7b9a1eaf02c5fef2a669e269a",
+      "gitBlobSha": "a50c0f33fc791450e30c51927fb8625cf5473e8c"
+    },
+    {
+      "path": "source/tests/privacy-public.test.mjs",
+      "originalPath": "tests/privacy-public.test.mjs",
+      "bytes": 6487,
+      "sha256": "6b743050bc78eea2d8038ad959c31629e8b22f72c51da8e40906006c21d974a7",
+      "gitBlobSha": "8c029a624997ac034e9b4f706501015e4ee69b3b"
+    },
+    {
+      "path": "source/tests/purchase.test.mjs",
+      "originalPath": "tests/purchase.test.mjs",
+      "bytes": 6244,
+      "sha256": "f4ee4c5d61da58600476fb9b164c71fd919a218e7e59eb9929d785c92474622c",
+      "gitBlobSha": "cb002ef00be4e5be53f1f17d93db2ea51ed92941"
+    },
+    {
+      "path": "source/tests/seo.test.mjs",
+      "originalPath": "tests/seo.test.mjs",
+      "bytes": 9201,
+      "sha256": "a9081d3c14ef266d91824db8628f38157bf762e66c57f2fb50058a787f749254",
+      "gitBlobSha": "94bde04495b5e677e5e263206168aa06147de9bd"
+    }
+  ],
+  "notAStandaloneBuild": true,
+  "excluded": [
+    "worker/index.js",
+    "runtime databases and account records",
+    "CRM and profile exports",
+    "OAuth and provider credentials",
+    "private reports",
+    "raw uploads and full source archive"
+  ]
+}
