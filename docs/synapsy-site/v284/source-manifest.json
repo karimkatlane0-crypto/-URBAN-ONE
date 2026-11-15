@@ -1,0 +1,89 @@
+{
+  "siteVersion": 284,
+  "sourceCommit": "0948e73115d85e087c32d867a8c747b1bda75c1a",
+  "baselineSourceCommit": "d1c9874fe298fca26d7be11a6fbbd9acbb7be45f",
+  "generatedWorkerExcluded": true,
+  "runtimeDataIncluded": false,
+  "files": [
+    {
+      "path": "docs/KKUBERA_BOOKING_RELEASE_2026-11-15.md",
+      "bytes": 6092,
+      "sha256": "572b9c89b002172b25cea95477ddd4b1bd629f62c7f6aebf7d068a3541c233d1"
+    },
+    {
+      "path": "scripts/compile.mjs",
+      "bytes": 40042,
+      "sha256": "a205889fa14081b24a9b9ab44d7b83e0b2724d1b256d20884a3524d743036a77"
+    },
+    {
+      "path": "src/kkubera-europe-ui.js",
+      "bytes": 34359,
+      "sha256": "5995dbe836d9c92877c5b249abd86def120e692b509d81c41f87407f67c42403"
+    },
+    {
+      "path": "src/kkubera-stay-calendar.js",
+      "bytes": 13543,
+      "sha256": "818f6a3390a1025ce4f5b829809e7006ef18ecfe9aafeb00545b9ae2e3adccac"
+    },
+    {
+      "path": "src/kkubera-stay-page.js",
+      "bytes": 42045,
+      "sha256": "e95a3cbff977cc6e6fa0cc23fbd550e3048f201781a606afd7bedbdf220733c3"
+    },
+    {
+      "path": "src/navigation.js",
+      "bytes": 6275,
+      "sha256": "aae1224d894fd3cc5084cb1516e64854c4e512a2456bfec10f231b5955ec9954"
+    },
+    {
+      "path": "src/public-content.js",
+      "bytes": 168595,
+      "sha256": "05f88fc4e50204283ea82c6653d6521e5ea36925e14d5f051a4239590f04da41"
+    },
+    {
+      "path": "src/release.js",
+      "bytes": 34686,
+      "sha256": "245d6cc0e0d3f95c2d087a1c2725da9cb7d94d784119722b52881c3990fc21d9"
+    },
+    {
+      "path": "src/seo.js",
+      "bytes": 6138,
+      "sha256": "4e33588a59032d83540ccb272aa1b9f91c54ad15590328aa4d978c300cd01e50"
+    },
+    {
+      "path": "src/server.js",
+      "bytes": 72080,
+      "sha256": "fffca4e197a80e95677f738e60abad8207f7a5f3dd4f6a15bdcc888f3ab0f853"
+    },
+    {
+      "path": "src/site-search.js",
+      "bytes": 30648,
+      "sha256": "33b52dadf25a933ae439ab1bbaea75fe923fca29b61124fae1afc90762d33951"
+    },
+    {
+      "path": "tests/kkubera-stay-calendar.test.mjs",
+      "bytes": 15688,
+      "sha256": "07bcb1ec0941d99710bfdf71de7b126029e68fbf037dacd36e329b3c1a6a1aad"
+    },
+    {
+      "path": "tests/kkubera-stay-routing.test.mjs",
+      "bytes": 2308,
+      "sha256": "607f04d26136b07f174e0f1cd80c658529dca19e96201b892aa874645a57148e"
+    },
+    {
+      "path": "tests/kkubera-stay-ui.test.mjs",
+      "bytes": 22460,
+      "sha256": "af6c128cc58c17cf145cd2112e15c1dc82a4881bcc52a643c4a8ca936aa9bd51"
+    },
+    {
+      "path": "tests/privacy-public.test.mjs",
+      "bytes": 6583,
+      "sha256": "50bd9e13f5a8e7fdd49be1f786ec35a5dda74e0daccb9d77a34967ba092a58b1"
+    },
+    {
+      "path": "tests/seo.test.mjs",
+      "bytes": 9220,
+      "sha256": "ac983051de790fc06f9bc71db05f78772427e42be191891cde100db43e221024"
+    }
+  ]
+}

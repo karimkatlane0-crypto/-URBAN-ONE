@@ -1,0 +1,39 @@
+{
+  "siteVersion": 284,
+  "sourceCommit": "0948e73115d85e087c32d867a8c747b1bda75c1a",
+  "deployment": {
+    "id": "appgdep_6af9ba7e8140819187c106b7b8679fd9",
+    "status": "succeeded",
+    "url": "https://seva.karimkatlane0.chatgpt.site",
+    "completedAt": "2026-11-15T13:58:38.220444+00:00"
+  },
+  "checks": {
+    "total": 2188,
+    "passed": 2187,
+    "failed": 0,
+    "skipped": 1,
+    "links": {
+      "pages": 155,
+      "linksChecked": 21250,
+      "anchorsChecked": 1729,
+      "scriptsChecked": 1510,
+      "failed": 0
+    },
+    "auditVulnerabilities": 0,
+    "browserQA": [
+      "manual-period",
+      "adjacent-checkout",
+      "ICS-preview-import",
+      "scoped-source-replacement",
+      "undo",
+      "device-save-reload-restore",
+      "unsupported-recurrence-rejected",
+      "ICS-download-privacy",
+      "English",
+      "320-390-CSS-responsive"
+    ]
+  },
+  "providerConnected": false,
+  "realGuestDataUsed": false,
+  "privateRuntimeDataPublished": false
+}

@@ -1,0 +1,17 @@
+{
+  "version": "0.1.2",
+  "checkedOn": "2026-11-15",
+  "pythonTests": 21,
+  "negativeTests": 20,
+  "pythonFailed": 0,
+  "nodeWrappers": 2,
+  "nodeWrappersRepeatPythonTests": true,
+  "externalNetwork": false,
+  "newDependenciesInstalled": false,
+  "installedSkillUnchanged": true,
+  "openAPIUnchanged": true,
+  "runtimeInstalled": false,
+  "clusterInstalled": false,
+  "zipSHA256": "c462c371e019abfd9f9bf2ce3029966e5561316a72b2742cccaa38a79afb0ab0",
+  "zipBytes": 11349
+}

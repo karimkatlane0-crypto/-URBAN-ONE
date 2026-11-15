@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "name": "TITANS Enterprise Read-Only",
+  "slug": "titans-enterprise-readonly",
+  "version": "0.1.2",
+  "visibility": "private",
+  "description": "Tenant-scoped read-only observability for SEVA Enterprise reconciliation.",
+  "api": {
+    "type": "openapi",
+    "spec": "../openapi/titans-readonly.openapi.yaml"
+  },
+  "auth": {
+    "type": "oauth2",
+    "flow": "authorizationCode",
+    "pkce_required": true
+  },
+  "permissions": [
+    "enterprise:read",
+    "nodes:read",
+    "evidence:read",
+    "agents:read",
+    "ci:read",
+    "audit:read"
+  ],
+  "safety": {
+    "default_deny": true,
+    "tenant_scoped": true,
+    "business_operations_read_only": true,
+    "live_operations_enabled": false,
+    "external_messages_enabled": false,
+    "payments_enabled": false,
+    "deployments_enabled": false
+  },
+  "status": "DESIGN_ONLY_NOT_INSTALLED",
+  "material_type": "reference_only",
+  "runtime_included": false,
+  "validation": {
+    "entrypoint": "../tests/validate_contract.py",
+    "tests": "../tests/test_contract_validation.py",
+    "scope": "Structural contract only; no runtime RBAC, OAuth, audit or Kubernetes proof",
+    "requires": {
+      "python": ">=3.11",
+      "PyYAML": ">=6,<7"
+    }
+  }
+}

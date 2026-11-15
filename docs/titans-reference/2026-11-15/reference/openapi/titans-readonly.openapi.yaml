@@ -1,0 +1,95 @@
+openapi: 3.1.0
+info:
+  title: TITANS Enterprise Read-Only API
+  version: 0.1.0
+  description: Proposed contract only; no server or deployment is implied.
+servers:
+  - url: https://example.invalid
+    description: Placeholder; replace only after authenticated environment review
+security:
+  - OAuth2: [enterprise:read]
+tags:
+  - name: ReadOnly
+paths:
+  /v1/enterprise/overview:
+    get:
+      tags: [ReadOnly]
+      operationId: getEnterpriseOverview
+      security: [{OAuth2: [enterprise:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/nodes:
+    get:
+      tags: [ReadOnly]
+      operationId: listNodes
+      security: [{OAuth2: [nodes:read]}]
+      parameters:
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 50}}
+        - {name: cursor, in: query, schema: {type: string}}
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/nodes/{id}/evidence:
+    get:
+      tags: [ReadOnly]
+      operationId: getNodeEvidence
+      security: [{OAuth2: [evidence:read]}]
+      parameters:
+        - {name: id, in: path, required: true, schema: {type: string, pattern: '^[A-Za-z0-9_-]{1,80}$'}}
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}, '404': {description: Not found or hidden resource}}
+  /v1/agents:
+    get:
+      tags: [ReadOnly]
+      operationId: listAgents
+      security: [{OAuth2: [agents:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/ci/runs:
+    get:
+      tags: [ReadOnly]
+      operationId: listCiRuns
+      security: [{OAuth2: [ci:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/dependencies:
+    get:
+      tags: [ReadOnly]
+      operationId: listDependencies
+      security: [{OAuth2: [enterprise:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/audit/events:
+    get:
+      tags: [ReadOnly]
+      operationId: listAuditEvents
+      security: [{OAuth2: [audit:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+  /v1/onboarding/status:
+    get:
+      tags: [ReadOnly]
+      operationId: getOnboardingStatus
+      security: [{OAuth2: [enterprise:read]}]
+      responses: {'200': {$ref: '#/components/responses/JsonResult'}, '401': {$ref: '#/components/responses/Unauthorized'}, '403': {$ref: '#/components/responses/Forbidden'}}
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.invalid/oauth/authorize
+          tokenUrl: https://example.invalid/oauth/token
+          scopes:
+            enterprise:read: Read enterprise overview and dependencies
+            nodes:read: Read node inventory
+            evidence:read: Read node evidence
+            agents:read: Read agent status
+            ci:read: Read CI status
+            audit:read: Read permitted audit events
+  responses:
+    JsonResult:
+      description: Tenant-scoped, redacted response
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data, request_id]
+            properties:
+              data: {type: [object, array]}
+              request_id: {type: string}
+              next_cursor: {type: [string, 'null']}
+    Unauthorized: {description: Authentication required}
+    Forbidden: {description: Insufficient privileges or audit unavailable}
