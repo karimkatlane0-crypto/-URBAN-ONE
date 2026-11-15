@@ -1,0 +1,63 @@
+{
+  "schema": "synapsy-public-release-evidence",
+  "version": 1,
+  "recordedOn": "2026-11-15",
+  "release": {
+    "version": 282,
+    "projectId": "appgprj_6ade4dd9b604819190ac80a133057f77",
+    "savedVersionId": "appgprj_6ade4dd9b604819190ac80a133057f77~appgver_6c56ba39bfc8819194b48aa4a8e01d73",
+    "sourceCommit": "82a5b7e86c00c514b7aff2927572ccb2c97147df",
+    "deploymentId": "appgdep_6af99cef630081918f57876e8fde4ba4",
+    "status": "SUCCEEDED",
+    "completedAt": "2026-11-15T11:52:28.008401+00:00",
+    "environmentRevision": 18,
+    "canonicalUrl": "https://seva.karimkatlane0.chatgpt.site",
+    "mcpEnabled": true
+  },
+  "sourceArchive": {
+    "sha256": "13b38854d89e8a96ce39fed9f46109813b034e6962b0c4bc57f38d2ea1acabb9",
+    "archivePublishedHere": false
+  },
+  "sourceReleaseGate": {
+    "reportedBy": "release coordinator after check:release",
+    "sourceCommit": "82a5b7e86c00c514b7aff2927572ccb2c97147df",
+    "tests": {
+      "total": 2107,
+      "passed": 2106,
+      "skipped": 1,
+      "failed": 0
+    },
+    "staticVerification": {
+      "pages": 147,
+      "links": 20128,
+      "anchors": 1671,
+      "scripts": 1475,
+      "failures": 0
+    },
+    "dependencyAudit": {
+      "reportedVulnerabilities": 0
+    },
+    "scopeNote": "Source-release verification, not a GitHub run of this selected dossier. No claim of physical-device test, new payment, external-message delivery or provider connection."
+  },
+  "githubBase": {
+    "repository": "karimkatlane0-crypto/-URBAN-ONE",
+    "branch": "main-@URBAN-ONE",
+    "commit": "9265943fbb00bee9249e222145f48ec76fd6cec0",
+    "tree": "2c844f29070d0270325c7f2ab3a414c979793a74"
+  },
+  "privateBusinessRecordsIncluded": false,
+  "productionQa": {
+    "reportedBy": "release coordinator, managed desktop browser",
+    "route": "/premium",
+    "authenticatedOwnWorkspaceLoaded": true,
+    "approvedLogoObserved": true,
+    "duplicateHeaderObserved": false,
+    "italianToEnglishMenuChecked": true,
+    "desktopViewportWidth": 1363,
+    "desktopScrollWidth": 1348,
+    "productionBusinessDataMutated": false,
+    "mobileLayoutVerified": false,
+    "physicalDeviceVerified": false,
+    "limits": "Managed-browser mobile emulation was unavailable; no bypass. This record does not attest a complete multi-account end-to-end production flow."
+  }
+}

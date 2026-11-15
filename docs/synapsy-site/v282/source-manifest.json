@@ -1,0 +1,320 @@
+{
+  "schema": "synapsy-selected-source-manifest",
+  "version": 1,
+  "releaseVersion": 282,
+  "sourceCommit": "82a5b7e86c00c514b7aff2927572ccb2c97147df",
+  "baselineVersion": 281,
+  "baselineCommit": "92369ddf7d097109991c980e720813893e23fdc0",
+  "repositoryPrefix": "docs/synapsy-site/v282",
+  "selection": "All changed files except compiled worker/index.js; plus COPYRIGHT.md and src/studio-languages.js",
+  "exactByteCopies": true,
+  "standaloneProject": false,
+  "files": [
+    {
+      "path": "assets/brand-history/2026-11-15-v281/README.md",
+      "bytes": 864,
+      "binary": false,
+      "sha256": "87b7da0f44a085fc98fbf5086c23fc4fcf29e3113433f5e3bbe55ed4135716f3",
+      "gitBlobSha": "c54ccc80a2f1c21f99ee4bd9bde8305b08904a8a",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/README.md"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/approved-original-01-9164.jpg",
+      "bytes": 46020,
+      "binary": true,
+      "sha256": "9a72dc877cf2d3e5cf891338a2c974299cfb3cb89b6d9421c51597f2b88cace3",
+      "gitBlobSha": "0f5341535f40793a260263a64b7b697b82cee90a",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/approved-original-01-9164.jpg"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/provenance.json",
+      "bytes": 1840,
+      "binary": false,
+      "sha256": "f8f652971adb208ebe02fc52734c6f2cd4cc2f22fc935acea5e081ebff880bca",
+      "gitBlobSha": "cd0bb4b4503ab706f4e8736c58d3c23a9c984908",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/provenance.json"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/seva-icon-192.png",
+      "bytes": 17079,
+      "binary": true,
+      "sha256": "1758f7850817c462eb16346d63b0ed8f8b8df40fa6bb7161c9a744395c877b01",
+      "gitBlobSha": "546e7f38b5b55da777d87c56571d797b5fecceab",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/seva-icon-192.png"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/seva-icon-512.png",
+      "bytes": 73641,
+      "binary": true,
+      "sha256": "ce4a9c42c29a34f539ab27eb40792db4da2dee499023f27dd08fddacedde8af0",
+      "gitBlobSha": "99b2b4e98f819ef16241dd78c84c6c6487d88ade",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/seva-icon-512.png"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/seva-logo.png",
+      "bytes": 394304,
+      "binary": true,
+      "sha256": "09ec14875ecf66b06976bc5f79d1170ae604d33c5e38fb13567e17b75b8bb0b6",
+      "gitBlobSha": "cf45cd4685c1960c3aa4faf9ed0a7b7f0395aa00",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/seva-logo.png"
+    },
+    {
+      "path": "assets/brand-history/2026-11-15-v281/synapsy-icon.svg",
+      "bytes": 367,
+      "binary": false,
+      "sha256": "de47c4d94eb56e2ae7c3e57560d2101f1cfabcb87ed0289e1bce4034565ef656",
+      "gitBlobSha": "2014af9a3525d8d4d30582fa19e8924677f3434c",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/brand-history/2026-11-15-v281/synapsy-icon.svg"
+    },
+    {
+      "path": "assets/seva-icon-192.png",
+      "bytes": 6039,
+      "binary": true,
+      "sha256": "80ae85ba083e3b0a9715f6a6ba3e6ce960de0bbf7c39aa0a0d85001604cb7fcf",
+      "gitBlobSha": "4df5835ac09ee766435f266bcbca17dda9655627",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/seva-icon-192.png"
+    },
+    {
+      "path": "assets/seva-icon-512.png",
+      "bytes": 23821,
+      "binary": true,
+      "sha256": "c0ac2a6e29722fe4da6f35f9b0eb09d2c3aeed8fda2e6937dd3e0fe85f83a869",
+      "gitBlobSha": "2a9b00be1c39d03a94a21ba29f24bab86e752216",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/seva-icon-512.png"
+    },
+    {
+      "path": "assets/seva-logo.png",
+      "bytes": 169244,
+      "binary": true,
+      "sha256": "5575d733c7ae05b5b58eabe3e34a6410f6762ba4b0ff1464051115ac376f2215",
+      "gitBlobSha": "c162efe58cc17927487ce2551dc6e0f46d239abc",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/seva-logo.png"
+    },
+    {
+      "path": "assets/synapsy-icon.svg",
+      "bytes": 61582,
+      "binary": false,
+      "sha256": "3c55e81d1eb3395f6806966db0e6d9f7d35307465ac8c7bd94eebb34dc0d19c0",
+      "gitBlobSha": "d71002234c099862bbbaf41a2953732792e8de62",
+      "repositoryPath": "docs/synapsy-site/v282/source/assets/synapsy-icon.svg"
+    },
+    {
+      "path": "db/schema.ts",
+      "bytes": 33468,
+      "binary": false,
+      "sha256": "3958ad659724d3a69bb64ddd5bd6224bee2eb1e5144042b007ff00267b591f2d",
+      "gitBlobSha": "e3efe44cfcce0bb41562cbc9d34e3a245993ddf4",
+      "repositoryPath": "docs/synapsy-site/v282/source/db/schema.ts"
+    },
+    {
+      "path": "drizzle/0032_premium_voluntary_matching.sql",
+      "bytes": 2807,
+      "binary": false,
+      "sha256": "3fd5398c7796f03c6ff1cd29cb6bde8191723bd1910ee0811b7e84238ef8e930",
+      "gitBlobSha": "c5393b3d4f7f8ef344c31aacbe75fc3db1698681",
+      "repositoryPath": "docs/synapsy-site/v282/source/drizzle/0032_premium_voluntary_matching.sql"
+    },
+    {
+      "path": "drizzle/meta/0032_snapshot.json",
+      "bytes": 125513,
+      "binary": false,
+      "sha256": "0e272973116fc4c7ba7512b4cacd25a532b16caee427ef39a5012eddf4187327",
+      "gitBlobSha": "f9b5611f87323009a99e54ec9daf77120b183371",
+      "repositoryPath": "docs/synapsy-site/v282/source/drizzle/meta/0032_snapshot.json"
+    },
+    {
+      "path": "drizzle/meta/_journal.json",
+      "bytes": 4855,
+      "binary": false,
+      "sha256": "6ef6d734b9609be42a9a29fc3283341fd4bffaee73cf97004690a4802cc1c1b9",
+      "gitBlobSha": "ca9619dc88ff878a4fcaf9c251a05d00bdff2671",
+      "repositoryPath": "docs/synapsy-site/v282/source/drizzle/meta/_journal.json"
+    },
+    {
+      "path": "scripts/check-links.mjs",
+      "bytes": 3411,
+      "binary": false,
+      "sha256": "73d79d3d94e9615eb1c4928a417a7d1d4dddbeb7c99e77578fd1e09894334e48",
+      "gitBlobSha": "559a2d600cc222edafa144a4641f1e3e8f6dc6f4",
+      "repositoryPath": "docs/synapsy-site/v282/source/scripts/check-links.mjs"
+    },
+    {
+      "path": "scripts/compile.mjs",
+      "bytes": 39748,
+      "binary": false,
+      "sha256": "fc5de1235bc5637489690ad887f190f042b0c6f19a049dfde1d70fdd4e2779e2",
+      "gitBlobSha": "a9e3219e62f1c6fce16311c2975ab3c160ea6226",
+      "repositoryPath": "docs/synapsy-site/v282/source/scripts/compile.mjs"
+    },
+    {
+      "path": "src/experience.js",
+      "bytes": 67514,
+      "binary": false,
+      "sha256": "257dc20aacdd869608686f45095bb98dcf4106ce49ff907d1f517cf97ba1e5a4",
+      "gitBlobSha": "71edb79399668e9ac54af7e1de6217e540c8b269",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/experience.js"
+    },
+    {
+      "path": "src/mobile-shortcut.js",
+      "bytes": 9199,
+      "binary": false,
+      "sha256": "865214775abfa646739ce94eec1bbe1517dcfef7992c498bd2a1d7f503891e3c",
+      "gitBlobSha": "81e6962e371fd3d47a7520b16bc20eaef3ac4633",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/mobile-shortcut.js"
+    },
+    {
+      "path": "src/navigation.js",
+      "bytes": 6246,
+      "binary": false,
+      "sha256": "a1d4e6e0b45cfca6afdcdf3e0bd0889a73a9b2e4864300a5b70360dfeaf92af3",
+      "gitBlobSha": "3b70a0ce9b2cb96911833c0f1e79773d4b564721",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/navigation.js"
+    },
+    {
+      "path": "src/premium-model.js",
+      "bytes": 7308,
+      "binary": false,
+      "sha256": "dd58e339780e4d4b3d8f2cf08e4f4834e5e36874580126f35e26712268d90fba",
+      "gitBlobSha": "eab9e1b5151fcbb8890341db40c581c9d5154a87",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/premium-model.js"
+    },
+    {
+      "path": "src/premium-page.js",
+      "bytes": 46281,
+      "binary": false,
+      "sha256": "abe56278aafdee26b0e9d7046e8a955f1998e3d7e17bf204dcb360063f836452",
+      "gitBlobSha": "16b976ba1e11a492a1a5c7e9b2bec3fd6595f721",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/premium-page.js"
+    },
+    {
+      "path": "src/premium-server.js",
+      "bytes": 16277,
+      "binary": false,
+      "sha256": "318411763732b6c3d35e5ed5e25adc56efacd60e117ee39726085e16740c94b7",
+      "gitBlobSha": "5d2ada5220ab218b27eaf441bcdb62333bdb7a17",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/premium-server.js"
+    },
+    {
+      "path": "src/public-content.js",
+      "bytes": 165746,
+      "binary": false,
+      "sha256": "e4c3232ba4e294268386f56b7337eeb415b141acc52f2b4a1bcccb60d76c2b59",
+      "gitBlobSha": "028bfa27f4de12d435fb72a2372c33828ba677f2",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/public-content.js"
+    },
+    {
+      "path": "src/public-pages.js",
+      "bytes": 12605,
+      "binary": false,
+      "sha256": "99bfbc9e7f386c935b0e54704d00e35bc879eab4ae5b0c58f8e12131984c81fe",
+      "gitBlobSha": "daa73b06bc6de2786cf2d006cc86f91a9533d49b",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/public-pages.js"
+    },
+    {
+      "path": "src/server.js",
+      "bytes": 72782,
+      "binary": false,
+      "sha256": "776416e0dac016f4b5cbba24bcdb6aa08126563fbd21b412000117a6d3e9652c",
+      "gitBlobSha": "b48e25b4de4a988c5eded0999ac273d9f384ab3f",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/server.js"
+    },
+    {
+      "path": "src/site-search.js",
+      "bytes": 29525,
+      "binary": false,
+      "sha256": "553368c584317f25c2a296e97115b733d73ecac4310257e1b52448cdd906331b",
+      "gitBlobSha": "d40a640302cb8e89c45f1f0b470771a7e56f5ccc",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/site-search.js"
+    },
+    {
+      "path": "src/superapp-manifest.js",
+      "bytes": 1258,
+      "binary": false,
+      "sha256": "e6a7064f48390907054944be3b3607d33644cc53a44cc0775b40201a9deafbb6",
+      "gitBlobSha": "70b23b420437948a23dfa07e06f9730110705390",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/superapp-manifest.js"
+    },
+    {
+      "path": "src/synapsy-brand.js",
+      "bytes": 72361,
+      "binary": false,
+      "sha256": "ce6e4bbb7664f39e264761af47e48ef0784addc369d760261814cc83e4ebe8ec",
+      "gitBlobSha": "e3a7bea4a3ec7f271af16d34dc8f4c662335106e",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/synapsy-brand.js"
+    },
+    {
+      "path": "src/synapsy-home.js",
+      "bytes": 16351,
+      "binary": false,
+      "sha256": "2bcf669cf87ac3d21fc5c23c7bcc267b42954ae9f41acef62b34699eefb249e1",
+      "gitBlobSha": "4e2d3fbcc4d2df5b1b91de479f32be16e3beb71c",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/synapsy-home.js"
+    },
+    {
+      "path": "src/synapsy-onboarding.js",
+      "bytes": 22506,
+      "binary": false,
+      "sha256": "026a96d7bfe9959c1a3ec374e8a83a5a677230321e653fd61adb020322193a0f",
+      "gitBlobSha": "01281abb37c5006b40db560a3eaf2fab0f0b9759",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/synapsy-onboarding.js"
+    },
+    {
+      "path": "tests/brand-language.test.mjs",
+      "bytes": 8828,
+      "binary": false,
+      "sha256": "c1d4d54c3fbf4d46738ed5914489c15ed74c95eb7aee9b70b0408d5c3fda151c",
+      "gitBlobSha": "f38554a84c1957091eecc6a29797072ee1bfec42",
+      "repositoryPath": "docs/synapsy-site/v282/source/tests/brand-language.test.mjs"
+    },
+    {
+      "path": "tests/premium-page.test.mjs",
+      "bytes": 20964,
+      "binary": false,
+      "sha256": "69300c93b0c807aacbd9a430badf5a08151bab01aa34c81963db7aff8e590f70",
+      "gitBlobSha": "583530649ef8ad828c5d775a68d2a17f36d9bf8b",
+      "repositoryPath": "docs/synapsy-site/v282/source/tests/premium-page.test.mjs"
+    },
+    {
+      "path": "tests/premium-server.test.mjs",
+      "bytes": 16844,
+      "binary": false,
+      "sha256": "e02c74b638df668b089cc7174cea052c9ca459669e6c7bac860180681a71da6f",
+      "gitBlobSha": "01661a26a487a998644da46524726a76540395af",
+      "repositoryPath": "docs/synapsy-site/v282/source/tests/premium-server.test.mjs"
+    },
+    {
+      "path": "tests/unified-experience.test.mjs",
+      "bytes": 7234,
+      "binary": false,
+      "sha256": "2eaa84ce8b03fdb11ec95443f0e9613aec550aab8961167d65d3db390a981b9b",
+      "gitBlobSha": "f2eb2389c31f19308b9b3550c25bdfcdae7bb46b",
+      "repositoryPath": "docs/synapsy-site/v282/source/tests/unified-experience.test.mjs"
+    },
+    {
+      "path": "COPYRIGHT.md",
+      "bytes": 1189,
+      "binary": false,
+      "sha256": "8f73e41951360eb6c5adc600983752092c00bfe6ac64c5b46610e88db501306f",
+      "gitBlobSha": "da6400f064886e2e16a10b3ebc74bc7f0dffe317",
+      "repositoryPath": "docs/synapsy-site/v282/source/COPYRIGHT.md"
+    },
+    {
+      "path": "src/studio-languages.js",
+      "bytes": 42330,
+      "binary": false,
+      "sha256": "da1724a9506f6c5837ca5c13dec7089140a4595abab813ceb088b0f13ad110db",
+      "gitBlobSha": "5446a134b2659f3ed9df996a360758d68813e6ac",
+      "repositoryPath": "docs/synapsy-site/v282/source/src/studio-languages.js"
+    }
+  ],
+  "excludedCategories": [
+    "private-documents",
+    "account exports",
+    "CRM records",
+    "credentials and environment secrets",
+    "raw user uploads",
+    "private connection receipts",
+    "complete release archive",
+    "compiled general worker"
+  ]
+}

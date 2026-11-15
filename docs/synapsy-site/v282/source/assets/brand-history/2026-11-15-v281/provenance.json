@@ -1,0 +1,57 @@
+{
+  "schema": "synapsy-brand-provenance",
+  "version": 1,
+  "date": "2026-11-15",
+  "baselineVersion": 281,
+  "baselineCommit": "92369ddf7d097109991c980e720813893e23fdc0",
+  "original": {
+    "uploadedFilename": "01-9164.png",
+    "actualMimeType": "image/jpeg",
+    "archivedFilename": "approved-original-01-9164.jpg",
+    "width": 1536,
+    "height": 1536,
+    "sha256": "9a72dc877cf2d3e5cf891338a2c974299cfb3cb89b6d9421c51597f2b88cace3"
+  },
+  "process": {
+    "primary": "JPEG decoded to 24-bit PNG; no resize, crop, recolour or redrawing",
+    "decodedPixelDifference": 0,
+    "pwa": "Lanczos scaling of the complete square artwork to 192 and 512 pixels",
+    "legacySVG": "Embeds the exact original JPEG bytes, without external resources"
+  },
+  "previousAssets": [
+    {
+      "name": "seva-logo.png",
+      "sha256": "09ec14875ecf66b06976bc5f79d1170ae604d33c5e38fb13567e17b75b8bb0b6"
+    },
+    {
+      "name": "seva-icon-192.png",
+      "sha256": "1758f7850817c462eb16346d63b0ed8f8b8df40fa6bb7161c9a744395c877b01"
+    },
+    {
+      "name": "seva-icon-512.png",
+      "sha256": "ce4a9c42c29a34f539ab27eb40792db4da2dee499023f27dd08fddacedde8af0"
+    },
+    {
+      "name": "synapsy-icon.svg",
+      "sha256": "de47c4d94eb56e2ae7c3e57560d2101f1cfabcb87ed0289e1bce4034565ef656"
+    }
+  ],
+  "currentAssets": [
+    {
+      "name": "seva-logo.png",
+      "sha256": "5575d733c7ae05b5b58eabe3e34a6410f6762ba4b0ff1464051115ac376f2215"
+    },
+    {
+      "name": "seva-icon-192.png",
+      "sha256": "80ae85ba083e3b0a9715f6a6ba3e6ce960de0bbf7c39aa0a0d85001604cb7fcf"
+    },
+    {
+      "name": "seva-icon-512.png",
+      "sha256": "c0ac2a6e29722fe4da6f35f9b0eb09d2c3aeed8fda2e6937dd3e0fe85f83a869"
+    },
+    {
+      "name": "synapsy-icon.svg",
+      "sha256": "3c55e81d1eb3395f6806966db0e6d9f7d35307465ac8c7bd94eebb34dc0d19c0"
+    }
+  ]
+}
