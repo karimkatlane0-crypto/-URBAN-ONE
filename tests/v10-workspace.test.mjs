@@ -25,3 +25,16 @@ test('honest release gates and no automatic billing or third-party access',()=>{
   assert.doesNotMatch(web,/<form|fetch\(|XMLHttpRequest|https:\/\/api\.stripe\.com/i);
   assert.match(web,/role="status"/);
 });
+
+test('SEVA Unified Studio portal is mirrored across Web/mobile and has explicit integration gates',()=>{
+  const webStudio=read('apps/web/seva-unified-studio.html');
+  const mobileStudio=read('apps/mobile/www/seva-unified-studio.html');
+  assert.equal(webStudio,mobileStudio);
+  assert.ok(web.includes('href="./seva-unified-studio.html"'));
+  assert.ok(webStudio.includes('https://www.klaviyo.com/dashboard'));
+  assert.ok(webStudio.includes('ChatGPT connector linked'));
+  assert.ok(webStudio.includes('Google Drive è installato ma disabilitato'));
+  assert.ok(webStudio.includes('No automatic messages, billing, provider calls or agent execution'));
+  assert.doesNotMatch(webStudio,/karimkatlane0@gmail\.com|karimkatlane86@gmail\.com/);
+  assert.doesNotMatch(webStudio,/<form|fetch\(|XMLHttpRequest|https:\/\/api\.stripe\.com/i);
+});

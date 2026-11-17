@@ -44,6 +44,10 @@ jobs:
           test -f apps/web/v10-workspace.html
           test -f apps/mobile/www/v10-workspace.html
           cmp apps/web/v10-workspace.html apps/mobile/www/v10-workspace.html
+          test -f apps/web/seva-unified-studio.html
+          test -f apps/mobile/www/seva-unified-studio.html
+          cmp apps/web/seva-unified-studio.html apps/mobile/www/seva-unified-studio.html
+          ! grep -Eiq 'karimkatlane0@gmail\.com|karimkatlane86@gmail\.com' apps/web/seva-unified-studio.html
           test -f apps/web/pole-premium.js
           test -f apps/web/pole-spectrum.css
           test -f apps/mobile/www/pole-spectrum.css
@@ -112,6 +116,12 @@ jobs:
           grep -q 'Adobe Styles' "$RUNNER_TEMP/pole-premium.html"
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/v10-workspace.html" "${PAGE_URL%/}/apps/web/v10-workspace.html"
           grep -q 'non è una release v10 certificata' "$RUNNER_TEMP/v10-workspace.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/seva-unified-studio.html" "${PAGE_URL%/}/apps/web/seva-unified-studio.html"
+          grep -q 'SEVA INTELLIGENCE STUDIO' "$RUNNER_TEMP/seva-unified-studio.html"
+          grep -q 'ChatGPT connector linked' "$RUNNER_TEMP/seva-unified-studio.html"
+          grep -q 'No automatic messages, billing, provider calls or agent execution' "$RUNNER_TEMP/seva-unified-studio.html"
+          ! grep -Eiq 'karimkatlane0@gmail\.com|karimkatlane86@gmail\.com' "$RUNNER_TEMP/seva-unified-studio.html"
+          echo "SEVA Intelligence Studio public page verified: ${PAGE_URL%/}/apps/web/seva-unified-studio.html" >> "$GITHUB_STEP_SUMMARY"
           # Verify the check-in/check-out operator guide is actually public.
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/checkin-checkout.html" "${PAGE_URL%/}/apps/web/checkin-checkout.html"
           grep -q 'Check-in e check-out: calendario operativo da file' "$RUNNER_TEMP/checkin-checkout.html"

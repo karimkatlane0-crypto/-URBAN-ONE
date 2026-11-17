@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080b10">
+<meta name="description" content="SEVA Intelligence Studio — portale unico per CRM, marketing, AI, dati, commerce e infrastruttura.">
+<title>SEVA Intelligence Studio · Unified SaaS Portal</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#080b10;color:#f7f5ef;--gold:#f5c542;--gold-soft:#ffe7a0;--line:#3b3321;--muted:#b8b4a9;--ok:#9bd6a6;--warn:#f0c56b}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;font-size:14px;line-height:1.6;background:radial-gradient(ellipse at 82% 0%,rgba(245,197,66,.10),transparent 35%),#080b10}
+a{color:inherit}button,input,select{font:inherit}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.skip{position:absolute;left:18px;top:-70px;background:var(--gold);color:#15110a;padding:10px 14px;z-index:30}.skip:focus{top:12px}
+.shell{max-width:1380px;margin:auto;padding:0 34px}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:82px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:13px;text-decoration:none;font-weight:800;letter-spacing:.04em}
+.mark{display:grid;place-items:center;width:38px;height:40px;background:linear-gradient(145deg,#ffe7a0,#d49b16);color:#15110a;font-size:20px;border-radius:3px;box-shadow:0 0 24px #f5c54218}
+.brand small{display:block;font-size:9px;font-weight:600;letter-spacing:.22em;color:var(--gold-soft);margin-top:2px}
+nav{display:flex;align-items:center;gap:22px;flex-wrap:wrap}nav a{font-size:12px;color:var(--muted);text-decoration:none}nav a:hover{color:var(--gold-soft)}
+.version{font-size:10px;border:1px solid #80621f;color:var(--gold-soft);padding:5px 10px;white-space:nowrap}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:45px;padding:58px 0 34px;align-items:center}
+.eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:750;margin:0 0 14px}
+h1{font-size:clamp(2.8rem,5.8vw,5.3rem);line-height:.98;letter-spacing:-.06em;font-weight:560;margin:0 0 20px}h1 span{color:var(--gold)}
+.lead{max-width:720px;color:#c5c0b4;font-size:16px;margin:0}
+.hero-meta{border-left:3px solid var(--gold);padding:4px 0 4px 20px;color:var(--muted);font-size:12px}
+.hero-meta strong{display:block;color:#fff6dc;font-size:14px;margin-bottom:7px}.hero-meta p{margin:7px 0}.signal{display:inline-block;color:var(--ok);font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 220px auto;gap:12px;align-items:end;padding:20px 0 10px;border-top:1px solid var(--line)}
+label{display:block;font-size:10px;color:var(--gold-soft);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+input,select{width:100%;min-height:46px;background:#11151c;border:1px solid #554526;color:#f7f5ef;border-radius:3px;padding:10px 12px}
+.count{align-self:center;font-size:11px;color:var(--muted);text-align:right}
+.group{padding:28px 0 8px;scroll-margin-top:22px}.group-head{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:1px solid #4b3d21;padding-bottom:11px;margin-bottom:16px}
+.group-head h2{font-size:17px;color:var(--gold-soft);font-weight:650;letter-spacing:.03em;margin:0}.group-head p{margin:0;color:#9e9a90;font-size:11px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+article{position:relative;display:flex;flex-direction:column;min-height:222px;padding:19px;background:linear-gradient(155deg,#171a20,#101319);border:1px solid #514326;border-radius:3px}
+article:before{content:"";position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,#8b671b,#f5c542,#ffe7a0);opacity:.72}
+article[hidden]{display:none}.card-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.icon{width:34px;height:34px;display:grid;place-items:center;border:1px solid #66501f;background:#292316;color:var(--gold);font-size:15px}
+.status{font-size:9px;letter-spacing:.07em;text-transform:uppercase;text-align:right;color:var(--warn)}.status.good{color:var(--ok)}.status.neutral{color:#b8b4a9}
+.tag{font-size:9px;color:var(--gold-soft);letter-spacing:.14em;text-transform:uppercase;margin-top:16px}
+h3{font-size:18px;line-height:1.2;color:#fff9e9;font-weight:650;margin:5px 0 8px}
+article p{font-size:12px;color:#c3c0b8;margin:0 0 16px;flex:1}
+.meta{font-size:10px;color:#99958b;border-top:1px solid #514326;padding-top:10px;margin-top:auto}
+.open{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:9px 0 0;color:var(--gold-soft);text-decoration:none;font-size:11px;font-weight:700;border-top:1px solid #514326}
+.open:after{content:"↗";font-size:15px}.open:hover{color:#fff}
+.empty{padding:25px;border:1px dashed #80621f;color:var(--muted);text-align:center;margin:18px 0}
+.notice{margin:26px 0 20px;padding:17px 19px;border:1px solid #514326;background:#11151c;color:#c9c3b6;font-size:12px}.notice strong{color:var(--gold-soft)}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:24px 0 34px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#918d83;font-size:10px}footer a{color:var(--gold-soft)}
+[hidden]{display:none!important}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr;gap:22px}.hero-meta{max-width:720px}}
+@media(max-width:600px){.shell{padding:0 18px}header{min-height:72px}header nav{display:none}.hero{padding:38px 0 26px}h1{font-size:3rem}.lead{font-size:14px}.toolbar{grid-template-columns:1fr 128px}.count{grid-column:1/-1;text-align:left}.grid{grid-template-columns:1fr}.group{padding-top:22px}article{min-height:205px}.notice{margin-top:20px}footer{padding-bottom:35px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#catalogo">Vai al catalogo servizi</a>
+<div class="shell">
+<header>
+<a class="brand" href="https://seva.karimkatlane0.chatgpt.site/"><span class="mark" aria-hidden="true">S</span><span>SEVA INTELLIGENCE STUDIO<small>UNIFIED SAAS · GOVERNED OPERATIONS</small></span></a>
+<nav aria-label="Navigazione principale"><a href="#growth">Growth &amp; CRM</a><a href="#intelligence">AI &amp; Data</a><a href="#commerce">Commerce</a><a href="#platform">Platform</a></nav>
+<span class="version">STUDIO SHELL · BUILD CANDIDATA</span>
+</header>
+<main>
+<section class="hero" aria-labelledby="hero-title">
+<div><p class="eyebrow">ONE ENTRYPOINT / MULTIPLE INTELLIGENCE</p><h1>One mission.<br><span>One operating studio.</span></h1><p class="lead">Un solo punto di accesso per SEVA, URBAN ONE, CRM, marketing automation, AI, analisi e infrastruttura. Ogni servizio conserva il proprio account, le proprie autorizzazioni e il proprio stato di verifica.</p></div>
+<div class="hero-meta"><strong>CONTROL PLANE · BUILD → VERIFY → RELEASE</strong><span class="signal">Evidence-first · reversible by design</span><p>Link ufficiali e moduli esistenti. Le integrazioni sono dichiarate attive soltanto quando esiste una prova del collegamento effettivo.</p><p>Le identità Google devono essere autorizzate separatamente; nessun indirizzo email personale è pubblicato in questo portale.</p></div>
+</section>
+<section id="catalogo" aria-label="Catalogo servizi">
+<div class="toolbar">
+<div><label for="q">Cerca servizi e moduli</label><input id="q" type="search" placeholder="Es. CRM, Klaviyo, Power BI…" autocomplete="off"></div>
+<div><label for="category">Area</label><select id="category"><option value="all">Tutte le aree</option><option value="growth">Growth &amp; CRM</option><option value="ai">AI &amp; Data</option><option value="commerce">Commerce</option><option value="platform">Platform &amp; DevOps</option></select></div>
+<div id="count" class="count" role="status" aria-live="polite">17 servizi disponibili</div>
+</div>
+<section class="group" id="growth" aria-labelledby="growth-title"><div class="group-head"><h2 id="growth-title">01 / Growth, audience &amp; customer operations</h2><p>CRM · lifecycle · communications · contacts</p></div><div class="grid">
+<article data-category="growth" data-search="klaviyo email sms campaign flows segments audiences marketing automation"><div class="card-top"><span class="icon" aria-hidden="true">K</span><span class="status good">ChatGPT connector linked</span></div><span class="tag">Lifecycle marketing</span><h3>Klaviyo</h3><p>Campaign analytics, audiences, segments and flows. Il collegamento ChatGPT è confermato in questa richiesta; permessi API lato provider e sincronizzazione nel portale sono verifiche separate.</p><div class="meta">Invii campagne e modifiche ai flussi richiedono approvazione esplicita.</div><a class="open" href="https://www.klaviyo.com/dashboard" target="_blank" rel="noopener noreferrer">Open Klaviyo dashboard</a></article>
+<article data-category="growth" data-search="seva crm contacts customer relationship operations leads mobile crm"><div class="card-top"><span class="icon" aria-hidden="true">CRM</span><span class="status">Staging candidate</span></div><span class="tag">Customer operations</span><h3>SEVA CRM &amp; Operations</h3><p>Modulo CRM esistente per relazioni, attività, hospitality e partner. Browser HTTPS E2E e database di produzione non sono ancora verificati.</p><div class="meta">Percorso SEVA esistente · gate staging aperti.</div><a class="open" href="https://seva.karimkatlane0.chatgpt.site/mobile-crm/" target="_blank" rel="noopener noreferrer">Open CRM candidate</a></article>
+<article data-category="growth" data-search="hubspot crm contacts deals tickets pipeline"><div class="card-top"><span class="icon" aria-hidden="true">H</span><span class="status neutral">Not connected</span></div><span class="tag">CRM connector</span><h3>HubSpot</h3><p>CRM esterno opzionale per contatti, aziende, trattative, attività e pipeline. Nessun account HubSpot risulta collegato.</p><div class="meta">Autorizzare separatamente l'account HubSpot desiderato.</div><a class="open" href="https://app.hubspot.com/" target="_blank" rel="noopener noreferrer">Open HubSpot</a></article>
+<article data-category="growth" data-search="gmail google drive contacts sheets workspace"><div class="card-top"><span class="icon" aria-hidden="true">G</span><span class="status">Split permissions</span></div><span class="tag">Google Workspace</span><h3>Gmail, Drive &amp; Sheets</h3><p>Gmail è disponibile in questa sessione. Google Drive è installato ma disabilitato dall'amministratore; accesso Sheets non verificato. Le due identità email richiedono autorizzazioni distinte.</p><div class="meta">Nessun OAuth Google globale o sincronizzazione cartelle implicita.</div><a class="open" href="https://mail.google.com/" target="_blank" rel="noopener noreferrer">Open Gmail</a><a class="open" href="https://drive.google.com/" target="_blank" rel="noopener noreferrer">Open Google Drive</a></article>
+<article data-category="growth" data-search="twilio sms messaging phone skebby contacts"><div class="card-top"><span class="icon" aria-hidden="true">SMS</span><span class="status neutral">Credentials required</span></div><span class="tag">Messaging infrastructure</span><h3>SMS &amp; Messaging</h3><p>Twilio è il percorso provider disponibile. Le credenziali server e le regole di consenso devono essere configurate prima dell'invio di qualsiasi messaggio.</p><div class="meta">Nessun messaggio massivo o invio automatico attivo.</div><a class="open" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Open Twilio Console</a></article>
+</div></section>
+<section class="group" id="intelligence" aria-labelledby="intelligence-title"><div class="group-head"><h2 id="intelligence-title">02 / AI, research &amp; intelligence</h2><p>LLM access · TITANS · analytics · MLOps / DLoPs</p></div><div class="grid">
+<article data-category="ai" data-search="seva synapsy titans orchestration onboarding sovereign"><div class="card-top"><span class="icon" aria-hidden="true">S</span><span class="status good">Existing workspace</span></div><span class="tag">Command &amp; orchestration</span><h3>SEVA · SYNAPSY · TITANS</h3><p>Regia per obiettivi, evidenze, onboarding e flussi coordinati. L'esecuzione degli agenti resta vincolata allo stato autorizzativo e ai gate di rilascio osservati.</p><div class="meta">Workspace ufficiale e percorso completamento.</div><a class="open" href="https://seva.karimkatlane0.chatgpt.site/superapp" target="_blank" rel="noopener noreferrer">Open SEVA Super App</a><a class="open" href="https://seva.karimkatlane0.chatgpt.site/titans/completamento" target="_blank" rel="noopener noreferrer">Open TITANS completion</a></article>
+<article data-category="ai" data-search="chatgpt openai codex api ai models"><div class="card-top"><span class="icon" aria-hidden="true">AI</span><span class="status neutral">Separate sign-in</span></div><span class="tag">AI workspace</span><h3>OpenAI · ChatGPT · Codex</h3><p>Punti di accesso ufficiali per ChatGPT e piattaforma developer. Un account consumer non trasferisce accesso o crediti API a SEVA.</p><div class="meta">Credenziali API autorizzate solo lato server.</div><a class="open" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT</a><a class="open" href="https://platform.openai.com/" target="_blank" rel="noopener noreferrer">Open API Platform</a></article>
+<article data-category="ai" data-search="gemini google claude anthropic ai models"><div class="card-top"><span class="icon" aria-hidden="true">ML</span><span class="status neutral">Separate sign-in</span></div><span class="tag">External AI providers</span><h3>Gemini &amp; Claude</h3><p>Portali ufficiali dei provider. I collegamenti non implicano instradamento dei modelli, accordi commerciali o accesso incrociato agli account.</p><div class="meta">Attivazione e fatturazione restano separate.</div><a class="open" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini</a><a class="open" href="https://claude.ai/" target="_blank" rel="noopener noreferrer">Open Claude</a></article>
+<article data-category="ai" data-search="power bi microsoft business intelligence reporting dashboard"><div class="card-top"><span class="icon" aria-hidden="true">BI</span><span class="status">Workspace link only</span></div><span class="tag">Business intelligence</span><h3>Microsoft Power BI</h3><p>Destinazione analitica per la reportistica SEVA. Non risultano ancora verificati modello semantico, refresh pianificato o collegamento dataset.</p><div class="meta">Collegare separatamente il tenant Microsoft previsto.</div><a class="open" href="https://app.powerbi.com/" target="_blank" rel="noopener noreferrer">Open Power BI</a></article>
+<article data-category="ai" data-search="mlops dlops model evaluation monitoring deployment data science"><div class="card-top"><span class="icon" aria-hidden="true">MLOps</span><span class="status neutral">Design / verification gate</span></div><span class="tag">Model lifecycle</span><h3>MLOps &amp; DLoPs</h3><p>Registry dei modelli, valutazione, lineage dati, drift monitoring, riproducibilità e approvazione umana sono il piano di controllo previsto. Runtime non ancora verificato.</p><div class="meta">Nessun rilascio autonomo in produzione dichiarato.</div><a class="open" href="https://mlflow.org/docs/latest/" target="_blank" rel="noopener noreferrer">MLflow documentation</a></article>
+</div></section>
+<section class="group" id="commerce" aria-labelledby="commerce-title"><div class="group-head"><h2 id="commerce-title">03 / Commerce, payments &amp; content</h2><p>Storefronts · checkout · CMS · partner channels</p></div><div class="grid">
+<article data-category="commerce" data-search="stripe billing payments subscriptions checkout"><div class="card-top"><span class="icon" aria-hidden="true">S</span><span class="status">E2E not verified</span></div><span class="tag">Payments</span><h3>Stripe</h3><p>Amministrazione pagamenti e billing. I link di servizio esistenti non provano checkout cliente, entitlement via webhook o riconciliazione automatica.</p><div class="meta">Nessun addebito, trasferimento o abbonamento avviato.</div><a class="open" href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer">Open Stripe Dashboard</a></article>
+<article data-category="commerce" data-search="shopify ecommerce store orders products"><div class="card-top"><span class="icon" aria-hidden="true">S</span><span class="status neutral">Account to verify</span></div><span class="tag">Commerce platform</span><h3>Shopify</h3><p>Area negozio e ordini. Proprietà del negozio, account live e collegamento storefront vanno confermati separatamente.</p><div class="meta">Nessun ordine o prodotto modificato dal portale.</div><a class="open" href="https://admin.shopify.com/" target="_blank" rel="noopener noreferrer">Open Shopify Admin</a></article>
+<article data-category="commerce" data-search="wordpress cms publishing content"><div class="card-top"><span class="icon" aria-hidden="true">W</span><span class="status neutral">External CMS</span></div><span class="tag">Content management</span><h3>SEVA CMS · WordPress</h3><p>Sito editoriale e workspace di pubblicazione esistente. Bozze e pubblicazione restano azioni separate nell'account WordPress.</p><div class="meta">Endpoint CMS pubblico noto.</div><a class="open" href="https://zerounocms.wordpress.com/" target="_blank" rel="noopener noreferrer">Open SEVA CMS</a></article>
+</div></section>
+<section class="group" id="platform" aria-labelledby="platform-title"><div class="group-head"><h2 id="platform-title">04 / Platform, source &amp; DevSecOps</h2><p>Git · deploy · database · runtime · audit</p></div><div class="grid">
+<article data-category="platform" data-search="github source control repository pull requests ci"><div class="card-top"><span class="icon" aria-hidden="true">GH</span><span class="status good">Repository access verified</span></div><span class="tag">Source of truth</span><h3>GitHub · URBAN ONE</h3><p>Repository, branch, issue ed evidenze di rilascio. I fallimenti CI correnti devono essere risolti prima della release production.</p><div class="meta">karimkatlane0-crypto/-URBAN-ONE</div><a class="open" href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer">Open repository</a></article>
+<article data-category="platform" data-search="vercel deployments hosting sites"><div class="card-top"><span class="icon" aria-hidden="true">V</span><span class="status">Deploy verify required</span></div><span class="tag">Hosting</span><h3>Vercel</h3><p>Progetto SEVA executive preview individuato. I deploy storici READY non dimostrano la pubblicazione di questo nuovo portale.</p><div class="meta">seva-executive-studio-preview</div><a class="open" href="https://vercel.com/" target="_blank" rel="noopener noreferrer">Open Vercel</a></article>
+<article data-category="platform" data-search="render postgres database dbrelay deploydb"><div class="card-top"><span class="icon" aria-hidden="true">DB</span><span class="status">Service not observed</span></div><span class="tag">Database &amp; relay</span><h3>DBRELAY · DeployDB · PostgreSQL</h3><p>Gateway database e persistenza isolata sono distinti dai test locali. In questo inventario non è confermato un endpoint DBRELAY di produzione né un servizio DB live.</p><div class="meta">Nessuna migrazione o scrittura DB eseguita.</div><a class="open" href="https://dashboard.render.com/" target="_blank" rel="noopener noreferrer">Open Render</a></article>
+<article data-category="platform" data-search="kubernetes devsecops containers security"><div class="card-top"><span class="icon" aria-hidden="true">K8s</span><span class="status neutral">Runtime not connected</span></div><span class="tag">DevSecOps</span><h3>Kubernetes &amp; security</h3><p>Controlli target: isolamento tenant, RBAC, rotazione segreti, audit, approvazioni deploy e rollback. Nessun accesso cluster è stabilito da questa pagina.</p><div class="meta">Nessuna modifica cluster eseguita.</div><a class="open" href="https://kubernetes.io/docs/home/" target="_blank" rel="noopener noreferrer">Kubernetes documentation</a></article>
+</div></section>
+</section>
+<div class="notice"><strong>Governance baseline.</strong> Questo portale è una shell di navigazione e control plane, non una dichiarazione di provisioning completo dei servizi. I link non concedono credenziali, non aggirano termini provider, non sincronizzano cartelle private e non eseguono workflow agentici. Marketing, SMS, pagamenti, deploy e modifiche ai dati richiedono permessi specifici, consenso, revisione ed evidenze. No automatic messages, billing, provider calls or agent execution are triggered by this page.</div>
+</main>
+<footer><span>SEVA INTELLIGENCE STUDIO · UNIFIED SAAS PORTAL<br>Progetto indipendente · Visual system ispirato a dashboard executive, senza affiliazione EY.</span><span><a href="https://seva.karimkatlane0.chatgpt.site/">Official SEVA workspace</a> · <a href="https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web/v10-workspace.html#moduli">URBAN ONE Universal</a></span></footer>
+</div>
+<script>
+'use strict';
+(()=>{
+ const q=document.getElementById('q'),cat=document.getElementById('category');
+ const cards=[...document.querySelectorAll('article[data-category]')],count=document.getElementById('count');
+ function refresh(){
+  const term=q.value.trim().toLocaleLowerCase('it'),group=cat.value;let visible=0;
+  for(const card of cards){
+   const match=(group==='all'||group===card.dataset.category)&&(card.dataset.search+' '+card.innerText).toLocaleLowerCase('it').includes(term);
+   card.hidden=!match;if(match)visible++;
+  }
+  count.textContent=visible+' servizi visualizzati su '+cards.length+'.';
+ }
+ q.addEventListener('input',refresh);cat.addEventListener('change',refresh);refresh();
+})();
+</script>
+</body>
+</html>

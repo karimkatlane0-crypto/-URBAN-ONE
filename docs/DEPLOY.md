@@ -3,7 +3,7 @@
 ## Web
 Static local-first shell. Publish only after CI tests pass and hosting auth policy is tested independently.
 
-The public repository entry `index.html` redirects to `apps/web/index.html`. Both branch-based Pages/Jekyll and the custom Actions deployment retain this same app path, avoiding a README home or broken relative page links when either publishes. `node scripts/build-pages.mjs` creates a fresh `dist/pages` containing only the entry and public Web assets. The custom workflow checks the entry and nested app/hospitality pages. This static host provides no API runtime; a 404 at `/api/integrations/readiness` does not activate providers.
+The public repository entry `index.html` redirects to `apps/web/index.html`. Both branch-based Pages/Jekyll and the custom Actions deployment retain this same app path, avoiding a README home or broken relative page links when either publishes. `node scripts/build-pages.mjs` creates a fresh `dist/pages` containing only the entry and public Web assets. The custom workflow checks the entry and nested app/hospitality pages, including `apps/web/seva-unified-studio.html` and its public HTTP response. This static host provides no API runtime; a 404 at `/api/integrations/readiness` does not activate providers.
 
 For a combined local Web/API runtime, run `node services/api/server.mjs` with Node 22 or later and open `http://localhost:8787/`. `PORT` overrides the port. The server serves only public HTML/CSS/SVG/manifest assets from `apps/web`; repository files and secrets are excluded.
 
