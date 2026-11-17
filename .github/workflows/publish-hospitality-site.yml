@@ -47,6 +47,9 @@ jobs:
           test -f apps/web/seva-unified-studio.html
           test -f apps/mobile/www/seva-unified-studio.html
           cmp apps/web/seva-unified-studio.html apps/mobile/www/seva-unified-studio.html
+          test -f apps/web/seva-crm-studio.html
+          test -f apps/mobile/www/seva-crm-studio.html
+          cmp apps/web/seva-crm-studio.html apps/mobile/www/seva-crm-studio.html
           ! grep -Eiq 'karimkatlane0@gmail\.com|karimkatlane86@gmail\.com' apps/web/seva-unified-studio.html
           test -f apps/web/pole-premium.js
           test -f apps/web/pole-spectrum.css
@@ -122,6 +125,12 @@ jobs:
           grep -q 'No automatic messages, billing, provider calls or agent execution' "$RUNNER_TEMP/seva-unified-studio.html"
           ! grep -Eiq 'karimkatlane0@gmail\.com|karimkatlane86@gmail\.com' "$RUNNER_TEMP/seva-unified-studio.html"
           echo "SEVA Intelligence Studio public page verified: ${PAGE_URL%/}/apps/web/seva-unified-studio.html" >> "$GITHUB_STEP_SUMMARY"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/seva-crm-studio.html" "${PAGE_URL%/}/apps/web/seva-crm-studio.html"
+          grep -q 'SEVA CUSTOMER INTELLIGENCE' "$RUNNER_TEMP/seva-crm-studio.html"
+          grep -q 'Import consent-aware' "$RUNNER_TEMP/seva-crm-studio.html"
+          grep -q 'Agent orchestration' "$RUNNER_TEMP/seva-crm-studio.html"
+          ! grep -Eiq 'karimkatlane0@gmail\\.com|karimkatlane86@gmail\\.com' "$RUNNER_TEMP/seva-crm-studio.html"
+          echo "SEVA Unified CRM public page verified: ${PAGE_URL%/}/apps/web/seva-crm-studio.html" >> "$GITHUB_STEP_SUMMARY"
           # Verify the check-in/check-out operator guide is actually public.
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/checkin-checkout.html" "${PAGE_URL%/}/apps/web/checkin-checkout.html"
           grep -q 'Check-in e check-out: calendario operativo da file' "$RUNNER_TEMP/checkin-checkout.html"
