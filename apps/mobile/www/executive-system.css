@@ -1,22 +1,72 @@
-/* SEVA × URBAN ONE executive system — EY-inspired, independent visual identity */
-:root{color-scheme:dark;--exec-ink:#080b10;--exec-panel:#11151c;--exec-panel2:#171b22;--exec-gold:#f5c542;--exec-gold-soft:#ffe7a0;--exec-line:#403824;--exec-muted:#b8b4a9;--exec-positive:#9bd6a6}
-html{scroll-behavior:smooth;scroll-padding-top:24px}
-body{background:radial-gradient(ellipse at 82% 0%,rgba(245,197,66,.085),transparent 36%),var(--exec-ink);color:#f7f5ef}
-h1,h2,h3,h4{color:#fff8e8;letter-spacing:-.025em}
-a{color:var(--exec-gold-soft);text-underline-offset:3px}
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--exec-gold-soft);outline-offset:3px}
-:where(.card,.panel,.metric,.status,article,.start-panel){background:linear-gradient(155deg,var(--exec-panel2),var(--exec-panel) 78%);border-color:var(--exec-line);box-shadow:0 12px 32px #0003}
-:where(.card,.panel,article,.metric){border-radius:5px}
-:where(.eyebrow,.tag,.section-title a,.brand small,.panel-title){color:var(--exec-gold-soft)}
-:where(.muted,small,.lead){color:var(--exec-muted)}
-:where(button,.btn,.button,.jump,.primary){border-radius:4px;transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
-:where(button,.btn,.button,.jump,.primary):hover{border-color:var(--exec-gold);transform:translateY(-1px)}
-:where(input,select,textarea){background:#11151c;color:#f7f5ef;border:1px solid #554526;border-radius:4px;accent-color:var(--exec-gold)}
-:where(.btn,.button,.jump,.primary){background:linear-gradient(110deg,#ffe7a0,#e5b52c);color:#171208;border:1px solid var(--exec-gold);font-weight:750;text-decoration:none}
-:where(.btn.secondary,.button:not(.primary)){background:#171a20;color:var(--exec-gold-soft);border:1px solid #80621f}
-:where(th){color:var(--exec-gold-soft)}:where(th,td){border-bottom:1px solid var(--exec-line)}
-:where(footer){border-top:1px solid var(--exec-line)}
-:where(.pill,.badge,.version){border:1px solid #80621f;color:var(--exec-gold-soft);border-radius:3px}
-:where(.notice,.warn){border-left:3px solid var(--exec-gold);background:#17150f;padding:12px 15px}
-@media(max-width:640px){body{font-size:14px}:where(.card,.panel,article){padding:17px}}
+/* SYNAPSY Executive Studio — EY-inspired independent design system.
+   High-contrast charcoal / EY yellow / warm white. No EY affiliation implied. */
+:root{
+ color-scheme:light;
+ --exec-ink:#171717;--exec-panel:#fff;--exec-panel2:#f4f4f1;
+ --exec-gold:#ffe600;--exec-gold-soft:#e5cf00;--exec-line:#d9d9d4;
+ --exec-muted:#5c5c57;--exec-positive:#247a45;--exec-warn:#9a6700;
+ --exec-shadow:0 14px 36px rgba(20,20,16,.08)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:100px;background:#f4f4f1}
+body{margin:0;background:#f4f4f1;color:var(--exec-ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
+.shell{max-width:1440px;margin:0 auto;padding:0 40px}
+header{position:sticky;top:0;z-index:20;min-height:76px;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid #deded8;box-shadow:0 4px 18px rgba(0,0,0,.035)}
+.brand{color:#171717;letter-spacing:.015em}
+.mark{width:42px;height:42px;background:#ffe600;color:#171717;border-radius:0;box-shadow:none;font-weight:900}
+.brand small{color:#666!important;font-size:9px;letter-spacing:.16em}
+nav{gap:8px}
+nav a{color:#383833!important;padding:9px 12px;border-radius:2px;font-weight:650}
+nav a:hover{background:#fff5a8;color:#171717!important}
+.version{background:#171717;color:#ffe600!important;border:0;padding:7px 11px;font-weight:800;letter-spacing:.08em}
+.hero{position:relative;overflow:hidden;grid-template-columns:1.35fr .65fr;gap:38px;padding:68px 0 46px;border-bottom:1px solid #d9d9d4}
+.hero:before{content:"";position:absolute;right:0;top:24px;width:clamp(150px,22vw,310px);height:8px;background:#ffe600;transform:skewX(-35deg);transform-origin:right}
+.eyebrow{color:#655900!important;font-weight:850;letter-spacing:.19em}
+h1{color:#171717!important;font-size:clamp(3rem,6.5vw,6rem);font-weight:760;letter-spacing:-.065em;line-height:.98}
+h1 span{color:#171717!important;background:linear-gradient(transparent 58%,#ffe600 58%);padding:0 .04em}
+.lead{color:#4c4c47!important;font-size:17px;max-width:760px}
+.hero-meta{border-left:5px solid #ffe600;background:#fff;padding:22px 24px;color:#555!important;box-shadow:var(--exec-shadow)}
+.hero-meta strong{color:#171717!important;font-size:13px;letter-spacing:.06em}
+.signal{color:#247a45!important;font-weight:850}
+.toolbar{background:#fff;padding:20px;border:1px solid #deded8;border-top:4px solid #ffe600;box-shadow:var(--exec-shadow);grid-template-columns:minmax(220px,1fr) 220px auto}
+label{color:#444!important;font-weight:800}
+input,select{background:#fff!important;color:#171717!important;border:1px solid #c9c9c2!important;border-radius:2px!important;min-height:46px}
+.group{padding:38px 0 12px}
+.group-head{border-bottom:2px solid #171717;padding-bottom:13px;margin-bottom:18px}
+.group-head h2{color:#171717!important;font-size:19px;font-weight:850;letter-spacing:-.02em}
+.group-head p{color:#666!important}
+.grid{gap:18px}
+article{background:#fff!important;color:#171717!important;border:1px solid #deded8!important;border-radius:2px!important;box-shadow:var(--exec-shadow)!important;padding:22px!important;min-height:240px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+article:before{height:5px!important;background:#ffe600!important;opacity:1!important}
+article:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(20,20,16,.12)!important;border-color:#b7a500!important}
+.icon{background:#171717!important;color:#ffe600!important;border:0!important;border-radius:0!important;font-weight:850}
+.status{font-weight:850;color:#8a5c00!important}
+.status.good{color:#247a45!important}
+.status.neutral{color:#62625c!important}
+.tag{color:#716300!important;font-weight:850;letter-spacing:.13em}
+h3{color:#171717!important;font-size:19px;font-weight:800;letter-spacing:-.025em}
+article p{color:#4d4d47!important;font-size:13px;line-height:1.65}
+.meta{border-top:1px solid #e2e2dc!important;color:#666!important}
+.open{color:#171717!important;border-top:1px solid #d9d9d4!important;font-weight:850}
+.open:after{content:"↗";background:#ffe600;color:#171717;padding:2px 7px}
+.open:hover{color:#6d5f00!important}
+.notice{background:#171717!important;color:#f5f5ef!important;border:0!important;border-left:6px solid #ffe600!important;padding:20px 22px!important}
+.notice strong{color:#ffe600!important}
+footer{border-top:1px solid #cfcfc8!important;color:#666!important;padding:26px 0 36px}
+footer a{color:#5e5300!important;font-weight:800}
+.skip{background:#ffe600!important;color:#171717!important;font-weight:850}
+:where(a,button,input,select):focus-visible{outline:3px solid #9b8c00!important;outline-offset:3px!important}
+[hidden]{display:none!important}
+@media(max-width:900px){.shell{padding:0 24px}.hero{grid-template-columns:1fr;gap:24px}.hero:before{width:150px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+ .shell{padding:0 16px}header{position:relative;min-height:68px;gap:8px;flex-wrap:wrap;padding:10px 0}
+ header nav{display:flex!important;width:100%;overflow-x:auto;flex-wrap:nowrap;gap:4px;padding:0 0 7px}
+ nav a{white-space:nowrap;font-size:11px!important;padding:7px 9px}
+ .version{font-size:9px}
+ .hero{padding:36px 0 26px}h1{font-size:clamp(2.8rem,13vw,4rem)}
+ .lead{font-size:14px}.hero-meta{padding:17px}
+ .toolbar{grid-template-columns:1fr;padding:15px}.count{grid-column:auto;text-align:left}
+ .grid{grid-template-columns:1fr}article{min-height:0!important;padding:19px!important}
+ .group{padding-top:26px}.group-head{align-items:flex-start;flex-direction:column;gap:4px}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
