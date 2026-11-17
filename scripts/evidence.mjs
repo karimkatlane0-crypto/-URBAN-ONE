@@ -8,12 +8,11 @@ function sha(path) {
 const sourceCommit = process.env.GITHUB_SHA || 'UNPINNED';
 const runningInCi = process.env.GITHUB_ACTIONS === 'true' && process.env.GITHUB_WORKFLOW === 'ci';
 const proofPath = new URL('../release/portal-browser-proof.json', import.meta.url);
+const androidProofPath = new URL('../release/android-emulator-proof.json', import.meta.url);
 let portalProof = null;
-try {
-  portalProof = JSON.parse(fs.readFileSync(proofPath, 'utf8'));
-} catch {
-  portalProof = null;
-}
+let androidProof = null;
+try { portalProof = JSON.parse(fs.readFileSync(proofPath, 'utf8')); } catch { portalProof = null; }
+try { androidProof = JSON.parse(fs.readFileSync(androidProofPath, 'utf8')); } catch { androidProof = null; }
 
 const expectedPortals = ['Discovery', 'SEVA CRM Studio', 'SEVA Unified Studio'];
 const portalResults = portalProof?.results || [];
@@ -38,6 +37,21 @@ const publicBrowserVerified = Boolean(
   /^([a-f0-9]{64})$/.test(portalProof.artifact?.sha256 || '')
 );
 
+const androidResults = androidProof?.results || [];
+const androidEmulatorsVerified = Boolean(
+  androidProof &&
+  androidProof.run?.id === 44065748392 &&
+  androidResults.length === 2 &&
+  [24, 36].every(api => {
+    const result = androidResults.find(item => item.api === api);
+    return result?.status === 'PASS' &&
+      Object.values(result.checks || {}).length === 6 &&
+      Object.values(result.checks || {}).every(value => value === true) &&
+      /^([a-f0-9]{64})$/.test(result.apkSha256 || '') &&
+      /^([a-f0-9]{64})$/.test(result.artifact?.sha256 || '');
+  })
+);
+
 const files = {
   readme: sha(new URL('../README.md', import.meta.url)),
   mobileConfig: sha(new URL('../apps/mobile/capacitor.config.ts', import.meta.url)),
@@ -49,7 +63,8 @@ const files = {
   discovery: sha(new URL('../apps/web/discovery.html', import.meta.url)),
   sevaCrmStudio: sha(new URL('../apps/web/seva-crm-studio.html', import.meta.url)),
   sevaUnifiedStudio: sha(new URL('../apps/web/seva-unified-studio.html', import.meta.url)),
-  portalBrowserProof: fs.existsSync(proofPath) ? sha(proofPath) : null
+  portalBrowserProof: fs.existsSync(proofPath) ? sha(proofPath) : null,
+  androidEmulatorProof: fs.existsSync(androidProofPath) ? sha(androidProofPath) : null
 };
 
 const out = {
@@ -74,6 +89,10 @@ const out = {
     euLanguageSelectorAutomated: runningInCi ? 'PASS' : 'UNVERIFIED',
     publicBrowserVerification: publicBrowserVerified ? 'PASS' : 'OPEN',
     publicDeployment: publicBrowserVerified ? 'PASS' : 'OPEN',
+    androidEmulatorApi24: androidEmulatorsVerified ? 'PASS' : 'OPEN',
+    androidEmulatorApi36: androidEmulatorsVerified ? 'PASS' : 'OPEN',
+    physicalDeviceTest: 'OPEN',
+    providerLiveVerification: 'OPEN',
     iosSigning: 'OPEN',
     productionAndroidSigning: 'OPEN',
     providerCertification: 'OPEN',
@@ -90,6 +109,11 @@ const out = {
     verifiedPortals: portalResults.map(({ name, url, httpStatus, languageOptions, localeChange, mobileViewport }) => ({
       name, url, httpStatus, languageOptions, localeChange, mobileViewport
     }))
+  } : null,
+  androidCompatibilityEvidence: androidEmulatorsVerified ? {
+    runId: androidProof.run.id,
+    runUrl: androidProof.run.url,
+    apis: androidResults.map(({ api, status, apkSha256, artifact }) => ({ api, status, apkSha256, artifact }))
   } : null,
   capabilities: {
     aiCommandRegistry: {
@@ -109,6 +133,11 @@ const out = {
       versionCode: 7000001,
       productionSigned: false
     },
+    androidCompatibility: androidEmulatorsVerified ? {
+      workflowRun: androidProof.run.id,
+      api24ArtifactId: androidResults.find(item => item.api === 24).artifact.id,
+      api36ArtifactId: androidResults.find(item => item.api === 36).artifact.id
+    } : null,
     browser: publicBrowserVerified ? {
       workflowRun: portalProof.run.id,
       artifactId: portalProof.artifact.id,
