@@ -7,6 +7,37 @@ function sha(path) {
 
 const sourceCommit = process.env.GITHUB_SHA || 'UNPINNED';
 const runningInCi = process.env.GITHUB_ACTIONS === 'true' && process.env.GITHUB_WORKFLOW === 'ci';
+const proofPath = new URL('../release/portal-browser-proof.json', import.meta.url);
+let portalProof = null;
+try {
+  portalProof = JSON.parse(fs.readFileSync(proofPath, 'utf8'));
+} catch {
+  portalProof = null;
+}
+
+const expectedPortals = ['Discovery', 'SEVA CRM Studio', 'SEVA Unified Studio'];
+const portalResults = portalProof?.results || [];
+const publicBrowserVerified = Boolean(
+  portalProof &&
+  portalProof.passed === 3 &&
+  portalProof.failed === 0 &&
+  portalResults.length === 3 &&
+  expectedPortals.every((name, index) => {
+    const result = portalResults[index];
+    return result.name === name &&
+      result.status === 'PASS' &&
+      result.httpStatus === 200 &&
+      result.languageOptions === 24 &&
+      result.localeChange === 'de' &&
+      result.mobileViewport === '390x844' &&
+      result.horizontalOverflow === false &&
+      Array.isArray(result.pageErrors) &&
+      result.pageErrors.length === 0;
+  }) &&
+  portalProof.run?.id === 44066043868 &&
+  /^([a-f0-9]{64})$/.test(portalProof.artifact?.sha256 || '')
+);
+
 const files = {
   readme: sha(new URL('../README.md', import.meta.url)),
   mobileConfig: sha(new URL('../apps/mobile/capacitor.config.ts', import.meta.url)),
@@ -17,7 +48,8 @@ const files = {
   pagesBuilder: sha(new URL('./build-pages.mjs', import.meta.url)),
   discovery: sha(new URL('../apps/web/discovery.html', import.meta.url)),
   sevaCrmStudio: sha(new URL('../apps/web/seva-crm-studio.html', import.meta.url)),
-  sevaUnifiedStudio: sha(new URL('../apps/web/seva-unified-studio.html', import.meta.url))
+  sevaUnifiedStudio: sha(new URL('../apps/web/seva-unified-studio.html', import.meta.url)),
+  portalBrowserProof: fs.existsSync(proofPath) ? sha(proofPath) : null
 };
 
 const out = {
@@ -40,8 +72,8 @@ const out = {
     aiCommandMaxPageSize100k: 'PASS',
     repositoryCommit: sourceCommit === 'UNPINNED' ? 'OPEN' : 'PASS',
     euLanguageSelectorAutomated: runningInCi ? 'PASS' : 'UNVERIFIED',
-    publicBrowserVerification: 'OPEN',
-    publicDeployment: 'OPEN',
+    publicBrowserVerification: publicBrowserVerified ? 'PASS' : 'OPEN',
+    publicDeployment: publicBrowserVerified ? 'PASS' : 'OPEN',
     iosSigning: 'OPEN',
     productionAndroidSigning: 'OPEN',
     providerCertification: 'OPEN',
@@ -50,6 +82,15 @@ const out = {
     releaseAuthorization: 'BLOCKED'
   },
   files,
+  browserEvidence: publicBrowserVerified ? {
+    runId: portalProof.run.id,
+    runUrl: portalProof.run.url,
+    artifactId: portalProof.artifact.id,
+    artifactSha256: portalProof.artifact.sha256,
+    verifiedPortals: portalResults.map(({ name, url, httpStatus, languageOptions, localeChange, mobileViewport }) => ({
+      name, url, httpStatus, languageOptions, localeChange, mobileViewport
+    }))
+  } : null,
   capabilities: {
     aiCommandRegistry: {
       capacity: 100000,
@@ -67,7 +108,13 @@ const out = {
       versionName: '7.0.0',
       versionCode: 7000001,
       productionSigned: false
-    }
+    },
+    browser: publicBrowserVerified ? {
+      workflowRun: portalProof.run.id,
+      artifactId: portalProof.artifact.id,
+      name: portalProof.artifact.name,
+      sha256: portalProof.artifact.sha256
+    } : null
   }
 };
 
