@@ -1,5 +1,13 @@
 name: public-portals-browser
 on:
+  push:
+    paths:
+      - 'apps/web/discovery.html'
+      - 'apps/web/seva-crm-studio.html'
+      - 'apps/web/seva-unified-studio.html'
+      - 'apps/web/eu-language-selector.js'
+      - 'scripts/public-portals-browser-smoke.mjs'
+      - '.github/workflows/public-portals-browser.yml'
   workflow_dispatch:
   pull_request:
     paths:
