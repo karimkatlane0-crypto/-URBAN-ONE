@@ -28,11 +28,11 @@ function boot({ languages = ['it-IT'], stored = null, storageThrows = false } = 
     },
     dispatchEvent(event) { emitted.push(event); }
   };
-  const selectStore = { value: '' };
+  let selectElement;
   const originalCreate = document.createElement.bind(document);
   document.createElement = tag => {
     const element = originalCreate(tag);
-    if (tag === 'select') Object.assign(selectStore, element);
+    if (tag === 'select') selectElement = element;
     return element;
   };
   const localStorage = {
@@ -48,7 +48,7 @@ function boot({ languages = ['it-IT'], stored = null, storageThrows = false } = 
   const wrap = header.children[0];
   const select = wrap.children[1];
   const status = wrap.children[2];
-  return { context, select, status, wrap, listeners, emitted, get stored() { return stored; } };
+  return { context, select: selectElement, status, wrap, listeners, emitted, get stored() { return stored; } };
 }
 
 test('selector exposes exactly the 24 official EU language codes with native labels', () => {
