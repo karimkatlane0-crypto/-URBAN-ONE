@@ -128,3 +128,11 @@ test('selector exposes an accessible label and live status announcement', () => 
   assert.equal(app.wrap.children[0].tagName, 'LABEL');
   assert.equal(app.wrap.children[1].tagName, 'SELECT');
 });
+
+
+test('initialization announces the selected locale and keeps a stable control id', () => {
+  const app = boot({ languages: ['en-IE'] });
+  assert.equal(app.select.id, 'titans-locale-select');
+  assert.equal(app.context.document.documentElement.lang, 'en');
+  assert.match(app.status.textContent, /locale/i);
+});
