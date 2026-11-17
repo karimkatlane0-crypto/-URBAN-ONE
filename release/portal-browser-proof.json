@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-11-17T10:34:37.528Z",
+  "sourceCommit": "bc75932da2960145b076d8f8dd62268918f78747",
+  "publicBaseUrl": "https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web",
+  "browser": "Playwright Chromium",
+  "run": {
+    "id": 44066043868,
+    "url": "https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44066043868"
+  },
+  "artifact": {
+    "id": 14319809016,
+    "name": "public-portals-browser-proof",
+    "sha256": "6e01d7c2d78672790d0c2d9f85d48cfdfe0ac4ee3df298a790a90df8c2b99b75",
+    "screenshots": [
+      "discovery.png",
+      "seva-crm-studio.png",
+      "seva-unified-studio.png"
+    ]
+  },
+  "results": [
+    {
+      "name": "Discovery",
+      "url": "https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web/discovery.html",
+      "status": "PASS",
+      "httpStatus": 200,
+      "title": "URBAN ONE · Soggiorni e immobili",
+      "languageOptions": 24,
+      "localeChange": "de",
+      "mobileViewport": "390x844",
+      "horizontalOverflow": false,
+      "pageErrors": [],
+      "screenshot": "discovery.png"
+    },
+    {
+      "name": "SEVA CRM Studio",
+      "url": "https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web/seva-crm-studio.html",
+      "status": "PASS",
+      "httpStatus": 200,
+      "title": "SEVA Unified CRM · Customer Intelligence Studio",
+      "languageOptions": 24,
+      "localeChange": "de",
+      "mobileViewport": "390x844",
+      "horizontalOverflow": false,
+      "pageErrors": [],
+      "screenshot": "seva-crm-studio.png"
+    },
+    {
+      "name": "SEVA Unified Studio",
+      "url": "https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web/seva-unified-studio.html",
+      "status": "PASS",
+      "httpStatus": 200,
+      "title": "SEVA Intelligence Studio · Unified SaaS Portal",
+      "languageOptions": 24,
+      "localeChange": "de",
+      "mobileViewport": "390x844",
+      "horizontalOverflow": false,
+      "pageErrors": [],
+      "screenshot": "seva-unified-studio.png"
+    }
+  ],
+  "passed": 3,
+  "failed": 0
+}

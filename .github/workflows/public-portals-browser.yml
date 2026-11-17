@@ -1,0 +1,41 @@
+name: public-portals-browser
+on:
+  push:
+    paths:
+      - 'apps/web/discovery.html'
+      - 'apps/web/seva-crm-studio.html'
+      - 'apps/web/seva-unified-studio.html'
+      - 'apps/web/eu-language-selector.js'
+      - 'scripts/public-portals-browser-smoke.mjs'
+      - '.github/workflows/public-portals-browser.yml'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/web/discovery.html'
+      - 'apps/web/seva-crm-studio.html'
+      - 'apps/web/seva-unified-studio.html'
+      - 'apps/web/eu-language-selector.js'
+      - 'scripts/public-portals-browser-smoke.mjs'
+      - '.github/workflows/public-portals-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Verify the three public portals in a real browser
+        run: node scripts/public-portals-browser-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-portals-browser-proof
+          path: release/browser-proof/
+          if-no-files-found: warn

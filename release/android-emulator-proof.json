@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-11-17T10:35:00Z",
+  "sourceCommit": "544d713c195ddd3cedf0b9ea2e0950f774934e64",
+  "run": {
+    "id": 44065748392,
+    "url": "https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44065748392"
+  },
+  "browser": "GitHub Actions Android Emulator Runner",
+  "results": [
+    {
+      "api": 24,
+      "status": "PASS",
+      "checks": {
+        "install": true,
+        "launch": true,
+        "initialCalculation": true,
+        "calculate": true,
+        "unconfiguredBackendFallback": true,
+        "relaunchProcess": true
+      },
+      "physicalDeviceVerified": false,
+      "providerLiveVerified": false,
+      "apkSha256": "6a42354749fb9a883440c7ff3d9918b18d1bb8e5d94fdd8700c5f2c23b9eb0c6",
+      "artifact": {
+        "id": 14321125135,
+        "name": "android-emulator-api-24",
+        "sha256": "cadeb28d626be26b886d7e42969e80a877c20e43577e274713cb9ca3ed32087c"
+      }
+    },
+    {
+      "api": 36,
+      "status": "PASS",
+      "webview": "com.google.android.webview 133.0.6943.137",
+      "checks": {
+        "install": true,
+        "launch": true,
+        "initialCalculation": true,
+        "calculate": true,
+        "unconfiguredBackendFallback": true,
+        "relaunchProcess": true
+      },
+      "physicalDeviceVerified": false,
+      "providerLiveVerified": false,
+      "apkSha256": "d50780568ee9615caa73d1b37bb670c9518ee571584a466608926b3bbb77f9e6",
+      "artifact": {
+        "id": 14320022825,
+        "name": "android-emulator-api-36",
+        "sha256": "6605ba0803ad6a52dacac4825501e1bdc7c58b7fba8175e325b969a155c47142"
+      }
+    }
+  ],
+  "physicalDeviceVerified": false,
+  "providerLiveVerified": false
+}
