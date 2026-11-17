@@ -33,7 +33,7 @@ test('SEVA Unified Studio portal is mirrored across Web/mobile and has explicit 
   assert.ok(web.includes('href="./seva-unified-studio.html"'));
   assert.ok(webStudio.includes('https://www.klaviyo.com/dashboard'));
   assert.ok(webStudio.includes('ChatGPT connector linked'));
-  assert.ok(webStudio.includes('disabilitato dall’amministratore'));
+  assert.ok(webStudio.includes('Google Drive è installato ma disabilitato'));
   assert.ok(webStudio.includes('No automatic messages, billing, provider calls or agent execution'));
   assert.doesNotMatch(webStudio,/<form|fetch\(|XMLHttpRequest|https:\/\/api\.stripe\.com/i);
 });
