@@ -1,0 +1,22 @@
+/* SEVA × URBAN ONE executive system — EY-inspired, independent visual identity */
+:root{color-scheme:dark;--exec-ink:#080b10;--exec-panel:#11151c;--exec-panel2:#171b22;--exec-gold:#f5c542;--exec-gold-soft:#ffe7a0;--exec-line:#403824;--exec-muted:#b8b4a9;--exec-positive:#9bd6a6}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{background:radial-gradient(ellipse at 82% 0%,rgba(245,197,66,.085),transparent 36%),var(--exec-ink);color:#f7f5ef}
+h1,h2,h3,h4{color:#fff8e8;letter-spacing:-.025em}
+a{color:var(--exec-gold-soft);text-underline-offset:3px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--exec-gold-soft);outline-offset:3px}
+:where(.card,.panel,.metric,.status,article,.start-panel){background:linear-gradient(155deg,var(--exec-panel2),var(--exec-panel) 78%);border-color:var(--exec-line);box-shadow:0 12px 32px #0003}
+:where(.card,.panel,article,.metric){border-radius:5px}
+:where(.eyebrow,.tag,.section-title a,.brand small,.panel-title){color:var(--exec-gold-soft)}
+:where(.muted,small,.lead){color:var(--exec-muted)}
+:where(button,.btn,.button,.jump,.primary){border-radius:4px;transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
+:where(button,.btn,.button,.jump,.primary):hover{border-color:var(--exec-gold);transform:translateY(-1px)}
+:where(input,select,textarea){background:#11151c;color:#f7f5ef;border:1px solid #554526;border-radius:4px;accent-color:var(--exec-gold)}
+:where(.btn,.button,.jump,.primary){background:linear-gradient(110deg,#ffe7a0,#e5b52c);color:#171208;border:1px solid var(--exec-gold);font-weight:750;text-decoration:none}
+:where(.btn.secondary,.button:not(.primary)){background:#171a20;color:var(--exec-gold-soft);border:1px solid #80621f}
+:where(th){color:var(--exec-gold-soft)}:where(th,td){border-bottom:1px solid var(--exec-line)}
+:where(footer){border-top:1px solid var(--exec-line)}
+:where(.pill,.badge,.version){border:1px solid #80621f;color:var(--exec-gold-soft);border-radius:3px}
+:where(.notice,.warn){border-left:3px solid var(--exec-gold);background:#17150f;padding:12px 15px}
+@media(max-width:640px){body{font-size:14px}:where(.card,.panel,article){padding:17px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
