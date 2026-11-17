@@ -48,7 +48,7 @@ function boot({ languages = ['it-IT'], stored = null, storageThrows = false } = 
   const wrap = header.children[0];
   const select = wrap.children[1];
   const status = wrap.children[2];
-  return { context, select, status, listeners, emitted, get stored() { return stored; } };
+  return { context, select, status, wrap, listeners, emitted, get stored() { return stored; } };
 }
 
 test('selector exposes exactly the 24 official EU language codes with native labels', () => {
@@ -109,13 +109,13 @@ test('locale-aware date and number formatters use the active locale', () => {
 test('all three target pages load the shared selector and provide a header mount point', () => {
   for (const path of pages) {
     const html = readFileSync(new URL(path, import.meta.url), 'utf8');
-    assert.match(html, /<header\\b/i, `${path}: missing header`);
-    assert.match(html, /eu-language-selector\\.js/, `${path}: missing shared selector script`);
+    assert.match(html, /<header\b/i, `${path}: missing header`);
+    assert.match(html, /eu-language-selector\.js/, `${path}: missing shared selector script`);
   }
 });
 
 test('selector source contains no network, tracking, cookie or third-party translation calls', () => {
-  for (const forbidden of [/\\bfetch\\s*\\(/, /XMLHttpRequest/, /sendBeacon/, /document\\.cookie/, /gtag\\s*\\(/, /googletagmanager/, /translate\\.googleapis\\.com/]) {
+  for (const forbidden of [/\bfetch\s*\(/, /XMLHttpRequest/, /sendBeacon/, /document\.cookie/, /gtag\s*\(/, /googletagmanager/, /translate\.googleapis\.com/]) {
     assert.doesNotMatch(selectorSource, forbidden);
   }
 });
@@ -125,5 +125,6 @@ test('selector exposes an accessible label and live status announcement', () => 
   assert.equal(app.select.attributes['aria-label'], 'Select interface language');
   assert.equal(app.status.attributes.role, 'status');
   assert.equal(app.status.attributes['aria-live'], 'polite');
-  assert.equal(app.wrap?.children?.length, undefined);
+  assert.equal(app.wrap.children[0].tagName, 'LABEL');
+  assert.equal(app.wrap.children[1].tagName, 'SELECT');
 });
