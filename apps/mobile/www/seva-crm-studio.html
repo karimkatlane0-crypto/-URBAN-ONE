@@ -25,6 +25,31 @@ footer{border-top:1px solid var(--line);display:flex;justify-content:space-betwe
 @media(max-width:1000px){.layout{grid-template-columns:190px minmax(0,1fr);gap:18px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.topnav{display:none}}
 @media(max-width:700px){.shell{padding:0 15px}.top{height:68px}.brand{font-size:12px}.mark{width:33px;height:34px}.version{font-size:9px;padding:5px 7px}.layout{display:block;padding-top:18px}.side{position:static;display:flex;gap:3px;overflow:auto;padding:7px;margin-bottom:20px}.side-title,.side-foot{display:none}.side a{white-space:nowrap;flex:0 0 auto;font-size:10px;padding:8px}.hero{display:block}.asof{text-align:left;margin-top:14px}.kpis{gap:8px}.kpi{padding:13px;min-height:100px}.kpi strong{font-size:25px}.grid2{grid-template-columns:1fr}.section-head{align-items:start;display:block}.section-head a{display:inline-block;margin-top:8px}.statusbar{align-items:flex-start}.statusbar .dot{margin-top:5px}footer{display:block}footer span{display:block;margin-bottom:8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* 2026-11-17 Executive Gold refresh — warm white, charcoal and signal yellow */
+:root{color-scheme:light;--bg:#f4f4f1;--panel:#fff;--panel2:#f8f8f5;--line:#d8d8d1;--gold:#ffe600;--gold2:#5e5300;--text:#171717;--muted:#5d5d57;--green:#247a45;--amber:#8a5c00;--red:#a33b32}
+body{background:radial-gradient(ellipse at 88% 0%,rgba(255,230,0,.15),transparent 30%),#f4f4f1;color:#171717}
+.shell{max-width:1500px;padding:0 32px}
+.top{background:rgba(255,255,255,.96);border-bottom:1px solid #d8d8d1;min-height:78px;position:sticky;top:0;z-index:25;backdrop-filter:blur(14px)}
+.brand{color:#171717}.mark{background:#ffe600;color:#171717;border-radius:0;box-shadow:none}.brand small{color:#5e5300}
+.topnav a{color:#41413b}.topnav a:hover{color:#171717;background:#fff5a8}.version{background:#171717;color:#ffe600;border:0;font-weight:800}
+.layout{gap:24px}.side{background:#fff;border:1px solid #d8d8d1;box-shadow:0 10px 30px rgba(20,20,16,.06)}
+.side-title{color:#5e5300}.side a{color:#41413b}.side a:hover,.side a:first-of-type{background:#fff5a8;color:#171717}.side-foot{border-color:#deded8;color:#666}
+.eyebrow{color:#655900}h1,h2,h3{color:#171717}.hero{border-bottom:1px solid #d8d8d1}.lead{color:#4c4c47}.asof{color:#5d5d57}.asof strong{color:#5e5300}
+.statusbar{background:#fff;border:1px solid #d8d8d1;border-left:5px solid #ffe600;color:#444;box-shadow:0 8px 24px rgba(20,20,16,.05)}.statusbar b{color:#171717}.statusbar .dot{background:#8a5c00}
+.kpi,.panel{background:#fff;border:1px solid #deded8;box-shadow:0 10px 28px rgba(20,20,16,.055);color:#171717}
+.kpi strong{color:#171717}.kpi span,.kpi small{color:#5d5d57}
+.section-head{border-color:#171717}.section-head h2{color:#171717}.section-head p{color:#666}.section-head a{color:#5e5300}
+.panel h3{color:#171717}.panel p{color:#4d4d47}.panel .meta{border-color:#e2e2dc;color:#666}
+.table-wrap{background:#fff;border-color:#d8d8d1}table{background:#fff}th{background:#171717;color:#ffe600}td{color:#3e3e39;border-color:#e4e4de}
+.list-item{background:#fff;border-color:#deded8;color:#171717}.list-item small{color:#666}
+.safe{background:#fff;border:1px solid #deded8;border-left:5px solid #ffe600;color:#41413b;box-shadow:0 8px 22px rgba(20,20,16,.045)}.safe strong{color:#171717}
+.btn{border:1px solid #b5a500;color:#171717;background:#fff}.btn.primary{background:#ffe600;color:#171717;border-color:#ffe600}.btn:hover{filter:brightness(.97)}
+.pill{border-color:#b5a500;color:#6b5e00;background:#fffdf0}.pill.ok{border-color:#9ac5a4;color:#247a45;background:#f2faf3}.pill.off{border-color:#d5aaa5;color:#9d3932;background:#fff6f5}
+footer{background:#f4f4f1;border-color:#d8d8d1;color:#666}footer a{color:#5e5300}
+@media(max-width:900px){.shell{padding:0 18px}.layout{grid-template-columns:1fr}.side{position:static;display:flex;gap:4px;overflow:auto;white-space:nowrap}.side-title,.side-foot{display:none}.side a{flex:0 0 auto}}
+@media(max-width:640px){.shell{padding:0 14px}.top{height:auto;min-height:0;padding:12px 0;position:relative;flex-wrap:wrap}.topnav{width:100%;overflow:auto;flex-wrap:nowrap}.topnav a{white-space:nowrap}.layout{padding-top:18px}.hero{align-items:flex-start;flex-direction:column}.asof{text-align:left}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.side{padding:8px}.side a{font-size:11px;padding:8px}}
+
 </style>
 </head>
 <body>
