@@ -17,8 +17,13 @@ test('CRM snapshot and consent gate remain explicit and privacy-safe',()=>{
   for(const phrase of ['181','Elenco e-mail','Elenco della messaggistica di testo','0 / 0','SAFE MODE','Import consent-aware','Nessun contatto importato']){
     assert.ok(web.includes(phrase),phrase);
   }
-  assert.doesNotMatch(web,/karimkatlane0@gmail\\.com|karimkatlane86@gmail\\.com/);
-  assert.doesNotMatch(web,/<form|fetch\\(|XMLHttpRequest|localStorage|https:\\/\\/api\\./i);
+  assert.ok(!web.includes('karimkatlane0@gmail.com'));
+  assert.ok(!web.includes('karimkatlane86@gmail.com'));
+  assert.ok(!web.includes('<form'));
+  assert.ok(!web.includes('fetch('));
+  assert.ok(!web.includes('XMLHttpRequest'));
+  assert.ok(!web.includes('localStorage'));
+  assert.ok(!web.includes('https://api.'));
 });
 
 test('AI orchestration and MLOps status is described without claiming live training',()=>{
