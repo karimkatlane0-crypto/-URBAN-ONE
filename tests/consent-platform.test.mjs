@@ -68,3 +68,22 @@ test('independent users cannot share consent state', () => {
     assert.equal(db.get('user-002',base.product).mobile,false);
   } finally { db.close(); }
 });
+
+import {PRODUCT_IDS, PRODUCT_REGISTRY, requireRegisteredProduct} from '../packages/privacy/products.mjs';
+
+test('four-product registry is explicit and rejects unregistered namespaces',()=>{
+  assert.deepEqual(PRODUCT_IDS,['urban-one','seva','synapsy','kkubera']);
+  assert.equal(PRODUCT_REGISTRY.seva.label,'SEVA');
+  assert.throws(()=>requireRegisteredProduct('unknown-app'),e=>e.code==='UNREGISTERED_PRODUCT');
+});
+
+test('same account preferences remain isolated across all four products',()=>{
+  const db=ledger();
+  try{
+    for(const product of PRODUCT_IDS) db.update({subjectId:'shared-account',product,noticeVersion:'v1',choices:{analytics:product==='seva',partners:product==='kkubera'}});
+    assert.equal(db.get('shared-account','seva').analytics,true);
+    assert.equal(db.get('shared-account','urban-one').analytics,false);
+    assert.equal(db.get('shared-account','kkubera').partners,true);
+    assert.equal(db.get('shared-account','synapsy').partners,false);
+  }finally{db.close();}
+});
