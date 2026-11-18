@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101216"><title>SEVA TITANS · Sovereign Onboarding</title>
+<style>
+:root{color-scheme:dark;font:14px system-ui,sans-serif;background:#101216;color:#f4f5f7}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1120px;margin:auto;padding:24px 16px 50px}header,.panel{border:1px solid #343a45;border-radius:14px;background:#1b2028;padding:20px;margin-bottom:14px}h1{font-size:clamp(27px,4vw,42px);margin:4px 0 8px}h2{font-size:17px;margin:0 0 8px}.muted{color:#a7aebb;line-height:1.6}.pill{display:inline-block;border:1px solid #65552c;color:#f4ca54;border-radius:30px;padding:6px 10px;font-size:11px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.provider{border:1px solid #343a45;border-radius:10px;padding:13px;background:#12161d}.provider strong,.provider small{display:block}.provider small{color:#a7aebb;margin-top:5px;overflow-wrap:anywhere}.status{font-size:10px;color:#f4ca54;margin-top:10px}.ok{color:#8dd7ad}.danger{border-left:3px solid #d7a34c;padding:10px;background:#151a21}.link{color:#f4ca54}.matrix{width:100%;border-collapse:collapse}.matrix td,.matrix th{text-align:left;padding:10px;border-bottom:1px solid #343a45;font-size:12px}.matrix th{color:#a7aebb}.foot{font-size:11px;color:#a7aebb}@media(max-width:550px){.wrap{padding:14px}.matrix td,.matrix th{padding:7px;font-size:11px}}
+</style></head><body><main class="wrap">
+<header><span class="pill">EXECUTIVE TIER 1 · BUILD CANDIDATE</span><h1>SEVA SOVEREIGN TITANS</h1><p class="muted">Enterprise onboarding, identity governance, consent gateway and remote-agent readiness. Questa console espone gli stati dichiarati dal manifest del repository: non simula connessioni o autorizzazioni mancanti.</p><p class="danger">DENY BY DEFAULT · Nessun invio, sincronizzazione, trasferimento contatti, modifica cloud o deploy viene avviato da questa pagina.</p></header>
+<section class="panel"><h2>Provider & identità</h2><p class="muted">Le due identità Google sono separate. Collegamenti OAuth e token non sono ancora attivi.</p><div id="providers" class="grid" aria-live="polite"></div></section>
+<section class="panel"><h2>Action governance</h2><table class="matrix"><thead><tr><th>Azione</th><th>Regola</th><th>Stato</th></tr></thead><tbody>
+<tr><td>READ</td><td>Provider connesso + scope specifico + grant valido</td><td>Fail-closed</td></tr>
+<tr><td>DRAFT</td><td>Bozza locale, nessun effetto esterno</td><td class="ok">Consentito localmente</td></tr>
+<tr><td>WRITE</td><td>Grant + approvazione esplicita per singola azione</td><td>Bloccato senza prova</td></tr>
+<tr><td>SEND</td><td>Grant + consenso verificabile + approvazione dedicata</td><td>Bloccato senza prova</td></tr>
+<tr><td>SHARE</td><td>Destinatario autenticato + campi autorizzati + scadenza</td><td>Bloccato senza prova</td></tr>
+<tr><td>DELETE</td><td>Identità autenticata + conferma + audit</td><td>Bloccato senza prova</td></tr>
+</tbody></table></section>
+<section class="panel"><h2>Remote agent control plane</h2><p class="muted">Architettura predisposta per adapter provider-neutral, tool allowlist, sandbox, trace ID, idempotenza, rate limits, kill switch e human-in-the-loop. Nessun agent runtime remoto è dichiarato collegato in questa build.</p><div class="grid"><div class="provider"><strong>Orchestrator</strong><small>Policy registry e task routing</small><div class="status">SPECIFIED · RUNTIME PENDING</div></div><div class="provider"><strong>Execution gateway</strong><small>Isolamento, tool allowlist e limiti di quota</small><div class="status">SPECIFIED · RUNTIME PENDING</div></div><div class="provider"><strong>Consent ledger</strong><small>Actor, purpose, scope, expiry, revocation, evidence</small><div class="status">SPECIFIED · SECURE BACKEND PENDING</div></div><div class="provider"><strong>Audit & observability</strong><small>Event IDs, provenance, alerts e incident response</small><div class="status">SPECIFIED · PIPELINE PENDING</div></div></div></section>
+<section class="panel"><h2>Onboarding sequence</h2><ol class="muted"><li>Verificare tenant e identità senza unire account.</li><li>Collegare un provider per volta con OAuth e scope minimi.</li><li>Verificare callback, revoca token e isolamento tenant.</li><li>Abilitare READ solo dopo prova di identità e scope.</li><li>Abilitare WRITE/SEND/SHARE/DELETE soltanto con approvazione puntuale e audit.</li><li>Testare staging, recovery e security prima di qualsiasi release.</li></ol></section>
+<footer class="foot">SEVA TITANS · BUILD → VERIFY → RELEASE → SCALE · AD MAIOREM SEMPER · <a class="link" href="./seva-titans-hub.html">Rubrica & Browser</a> · <a class="link" href="./seva-titans-relations.html">Research & Relations</a></footer>
+</main><script type="module">
+import {summarizeProviderStates} from './seva-titans-policy.js';
+const response=await fetch('./seva-titans-manifest.json',{cache:'no-store'});
+if(!response.ok)throw new Error('Manifest non disponibile');
+const manifest=await response.json();
+const labels={not_connected:'NON COLLEGATO',not_configured:'DA CONFIGURARE',not_implemented:'NON IMPLEMENTATO',not_verified:'NON VERIFICATO',connected_limited:'COLLEGATO · SCOPE LIMITATO'};
+const host=document.getElementById('providers');
+for(const p of summarizeProviderStates(manifest.providers)){
+ const card=document.createElement('article');card.className='provider';
+ const name=document.createElement('strong');name.textContent=p.label;
+ const id=document.createElement('small');id.textContent=p.identity||'Identità/provider da assegnare';
+ const state=document.createElement('div');state.className='status';state.textContent=labels[p.status]||p.status.toUpperCase();
+ card.append(name,id,state);host.append(card);
+}
+</script></body></html>
