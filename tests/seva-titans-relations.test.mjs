@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const html=fs.readFileSync(new URL('../apps/web/seva-titans-relations.html',import.meta.url),'utf8');
+const js=fs.readFileSync(new URL('../apps/web/seva-titans-relations.js',import.meta.url),'utf8');
+test('public research requires explicit per-query acknowledgement',()=>{assert.match(html,/id="research-consent"/);assert.match(js,/if\(!\$\\('research-consent'\\)\.checked\)/);assert.match(js,/window\.open\(url/);assert.doesNotMatch(js,/fetch\s*\(|XMLHttpRequest|sendBeacon/)});
+test('public source ledger preserves unverified provenance',()=>{assert.match(js,/user-recorded-not-independently-verified/);assert.match(js,/NON VERIFICATA/)});
+test('share request is a local draft; acceptance and denial require evidence',()=>{assert.match(js,/draft-only-not-sent/);assert.match(js,/accepted-evidence-recorded-not-verified/);assert.match(js,/denied-evidence-recorded/);assert.match(js,/validUrl\(proof\)/);assert.match(html,/non trasferisce recapiti/)});
+test('Calendar opens a prefilled user-reviewed draft, no API write',()=>{assert.match(html,/id="calendar-consent"/);assert.match(js,/calendar\.google\.com\/calendar\/render/);assert.match(js,/window\.open\('https:\/\/calendar\.google\.com/);assert.doesNotMatch(js,/fetch\s*\(|XMLHttpRequest|sendBeacon/)});
+test('selected contact vCard export is available',()=>{assert.match(html,/export-vcard/);assert.match(js,/\.pick:checked/);assert.match(js,/text\/vcard/)});
+test('account separation and no OAuth secrets are preserved',()=>{assert.match(html,/Google Contacts OAuth/);assert.match(js,/seva\.titans\.contacts\.local\.v1/);assert.doesNotMatch(js,/access_token|refresh_token|client_secret/i)});
