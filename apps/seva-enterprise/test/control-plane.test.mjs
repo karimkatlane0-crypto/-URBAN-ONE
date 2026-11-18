@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const html=readFileSync(new URL('./public/control-plane.html',import.meta.url),'utf8');
+const html=readFileSync(new URL('../public/control-plane.html',import.meta.url),'utf8');
 
 test('control plane declares the snapshot and production boundary',()=>{
   assert.match(html,/snapshot di verifica del 18 novembre 2026/i);
@@ -33,6 +33,6 @@ test('control plane contains no remote mutation or secret-bearing browser logic'
 });
 
 test('main studio exposes the unified control plane route',()=>{
-  const studio=readFileSync(new URL('./public/studio.html',import.meta.url),'utf8');
+  const studio=readFileSync(new URL('../public/studio.html',import.meta.url),'utf8');
   assert.match(studio,/control-plane\.html/);
 });
