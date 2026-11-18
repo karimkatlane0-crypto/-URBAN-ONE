@@ -1,3 +1,5 @@
+import {requireRegisteredProduct} from '../../packages/privacy/products.mjs';
+import {ConsentError, OPTIONAL_PURPOSES} from '../../packages/privacy/consent.mjs';
 import {prepareUniversalAccess} from '../../packages/ai/universal-access.mjs';
 import {providerStatus} from '../../packages/ai/providers.mjs';
 import {AI_COMMAND_CAPACITY,aiCommandCapabilities} from '../../packages/ai/commands.mjs';
@@ -30,8 +32,40 @@ function safe(fn){
   catch(error){return {status:400,body:{error:'INVALID_REQUEST',message:error.message}};}
 }
 
+
+function consentRoute(req,env){
+  const match=/^\/api\/privacy\/consent\/([a-z0-9][a-z0-9._-]{1,63})(?:\/(withdraw|audit))?$/.exec(req.path||'');
+  if(!match) return null;
+  const [,rawProduct,action]=match, auth=req.auth||{}, ledger=env.consentLedger;
+  let product;
+  try { product=requireRegisteredProduct(rawProduct); }
+  catch { return {status:404,body:{error:'UNKNOWN_PRODUCT'}}; }
+  if(!auth.userId||!Array.isArray(auth.scopes)) return {status:401,body:{error:'AUTH_REQUIRED'}};
+  if(!ledger) return {status:503,body:{error:'CONSENT_STORE_UNAVAILABLE'}};
+  const requiredScope=action==='audit'||req.method==='GET'?'privacy:read':'privacy:write';
+  if(!auth.scopes.includes(requiredScope)) return {status:403,body:{error:'FORBIDDEN',requiredScope}};
+  try{
+    if(req.method==='GET'&&!action) return {status:200,body:ledger.get(auth.userId,product)};
+    if(req.method==='GET'&&action==='audit') return {status:200,body:{events:ledger.audit(auth.userId,product),verified:ledger.verifyAudit(auth.userId,product)}};
+    if(req.method==='PUT'&&!action){
+      const {choices,noticeVersion}=req.body||{};
+      return {status:200,body:ledger.update({subjectId:auth.userId,product,choices,noticeVersion})};
+    }
+    if(req.method==='POST'&&action==='withdraw'){
+      const {purposes=OPTIONAL_PURPOSES,noticeVersion}=req.body||{};
+      return {status:200,body:ledger.withdraw({subjectId:auth.userId,product,purposes,noticeVersion})};
+    }
+    return {status:405,body:{error:'METHOD_NOT_ALLOWED'}};
+  }catch(error){
+    if(error instanceof ConsentError) return {status:error.status,body:{error:error.code}};
+    return {status:400,body:{error:'INVALID_CONSENT_REQUEST'}};
+  }
+}
+
 export function route(req, env={}){
   const {method='GET',path='/',body={}}=req;
+  const consent=consentRoute(req,env);
+  if(consent) return consent;
   if(method==='POST'&&path==='/api/public/discovery/search') return discoveryResponse(body,env);
   if(method==='GET'&&path==='/health') return {status:200,body:{ok:true,version:'7.0.0'}};
   if(method==='GET'&&path==='/api/integrations/readiness') return {status:200,body:integrationReadiness(env)};
