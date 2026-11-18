@@ -1,3 +1,4 @@
+import {requireRegisteredProduct} from '../../packages/privacy/products.mjs';
 import {ConsentError, OPTIONAL_PURPOSES} from '../../packages/privacy/consent.mjs';
 import {prepareUniversalAccess} from '../../packages/ai/universal-access.mjs';
 import {providerStatus} from '../../packages/ai/providers.mjs';
@@ -35,7 +36,10 @@ function safe(fn){
 function consentRoute(req,env){
   const match=/^\/api\/privacy\/consent\/([a-z0-9][a-z0-9._-]{1,63})(?:\/(withdraw|audit))?$/.exec(req.path||'');
   if(!match) return null;
-  const [,product,action]=match, auth=req.auth||{}, ledger=env.consentLedger;
+  const [,rawProduct,action]=match, auth=req.auth||{}, ledger=env.consentLedger;
+  let product;
+  try { product=requireRegisteredProduct(rawProduct); }
+  catch { return {status:404,body:{error:'UNKNOWN_PRODUCT'}}; }
   if(!auth.userId||!Array.isArray(auth.scopes)) return {status:401,body:{error:'AUTH_REQUIRED'}};
   if(!ledger) return {status:503,body:{error:'CONSENT_STORE_UNAVAILABLE'}};
   const requiredScope=action==='audit'||req.method==='GET'?'privacy:read':'privacy:write';
