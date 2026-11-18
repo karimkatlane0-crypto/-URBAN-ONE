@@ -9,3 +9,37 @@ test('Copernicus Sentinel-2 search plan is bounded and metadata-only',()=>{const
 test('Copernicus rejects invalid bounding boxes',()=>{const r=route({method:'POST',path:'/api/public/satellite/copernicus/search-plan',body:{bbox:[13.8,45.7,13.7,45.6]}});assert.equal(r.status,400);assert.equal(r.body.error,'INVALID_REQUEST');});
 test('B&B network model is public, capped and reversible',()=>{const r=route({method:'GET',path:'/api/public/bnb-network/model'});assert.equal(r.status,200);assert.equal(r.body.annualFeeCents,100000);assert.equal(r.body.maxStandardNightCredits,6);assert.equal(r.body.userPromise.unlimitedNights,false);assert.equal(r.body.hostPromise.participationReversible,true);});
 test('B&B network quote exposes contribution sensitivity',()=>{const r=route({method:'POST',path:'/api/public/bnb-network/quote',body:{expectedRedeemedNights:6}});assert.equal(r.status,200);assert.equal(r.body.expectedHostSettlementCents,72000);assert.equal(r.body.contributionMarginBps,1800);});
+
+import {ConsentLedger} from '../packages/privacy/consent.mjs';
+
+test('consent API requires verified identity and privacy scope',()=>{
+  const db=new ConsentLedger(':memory:');
+  try{
+    const denied=route({method:'GET',path:'/api/privacy/consent/seva'}, {consentLedger:db});
+    assert.equal(denied.status,401);
+    const forbidden=route({method:'GET',path:'/api/privacy/consent/seva',auth:{userId:'u-1',scopes:[]}}, {consentLedger:db});
+    assert.equal(forbidden.status,403);
+  }finally{db.close();}
+});
+
+test('consent API supports user-scoped preferences and withdrawal',()=>{
+  const db=new ConsentLedger(':memory:');
+  const env={consentLedger:db};
+  const auth={userId:'u-1',scopes:['privacy:read','privacy:write']};
+  try{
+    const initial=route({method:'GET',path:'/api/privacy/consent/seva',auth},env);
+    assert.equal(initial.status,200);
+    assert.equal(initial.body.analytics,false);
+    const saved=route({method:'PUT',path:'/api/privacy/consent/seva',auth,body:{noticeVersion:'v1',choices:{analytics:true,email:true}}},env);
+    assert.equal(saved.status,200);
+    assert.equal(saved.body.analytics,true);
+    const withdrawn=route({method:'POST',path:'/api/privacy/consent/seva/withdraw',auth,body:{noticeVersion:'v1',purposes:['analytics']}},env);
+    assert.equal(withdrawn.status,200);
+    assert.equal(withdrawn.body.analytics,false);
+    assert.equal(withdrawn.body.email,true);
+    const audit=route({method:'GET',path:'/api/privacy/consent/seva/audit',auth},env);
+    assert.equal(audit.status,200);
+    assert.equal(audit.body.verified,true);
+    assert.equal(audit.body.events.length,2);
+  }finally{db.close();}
+});
