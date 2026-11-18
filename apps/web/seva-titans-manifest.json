@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "product": "SEVA SOVEREIGN TITANS",
+  "releaseChannel": "staging-candidate",
+  "defaults": {
+    "denyByDefault": true,
+    "humanApprovalForSideEffects": true,
+    "automaticOutboundCommunication": false,
+    "automaticContactSync": false,
+    "crossTenantAccess": false,
+    "unrestrictedAgentExecution": false
+  },
+  "providers": [
+    {"id":"google-contacts-a","label":"Google Contacts · account A","identity":"karimkatlane0@gmail.com","status":"not_connected","scopes":[]},
+    {"id":"google-contacts-b","label":"Google Contacts · account B","identity":"karimkatlane86@gmail.com","status":"not_connected","scopes":[]},
+    {"id":"google-calendar-a","label":"Google Calendar · account A","identity":"karimkatlane0@gmail.com","status":"not_connected","scopes":[]},
+    {"id":"google-calendar-b","label":"Google Calendar · account B","identity":"karimkatlane86@gmail.com","status":"not_connected","scopes":[]},
+    {"id":"remote-browser","label":"Remote browser agent","identity":null,"status":"not_configured","scopes":[]},
+    {"id":"crm-tenant","label":"SEVA CRM tenant","identity":null,"status":"not_implemented","scopes":[]},
+    {"id":"synapsy","label":"SYNAPSY","identity":null,"status":"not_verified","scopes":[]},
+    {"id":"hubspot","label":"HubSpot CRM","identity":null,"status":"not_connected","scopes":[]},
+    {"id":"vercel","label":"Vercel deployment","identity":null,"status":"not_connected","scopes":[]},
+    {"id":"github","label":"GitHub repository automation","identity":"karimkatlane0-crypto/-URBAN-ONE","status":"connected_limited","scopes":["repo:read","repo:write:branch","pull_request:create"]}
+  ],
+  "actionClasses": ["READ","DRAFT","WRITE","SEND","SHARE","DELETE"],
+  "approvalRequired": ["WRITE","SEND","SHARE","DELETE"]
+}
