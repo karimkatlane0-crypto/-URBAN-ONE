@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08111f">
+<meta name="description" content="SEVA Intelligence Studio — governance, integrazioni e release readiness. Snapshot verificato, non monitoraggio live.">
+<title>SEVA · Studio Control Plane</title>
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#111e30;--panel2:#16263a;--line:#263b52;--ink:#f1f6fb;--muted:#9db0c4;--mint:#9af0cf;--cyan:#79d7e7;--amber:#f2c477;--red:#f08c8c;--green:#8fe0b6}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 85% -10%,#174d5940,transparent 36%),var(--bg);color:var(--ink);font:14px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}button,input{font:inherit}button,a,input{outline-offset:3px}a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--mint)}
+.shell{max-width:1500px;margin:auto;min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.rail{position:sticky;top:0;height:100vh;padding:26px 18px;background:#0c1727;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.brand{display:flex;gap:12px;align-items:center;margin:0 0 38px}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#c8ffe5,#64cdbb);color:#0c2d32;display:grid;place-items:center;font-size:25px;font-weight:900}.brand b{display:block;font-size:17px;letter-spacing:.16em}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:.18em}
+.kicker{font-size:10px;letter-spacing:.19em;color:var(--mint);font-weight:800}.nav{display:grid;gap:6px;margin-top:12px}.nav a{padding:10px 12px;border-radius:9px;color:#b7c5d5;font-size:12px}.nav a:hover,.nav a.active{background:#1a3442;color:#eafff4}.rail-note{margin-top:auto;border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:11px}.rail-note strong{color:var(--mint)}
+main{min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 30px;border-bottom:1px solid #1e3045}.crumb{font-size:11px;color:var(--muted)}.crumb b{color:var(--ink)}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.linkbtn,.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #3a5269;border-radius:9px;padding:9px 12px;font-size:11px;font-weight:700;color:#d7e5f2;background:#13243a}.linkbtn.primary{background:var(--mint);color:#092d2a;border-color:var(--mint)}
+.content{max-width:1220px;margin:auto;padding:28px 30px 50px}.hero{position:relative;overflow:hidden;border:1px solid #315464;border-radius:19px;padding:30px;background:linear-gradient(115deg,#13283d,#123d40 80%);box-shadow:0 18px 50px #0003}.hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #a7ffe322;border-radius:50%;right:7%;top:-75px;box-shadow:0 0 0 35px #a7ffe30a,0 0 0 70px #a7ffe307}.hero h1{position:relative;z-index:1;font-size:clamp(30px,4vw,48px);line-height:1.08;letter-spacing:-.045em;margin:13px 0}.hero h1 span{color:var(--mint)}.hero p{position:relative;z-index:1;max-width:760px;color:#c2d7df;margin:0}.hero-meta{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.chip{border:1px solid #47706f;border-radius:99px;padding:5px 9px;font-size:10px;color:#d5fff0;background:#163d3d}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:28px 0 13px}.section-head h2{font-size:19px;letter-spacing:-.025em;margin:3px 0}.section-head p{color:var(--muted);font-size:11px;margin:0}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:#101e30;color:#b6c6d6;border-radius:99px;padding:7px 10px;font-size:10px;cursor:pointer}.filter[aria-pressed=true]{background:#1d4044;border-color:#4b897c;color:#dffff0}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:13px;background:linear-gradient(150deg,#142338,#101b2b);padding:16px;min-width:0}.card[hidden]{display:none}.card-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.card h3{font-size:14px;margin:12px 0 5px}.card p{font-size:11px;color:#aabbd0;margin:0;min-height:52px}.status{font-size:9px;letter-spacing:.08em;font-weight:800;border:1px solid currentColor;border-radius:99px;padding:4px 7px;white-space:nowrap}.status.pass{color:var(--green)}.status.partial{color:var(--amber)}.status.blocked{color:var(--red)}.status.unverified{color:#b9c8d8}.status.ready{color:var(--cyan)}.card-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #26394d;margin-top:13px;padding-top:10px}.card-foot small{font-size:9px;color:#8298ae}.card-foot a{font-size:10px;color:var(--mint);font-weight:700}
+.callout{margin-top:18px;border:1px solid #624d32;background:#2b2418;border-radius:12px;padding:14px 16px;color:#e8d7b8;font-size:11px}.callout strong{color:#ffe5a8}
+.conflicts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.conflict{border:1px solid var(--line);border-radius:12px;padding:15px;background:#101d2d}.conflict h3{font-size:12px;margin:0 0 5px}.conflict p{font-size:11px;color:#a8b9cc;margin:0}.conflict b{color:#e7f4ff}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.step{padding:13px;border:1px solid var(--line);border-radius:10px;background:#111f31}.step b{display:block;color:var(--mint);font-size:11px}.step small{color:var(--muted);font-size:10px}
+.footer{margin-top:28px;padding-top:15px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#8398ad;font-size:10px}
+.search{min-width:210px;max-width:280px;width:100%;border:1px solid var(--line);border-radius:9px;background:#0d1928;color:var(--ink);padding:9px 11px;font-size:11px}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.shell{display:block}.rail{position:static;height:auto;padding:14px 16px;border-right:0;border-bottom:1px solid var(--line)}.brand{margin:0 0 12px}.nav{display:flex;overflow:auto}.nav a{white-space:nowrap}.rail-note{display:none}.top{padding:12px 16px}.content{padding:18px 14px 35px}.hero{padding:22px}.hero:after{right:-120px}.section-head{align-items:start;flex-direction:column}.grid,.conflicts{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.search{max-width:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="rail">
+<a class="brand" href="/studio.html"><span class="mark">✳</span><span><b>SEVA</b><small>INTELLIGENCE STUDIO</small></span></a>
+<div class="kicker">COMMAND WORKSPACE</div>
+<nav class="nav" aria-label="Navigazione principale">
+<a href="/studio.html">← Studio principale</a><a class="active" href="#integrations">Integrazioni & stato</a><a href="#conflicts">Risoluzione conflitti</a><a href="#release">Release gates</a><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Manifest #185 ↗</a>
+</nav>
+<div class="rail-note"><strong>LOVE ALL SERVE ALL · AUM SAI RAM</strong><br>Trasparenza, libertà di scelta, privacy, consenso revocabile e accessi minimi. Nessuna attivazione commerciale automatica.</div>
+</aside>
+<main>
+<header class="top"><div class="crumb">SEVA <span>/</span> Developer workspace <span>/</span> <b>Control Plane</b></div><div class="top-actions"><a class="linkbtn" href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a class="linkbtn primary" href="https://seva-executive-studio-preview-1ade6b9w3-karimkatlane0-7632.vercel.app/" target="_blank" rel="noopener noreferrer">Apri Preview ↗</a></div></header>
+<div class="content">
+<section class="hero">
+<div class="kicker">GLOBAL GOVERNANCE · DEVELOPER STUDIO</div>
+<h1>One Studio.<br><span>Clear evidence.</span> Controlled release.</h1>
+<p>Un unico pannello per governare codice, infrastruttura, dati e provider. Questa schermata è uno snapshot di verifica del 18 novembre 2026: non è un monitoraggio live e non esegue modifiche remote.</p>
+<div class="hero-meta"><span class="chip">BUILD → VERIFY → CERTIFY</span><span class="chip">Preview only</span><span class="chip">No production writes</span><span class="chip">Least privilege</span></div>
+</section>
+
+<section id="integrations">
+<div class="section-head"><div><div class="kicker">01 / SYSTEM INVENTORY</div><h2>Integrazioni e stato verificato</h2><p>Gli stati si riferiscono alle prove raccolte; READY non significa certificato o operativo end-to-end.</p></div><input id="search" class="search" type="search" placeholder="Cerca provider o blocco…" aria-label="Cerca integrazioni"></div>
+<div class="filters" role="group" aria-label="Filtra per stato">
+<button class="filter" data-filter="all" aria-pressed="true">Tutti</button><button class="filter" data-filter="pass" aria-pressed="false">PASS</button><button class="filter" data-filter="ready" aria-pressed="false">READY</button><button class="filter" data-filter="partial" aria-pressed="false">PARTIAL</button><button class="filter" data-filter="blocked" aria-pressed="false">BLOCKED</button><button class="filter" data-filter="unverified" aria-pressed="false">UNVERIFIED</button>
+</div>
+<div class="grid" id="cards">
+<article class="card" data-status="pass" data-search="github repository source branch commit pr ci">
+<div class="card-top"><span class="kicker">SOURCE CONTROL</span><span class="status pass">PASS · SOURCE</span></div><h3>GitHub · Repository canonico</h3><p>Repository raggiungibile; branch <code>main-@URBAN-ONE</code>; commit di riferimento <code>66034eabc8f7</code>. PR #157 resta un milestone implementativo, non una certificazione.</p><div class="card-foot"><small>Codice e metadati letti</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer">Apri repo ↗</a></div>
+</article>
+<article class="card" data-status="ready" data-search="vercel preview deployment ready">
+<div class="card-top"><span class="kicker">FRONTEND HOSTING</span><span class="status ready">READY · PREVIEW</span></div><h3>Vercel · Preview</h3><p>Deployment <code>dpl_9KVLuAsVF9JJJdpYJJacAztnqGfX</code> READY. La home restituisce HTTP 200. Il progetto non mostra una connessione Git al repository canonico.</p><div class="card-foot"><small>Preview verificata · non promossa</small><a href="https://vercel.com/karimkatlane0-7632/seva-executive-studio-preview" target="_blank" rel="noopener noreferrer">Apri progetto ↗</a></div>
+</article>
+<article class="card" data-status="blocked" data-search="vercel production api health environment variables backend">
+<div class="card-top"><span class="kicker">API RUNTIME</span><span class="status blocked">BLOCKED</span></div><h3>Vercel · Backend e API</h3><p><code>/health</code> e <code>/api/public/status</code> restituiscono HTTP 404 sulla preview. Nessuna variabile d'ambiente visibile nel progetto. La home statica non prova il backend.</p><div class="card-foot"><small>Runtime e credenziali non verificati</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Gate #185 ↗</a></div>
+</article>
+<article class="card" data-status="unverified" data-search="kubernetes cluster staging manifests ingress tls secrets">
+<div class="card-top"><span class="kicker">INFRASTRUCTURE</span><span class="status unverified">UNVERIFIED</span></div><h3>Kubernetes · Staging</h3><p>Non è stata dimostrata l'identità di un cluster autorizzato, né namespace, ingress/TLS, secret store, osservabilità, backup/restore e rollback.</p><div class="card-foot"><small>Nessun deploy eseguito</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Gate infrastruttura ↗</a></div>
+</article>
+<article class="card" data-status="partial" data-search="power bi microsoft data analytics">
+<div class="card-top"><span class="kicker">ANALYTICS</span><span class="status partial">PARTIAL</span></div><h3>Microsoft Power BI</h3><p>Esiste un pacchetto di importazione Power Query/CSV. Non risultano collegati workspace Microsoft, gateway, report PBIX o refresh cloud verificato.</p><div class="card-foot"><small>Importazione preparata · non certificata</small><a href="https://seva.karimkatlane0.chatgpt.site/insights" target="_blank" rel="noopener noreferrer">Apri SEVA Insights ↗</a></div>
+</article>
+<article class="card" data-status="partial" data-search="synapsy crm identity system record">
+<div class="card-top"><span class="kicker">CRM · IDENTITY</span><span class="status partial">PARTIAL · READ</span></div><h3>SYNAPSY · CRM canonico</h3><p>Workspace disponibile in lettura. SYNAPSY resta il sistema master di identità e CRM. I provider esterni e la risposta AI reale non risultano certificati end-to-end.</p><div class="card-foot"><small>Snapshot read-only · zero scritture</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Governance ↗</a></div>
+</article>
+<article class="card" data-status="partial" data-search="klaviyo lifecycle marketing oauth consent webhooks">
+<div class="card-top"><span class="kicker">LIFECYCLE</span><span class="status partial">PARTIAL · READ</span></div><h3>Klaviyo</h3><p>Connettore read-only accessibile. Mancano OAuth server-side SEVA, staging isolato, mapping SYNAPSY, webhook e test eventi. Nessuna campagna o sincronizzazione attivata.</p><div class="card-foot"><small>Issue #186 · nessun invio</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/186" target="_blank" rel="noopener noreferrer">Apri gate CRM ↗</a></div>
+</article>
+<article class="card" data-status="blocked" data-search="wordpress cms canonical staging production connector mismatch">
+<div class="card-top"><span class="kicker">CMS</span><span class="status blocked">BLOCKED · IDENTITY</span></div><h3>WordPress · CMS canonico</h3><p>Produzione ZERO UNO e staging WordPress.com identificati; la sorgente WordPress collegata punta a un host diverso. Nessuna modifica ai contenuti o ai plugin.</p><div class="card-foot"><small>Riconciliazione richiesta</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/183" target="_blank" rel="noopener noreferrer">Apri gate CMS ↗</a></div>
+</article>
+<article class="card" data-status="unverified" data-search="spotify api embed oauth">
+<div class="card-top"><span class="kicker">MEDIA</span><span class="status unverified">UNVERIFIED</span></div><h3>Spotify · API + Embed</h3><p>La direzione tecnica prevede entrambe le modalità ufficiali. Nessun account Spotify risulta collegato; l'API e l'autorizzazione non sono verificate.</p><div class="card-foot"><small>Embed separato dall'API</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/183" target="_blank" rel="noopener noreferrer">Gate Spotify ↗</a></div>
+</article>
+<article class="card" data-status="partial" data-search="amazon awin thefork affiliate attribution commission payout">
+<div class="card-top"><span class="kicker">COMMERCE ATTRIBUTION</span><span class="status partial">PARTIAL</span></div><h3>Amazon · Awin · TheFork</h3><p>Amazon Associates ha un'identità affiliato registrata. Approvazioni, ordini attribuiti, commissioni approvate e liquidazioni restano prove distinte; Awin/TheFork non sono certificati.</p><div class="card-foot"><small>Nessun ricavo dichiarato</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Gate affiliazioni ↗</a></div>
+</article>
+<article class="card" data-status="blocked" data-search="whatsapp meta messenger api consent">
+<div class="card-top"><span class="kicker">MESSAGING</span><span class="status blocked">BLOCKED</span></div><h3>WhatsApp Business · Meta</h3><p>Autorizzazioni API, proprietà WABA/app, callback, template e round-trip webhook non dimostrati. Nessun invio o messaggio automatico consentito.</p><div class="card-foot"><small>Opt-in e provider approval richiesti</small><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/185" target="_blank" rel="noopener noreferrer">Gate messaging ↗</a></div>
+</article>
+<article class="card" data-status="blocked" data-search="google drive files folder connector administrator disabled">
+<div class="card-top"><span class="kicker">DOCUMENTS</span><span class="status blocked">BLOCKED · ACCESS</span></div><h3>Google Drive · Archivio</h3><p>Il connettore Drive risulta disabilitato dall'amministratore. Non posso ispezionare la cartella richiesta né verificare tutti i file dei due account in questa sessione.</p><div class="card-foot"><small>Nessun file modificato</small><a href="https://drive.google.com/" target="_blank" rel="noopener noreferrer">Apri Drive ↗</a></div>
+</article>
+<article class="card" data-status="partial" data-search="data plugin source analytics">
+<div class="card-top"><span class="kicker">DATA GOVERNANCE</span><span class="status partial">PARTIAL</span></div><h3>Data · KPI e qualità</h3><p>Il plugin Data è disponibile per analisi e report. Per KPI live servono sorgenti collegate, definizioni metriche e aggiornamenti con provenienza verificabile.</p><div class="card-foot"><small>Nessun dato sintetico spacciato per reale</small><a href="https://seva.karimkatlane0.chatgpt.site/insights" target="_blank" rel="noopener noreferrer">Insights ↗</a></div>
+</article>
+</div>
+<div class="callout"><strong>Nota Drive:</strong> il connettore Google Drive risulta installato ma DISABLED_BY_ADMIN. La ricerca della Library ChatGPT non equivale all'ispezione di Google Drive. Nessun file è stato caricato, scaricato, spostato o modificato.</div>
+</section>
+
+<section id="conflicts">
+<div class="section-head"><div><div class="kicker">02 / CONFLICT RESOLUTION</div><h2>Conflitti di sistema da risolvere</h2><p>Ordine di correzione basato sulle dipendenze tecniche.</p></div></div>
+<div class="conflicts">
+<article class="conflict"><h3>01 · Entry point duplicati</h3><p>Studio Enterprise, Unified Studio e CRM Studio convivono. <b>Soluzione:</b> un solo ingresso canonico; migrare le funzioni e le route dopo test, senza cancellare le pagine esistenti prima della parità funzionale.</p></article>
+<article class="conflict"><h3>02 · Vercel non allineato a GitHub</h3><p>Il progetto esiste ma non mostra repository collegato. <b>Soluzione:</b> associare una pipeline preview controllata, fissare commit e root directory, verificare build e route prima di qualsiasi promozione.</p></article>
+<article class="conflict"><h3>03 · Frontend statico vs backend persistente</h3><p>Gli endpoint di salute sono 404 e non esistono env visibili. <b>Soluzione:</b> frontend Vercel separato da API HTTPS persistente, PostgreSQL/RLS, secret manager, audit, backup e restore; niente credenziali nel browser.</p></article>
+<article class="conflict"><h3>04 · CRM e lifecycle identity</h3><p>SYNAPSY è master; Klaviyo è downstream. <b>Soluzione:</b> ID opaco stabile, tenant isolation, ledger consenso, sync unidirezionale, idempotenza e cancellazione propagata.</p></article>
+<article class="conflict"><h3>05 · CMS e canali esterni</h3><p>WordPress connector mismatch; Spotify non connesso. <b>Soluzione:</b> riconciliare host e identità, staging WordPress, Embed ufficiale e OAuth Spotify minimo separato.</p></article>
+<article class="conflict"><h3>06 · Dati, analytics e attribuzione</h3><p>Power BI è solo preparato; affiliazioni senza prova di settlement. <b>Soluzione:</b> definire KPI, collegare workspace/gateway, distinguere click, ordine, commissione approvata e pagamento.</p></article>
+<article class="conflict"><h3>07 · Kubernetes e resilienza</h3><p>Cluster non identificato. <b>Soluzione:</b> inventario autorizzato, namespace staging, ingress/TLS, RBAC, secrets, logs/metrics, backup/restore, rollback e attestazione immagine.</p></article>
+<article class="conflict"><h3>08 · Privacy e accessi</h3><p>Drive e contatti hanno autorizzazioni separate. <b>Soluzione:</b> accesso per account e finalità, consenso individuale revocabile, nessuna copia globale o sincronizzazione automatica.</p></article>
+</div>
+</section>
+
+<section id="release">
+<div class="section-head"><div><div class="kicker">03 / RELEASE ENGINEERING</div><h2>Sequenza di rilascio</h2><p>Ogni fase produce evidenza ispezionabile; nessuna fase si auto-certifica.</p></div></div>
+<div class="flow">
+<div class="step"><b>BUILD</b><small>Consolidare route, API, UI e manifest</small></div>
+<div class="step"><b>VERIFY</b><small>Test, CI, browser, sicurezza e dati</small></div>
+<div class="step"><b>STAGING</b><small>Vercel preview + backend isolato + Kubernetes</small></div>
+<div class="step"><b>CERTIFY</b><small>Reviewer indipendente, restore e provider E2E</small></div>
+<div class="step"><b>RELEASE</b><small>GO esplicito, rollback pronto, rollout controllato</small></div>
+</div>
+<div class="callout"><strong>Decisione corrente: NO-GO produzione.</strong> La versione Vercel production non è stata pubblicata né modificata. Il prossimo gate utile è collegare in modo verificabile il repository alla preview e ripristinare un backend HTTPS persistente prima di abilitare provider o analytics live.</div>
+</section>
+<footer class="footer"><span>SEVA Intelligence Studio · Governance snapshot · 18 Nov 2026</span><span>LOVE ALL SERVE ALL · AUM SAI RAM · AD MAIORA SEMPER</span></footer>
+</div>
+</main>
+</div>
+<script>
+(() => {
+ const cards=[...document.querySelectorAll('#cards .card')];
+ const buttons=[...document.querySelectorAll('[data-filter]')];
+ const search=document.getElementById('search');
+ let active='all';
+ function apply(){
+  const q=(search.value||'').trim().toLowerCase();
+  for(const card of cards){
+   const status=card.dataset.status;
+   const hay=(card.dataset.search+' '+card.innerText).toLowerCase();
+   card.hidden=!(active==='all'||status===active)||!hay.includes(q);
+  }
+ }
+ buttons.forEach(button=>button.addEventListener('click',()=>{
+  active=button.dataset.filter;
+  buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+  apply();
+ }));
+ search.addEventListener('input',apply);
+})();
+</script>
+</body>
+</html>
