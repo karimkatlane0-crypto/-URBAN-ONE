@@ -11,6 +11,12 @@ test('policy defaults deny and only allowlisted actions exist',()=>{
 });
 test('local draft is allowed without a provider and has no external side effect',()=>{
  assert.deepEqual(assessTitansAction({action:'DRAFT'}),{allowed:true,reason:'LOCAL_DRAFT_ONLY',externalSideEffect:false});
+ assert.deepEqual(assessTitansAction({provider:null,action:'DRAFT'}),{allowed:true,reason:'LOCAL_DRAFT_ONLY',externalSideEffect:false});
+ assert.deepEqual(assessTitansAction({provider:{status:'not_connected'},action:'DRAFT'}),{allowed:true,reason:'LOCAL_DRAFT_ONLY',externalSideEffect:false});
+ assert.equal(assessTitansAction({action:'UNKNOWN'}).reason,'ACTION_NOT_ALLOWLISTED');
+});
+test('provider-backed reads fail closed when provider is unresolved',()=>{
+ assert.equal(assessTitansAction({action:'READ',scope:'contacts.read',grant:valid}).reason,'PROVIDER_UNRESOLVED');
 });
 test('read requires connected provider, authenticated actor, exact scope and unexpired grant',()=>{
  assert.equal(assessTitansAction({provider:connected,action:'READ',scope:'contacts.read',grant:valid,now:Date.parse('2026-11-18')}).allowed,true);
