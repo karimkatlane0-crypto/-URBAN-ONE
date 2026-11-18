@@ -59,7 +59,9 @@ function consentRoute(req,env){
 }
 
 export function route(req, env={}){
-  const {method='GET',path='/',body={}}=req;\n  const consent=consentRoute(req,env);\n  if(consent) return consent;
+  const {method='GET',path='/',body={}}=req;
+  const consent=consentRoute(req,env);
+  if(consent) return consent;
   if(method==='POST'&&path==='/api/public/discovery/search') return discoveryResponse(body,env);
   if(method==='GET'&&path==='/health') return {status:200,body:{ok:true,version:'7.0.0'}};
   if(method==='GET'&&path==='/api/integrations/readiness') return {status:200,body:integrationReadiness(env)};
