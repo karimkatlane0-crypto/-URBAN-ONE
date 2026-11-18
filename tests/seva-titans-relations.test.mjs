@@ -29,8 +29,8 @@ test('Calendar opens a prefilled user-reviewed draft, no API write',()=>{
  assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon/);
 });
 test('selected contact vCard and CSV export are supported',()=>{
- assert.ok(html.includes('export-vcard'));
- assert.ok(js.includes('.pick:checked'));
+ assert.ok(html.includes('export-vcard')); assert.ok(html.includes('id="export-contacts"'));
+ assert.ok(js.includes("$('export-contacts').selectedOptions"));
  assert.ok(js.includes('text/vcard'));
  assert.ok(hub.includes('data-pick='));
  assert.ok(hub.includes('exportRows=selected.length?rows.filter'));
