@@ -1,5 +1,5 @@
 export const TITANS_POLICY = Object.freeze({
-  version: '1.0.0',
+  version: '1.0.1',
   denyByDefault: true,
   sideEffects: Object.freeze(['WRITE','SEND','SHARE','DELETE']),
   actions: Object.freeze(['READ','DRAFT','WRITE','SEND','SHARE','DELETE'])
@@ -7,9 +7,14 @@ export const TITANS_POLICY = Object.freeze({
 
 export function assessTitansAction({provider, action, scope, grant, now = Date.now()} = {}) {
   const deny = reason => Object.freeze({allowed:false, reason});
-  if (!provider || typeof provider !== 'object') return deny('PROVIDER_UNRESOLVED');
   if (!TITANS_POLICY.actions.includes(action)) return deny('ACTION_NOT_ALLOWLISTED');
+
+  // DRAFT is a local composition operation: it must not require a provider,
+  // grant, consent record, or authenticated external actor.
   if (action === 'DRAFT') return Object.freeze({allowed:true, reason:'LOCAL_DRAFT_ONLY', externalSideEffect:false});
+
+  // Every provider-backed action remains fail-closed.
+  if (!provider || typeof provider !== 'object') return deny('PROVIDER_UNRESOLVED');
   if (provider.status !== 'connected') return deny('PROVIDER_NOT_CONNECTED');
   if (!grant || grant.revoked === true) return deny('GRANT_MISSING_OR_REVOKED');
   if (grant.providerId !== provider.id || grant.scope !== scope) return deny('GRANT_SCOPE_MISMATCH');
