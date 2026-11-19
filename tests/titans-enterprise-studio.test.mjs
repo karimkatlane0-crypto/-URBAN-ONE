@@ -43,3 +43,13 @@ test('product search and navigation controls are wired', () => {
   assert.match(html, /addEventListener\('input'/);
   assert.match(html, /aria-current/);
 });
+
+test('product cards do not point to missing preview routes', () => {
+  assert.doesNotMatch(html, /href="\.\/(?:v10-workspace|seva-unified-studio)\.html"/);
+  assert.equal((html.match(/Consulta stato e prove/g) || []).length, 2);
+});
+
+test('small-screen navigation reflows instead of consuming a permanent sidebar column', () => {
+  assert.match(css, /@media\(max-width:560px\)\{\.sidebar\{position:sticky/);
+  assert.match(css, /\.main-content\{margin-left:0\}/);
+});
