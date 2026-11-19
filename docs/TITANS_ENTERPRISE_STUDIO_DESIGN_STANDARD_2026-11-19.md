@@ -31,7 +31,7 @@ The names above describe the proposed architecture and visual identity. The page
 - Root redirect and existing production entrypoint are intentionally unchanged. The new experience is not yet promoted to the production home route.
 
 ## Truthful data policy
-The current preview is a design shell. It does not query GitHub, CI, MLOps, model providers, billing systems or project backends. It labels live data as not connected and identifies the MLOps pipeline as a reference flow. Project states are a dated governance snapshot and must be replaced only by authoritative, traceable data bindings.
+The preview now reads the public GitHub pull-request #207 and Android compatibility workflow run through unauthenticated, read-only GitHub REST endpoints. It does not query MLOps, model providers, billing systems or project backends. If the public API is unavailable or rate-limited, the UI reports NOT VERIFIED and does not reuse stale values. It labels live data as not connected and identifies the MLOps pipeline as a reference flow. Project states are a dated governance snapshot and must be replaced only by authoritative, traceable data bindings.
 
 No metric, health status, agent activity, deployment, test result, payment, webhook receipt or certification may be fabricated or inferred from the visual design.
 
@@ -62,3 +62,11 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - Removed two preview-card links that returned HTTP 404; both now navigate to the evidence register until their dedicated workspaces have verified public routes.
 - Added a narrow-screen navigation reflow so the fixed desktop sidebar no longer permanently reduces the phone viewport width.
 - Added regression tests for both defects. This patch remains subject to CI and human review; it does not activate live integrations or change the production entrypoint.
+
+## Live GitHub read-only connector — 19 November 2026
+- Web and mobile views read PR #207 and Android compatibility run 44517664886 directly from public GitHub REST endpoints.
+- No GitHub token, write scope, server secret, merge, workflow dispatch or deployment action is used.
+- The UI shows PR state and CI result, with an explicit NOT VERIFIED fallback for API errors/rate limits.
+- Repository, PR, CI and Vercel preview destinations are direct links. Vercel links are previews only.
+- This is a bounded read-only integration, not a general GitHub connector, not a synchronized evidence register and not a live MLOps pipeline.
+- Verification requires CI, browser/network testing, and checking the mobile mirror after deployment.
