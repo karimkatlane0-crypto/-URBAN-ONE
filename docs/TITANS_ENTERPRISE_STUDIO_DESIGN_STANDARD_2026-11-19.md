@@ -86,10 +86,10 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 
 ## Unified cross-page visual system — 19 November 2026
 - Replaced the former light executive theme with the TITANS Studio graphite/navy, warm-ivory and champagne-gold design language.
-- The shared web and mobile `executive-system.css` files are byte-identical and style all current pages that load this shared stylesheet, including URBAN ONE Universal, SEVA Unified Studio, Science, Discovery, Pole Position/Premium, CRM and dashboard surfaces.
+- The shared web and mobile `executive-system.css` files are byte-identical and are now loaded by every Web and Mobile HTML route except the TITANS Enterprise Studio page, which uses its dedicated matching `titans-enterprise-studio.css` theme.
 - The TITANS Studio Web and Mobile connected-services panels now distinguish:
   - GITA.IA / GITA.ai: architecture role; NOT CONNECTED.
   - Copilot.IA / GitHub Copilot: operational integration NOT VERIFIED.
   - GitHub.IA / repository: bounded public READ-ONLY integration.
 - These labels describe verified implementation boundaries, not active agent certification. No provider credentials, write scopes, merge, deployment or release permissions were added.
-- Regression tests cover service labels, truthful status states and byte-identical web/mobile theme assets.
+- Regression tests cover service labels, truthful status states, byte-identical web/mobile theme assets and stylesheet coverage for every Web/Mobile HTML route.
