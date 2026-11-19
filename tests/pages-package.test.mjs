@@ -5,16 +5,18 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {buildPages} from '../scripts/build-pages.mjs';
 
-test('Pages package resolves its entry and every relative page/asset link without publishing the repository',()=>{
+test('Pages package resolves the UNIVERSAL 36 entry and every relative page/asset link without publishing the repository',()=>{
   const dir=mkdtempSync(join(tmpdir(),'urban-pages-'));
   try{
     const output=buildPages(join(dir,'site'));
     const entry=readFileSync(join(output,'index.html'),'utf8');
     const redirect=entry.match(/http-equiv="refresh" content="0; url=([^"]+)"/)[1];
+    assert.equal(redirect,'apps/web/universal-36.html');
     assert.ok(existsSync(join(output,redirect)));
     const landing=readFileSync(join(output,redirect),'utf8');
-    assert.match(landing,/UNICORN WORKSPACE/);
-    assert.match(landing,/href="\.\/index\.html"/);
+    assert.match(landing,/UNIVERSAL 36/);
+    assert.match(landing,/id="services"/);
+    assert.match(landing,/id="connections"/);
     assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
     let checked=0;
     function walk(path){
