@@ -15,7 +15,7 @@ test('TITANS studio exposes the core navigation and product areas', () => {
 });
 
 test('prototype does not misrepresent architecture as live integrations', () => {
-  assert.match(html, /DESIGN PREVIEW · LIVE DATA NOT CONNECTED/);
+  assert.match(html, /GITHUB READ-ONLY · LIVE CHECK/);
   assert.match(html, /non dichiara agenti live attivi/i);
   assert.match(html, /REFERENCE PIPELINE · NOT LIVE/);
   assert.match(html, /non sono una sincronizzazione live/i);
