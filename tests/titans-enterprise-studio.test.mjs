@@ -136,7 +136,7 @@ test('all local Web and Mobile navigation, script, stylesheet and form destinati
   const mobilePages = [
     'discovery.html','europe-immobili.html','index.html','pole-position.html','pole-premium.html',
     'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html',
-    'titans-enterprise-studio.html','seva-titans-hub.html'
+    'titans-enterprise-studio.html','seva-titans-hub.html','seva-titans-relations.html'
   ];
   for (const [root, pages] of [['web', webPages], ['mobile', mobilePages]]) {
     for (const page of pages) {
