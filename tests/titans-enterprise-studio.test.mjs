@@ -60,7 +60,7 @@ test('small-screen navigation reflows instead of consuming a permanent sidebar c
 test('GitHub public read-only integration renders live PR and Android CI signals with safe fallbacks', () => {
   assert.match(html, /id="services"/);
   assert.match(html, /https:\/\/api\.github\.com\/repos\//);
-  assert.match(html, /pulls\/209/);
+  assert.match(html, /pulls\/210/);
   assert.match(html, /actions\/runs\?branch=feat%2Ftitans-unified-visual-system-2026-11-19/);
   assert.match(html, /NOT VERIFIED/);
   assert.match(html, /cache: 'no-store'/);
