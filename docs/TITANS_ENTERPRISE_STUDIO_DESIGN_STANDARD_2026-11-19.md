@@ -78,3 +78,8 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - The production root redirect is unchanged.
 
 - The verified Vercel branch preview alias is `https://titans-enterprise-studio-git-feat-tit-1f647a-karimkatlane0-7632.vercel.app`; the web and mobile cards link to the explicit static file paths under that preview alias.
+
+## Product workspace destinations — 19 November 2026
+- URBAN ONE `v10-workspace.html` and SEVA `seva-unified-studio.html` resolve with HTTP 200 on the branch preview and are linked as web previews.
+- HTTP 200 confirms route availability only; it does not prove backend readiness, authentication, payments, data synchronization or production service health.
+- SYNAPSY remains evidence-gated because no standalone public workspace route was verified in this pass.
