@@ -64,7 +64,7 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - Added regression tests for both defects. This patch remains subject to CI and human review; it does not activate live integrations or change the production entrypoint.
 
 ## Live GitHub read-only connector — 19 November 2026
-- Web and mobile views read PR #207 and Android compatibility run 44517664886 directly from public GitHub REST endpoints.
+- Web and mobile views read PR #208 and Android compatibility run 44517664886 directly from public GitHub REST endpoints.
 - No GitHub token, write scope, server secret, merge, workflow dispatch or deployment action is used.
 - The UI shows PR state and CI result, with an explicit NOT VERIFIED fallback for API errors/rate limits.
 - Repository, PR, CI and Vercel preview destinations are direct links. Vercel links are previews only.
