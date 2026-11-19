@@ -76,3 +76,5 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - TITANS preview routes are therefore explicit static paths: `/apps/web/titans-enterprise-studio.html` and `/apps/mobile/www/titans-enterprise-studio.html`.
 - The preview cards use relative same-deployment paths so they work in the repository-root Vercel deployment and in the static Pages package.
 - The production root redirect is unchanged.
+
+- The verified Vercel branch preview alias is `https://titans-enterprise-studio-git-feat-tit-1f647a-karimkatlane0-7632.vercel.app`; the web and mobile cards link to the explicit static file paths under that preview alias.
