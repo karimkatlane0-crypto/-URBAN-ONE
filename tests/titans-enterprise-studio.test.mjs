@@ -100,3 +100,26 @@ test('shared pages use the TITANS graphite and champagne-gold design system on w
   assert.match(sharedTheme, /prefers-reduced-motion:reduce/);
   assert.equal(mobileSharedTheme, sharedTheme);
 });
+
+test('all Web and Mobile HTML pages load the shared TITANS theme or the matching TITANS Studio theme', async () => {
+  const webPages = [
+    'checkin-checkout.html','discovery.html','europe-de.html','europe-en.html','europe-es.html','europe-fr.html',
+    'europe-immobili.html','europe-it.html','financial-dashboard.html','financial-insights.html',
+    'hospitality-de.html','hospitality-en.html','hospitality-es.html','hospitality-fr.html','hospitality-it.html',
+    'index.html','pole-position.html','pole-premium.html','press.html','psd2-x-ai.html','science.html',
+    'seva-crm-studio.html','seva-titans-hub.html','seva-titans-onboarding.html','seva-titans-relations.html',
+    'seva-unified-studio.html','travel-preview.html','v10-workspace.html','titans-enterprise-studio.html'
+  ];
+  const mobilePages = [
+    'discovery.html','europe-immobili.html','index.html','pole-position.html','pole-premium.html',
+    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html','titans-enterprise-studio.html'
+  ];
+  for (const page of webPages) {
+    const content = await readFile(new URL('../apps/web/' + page, import.meta.url), 'utf8');
+    assert.ok(content.includes(page === 'titans-enterprise-studio.html' ? './titans-enterprise-studio.css' : './executive-system.css'), 'Web theme missing: ' + page);
+  }
+  for (const page of mobilePages) {
+    const content = await readFile(new URL('../apps/mobile/www/' + page, import.meta.url), 'utf8');
+    assert.ok(content.includes(page === 'titans-enterprise-studio.html' ? './titans-enterprise-studio.css' : './executive-system.css'), 'Mobile theme missing: ' + page);
+  }
+});
