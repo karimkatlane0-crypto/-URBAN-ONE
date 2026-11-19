@@ -4,7 +4,6 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
-const js = await readFile(new URL('../apps/web/titans-enterprise-studio.js', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
   for (const id of ['overview', 'intelligence', 'products', 'mlops', 'evidence', 'lifecycle', 'principles']) {
@@ -42,5 +41,5 @@ test('responsive, reduced-motion and keyboard accessibility rules exist', () => 
 test('product search and navigation controls are wired', () => {
   assert.match(html, /id="product-search"/);
   assert.match(js, /addEventListener\('input'/);
-  assert.match(js, /aria-current/);
+  assert.match(html, /aria-current/);
 });
