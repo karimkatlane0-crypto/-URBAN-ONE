@@ -53,3 +53,14 @@ test('small-screen navigation reflows instead of consuming a permanent sidebar c
   assert.match(css, /@media\(max-width:560px\)\{\.sidebar\{position:sticky/);
   assert.match(css, /\.main-content\{margin-left:0\}/);
 });
+
+test('GitHub public read-only integration renders live PR and Android CI signals with safe fallbacks', () => {
+  assert.match(html, /id="services"/);
+  assert.match(html, /https:\/\/api\.github\.com\/repos\//);
+  assert.match(html, /pulls\/207/);
+  assert.match(html, /actions\/runs\/44517664886/);
+  assert.match(html, /NOT VERIFIED/);
+  assert.match(html, /cache: 'no-store'/);
+  assert.match(html, /No credentials, writes, or release actions/);
+  assert.match(html, /target="_blank" rel="noopener noreferrer"/);
+});
