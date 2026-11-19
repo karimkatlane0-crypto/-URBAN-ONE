@@ -160,3 +160,28 @@ for (const link of navLinks) {
 </script>
 </body>
 </html>
+/* TITANS Global Operations extension */
+.global-operations{padding-bottom:18px}
+.agent-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.agent-action-card{background:linear-gradient(145deg,#1b2731,#141d25);border:1px solid #34424d;padding:18px;min-height:250px;display:flex;flex-direction:column}
+.agent-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.agent-avatar{width:34px;height:34px;display:grid;place-items:center;background:#d8bd82;color:#17212a;font:800 15px var(--display)}
+.agent-action-card h3{font:700 19px var(--display);margin:17px 0 5px}
+.agent-action-card p,.agent-action-card small{font-size:10px;line-height:1.7;color:#9caab3}
+.agent-action-card>strong{font-size:9px;letter-spacing:.12em;color:#e5d09b;margin-top:12px}
+.agent-action-card .text-link{margin-top:auto}
+.global-partner-panel{display:grid;grid-template-columns:.8fr 1.2fr;gap:24px;margin-top:28px;padding:22px;background:#17222b;border:1px solid #34424d;border-top:2px solid var(--gold)}
+.global-partner-panel h2{font:600 23px/1.2 var(--display);letter-spacing:-.04em;margin:0 0 8px}
+.global-partner-panel>div:first-child>p:last-child{font-size:10px;color:#9caab3;line-height:1.8}
+.partner-links{display:grid;grid-template-columns:1fr;gap:8px}
+.partner-links a,.directory-grid a{padding:13px 14px;background:#1d2933;border:1px solid #34424d;display:flex;flex-direction:column;gap:4px}
+.partner-links a strong,.directory-grid a strong{font-size:11px;color:#f1f2ef}
+.partner-links a span,.directory-grid a span{font-size:9px;color:#9caab3}
+.partner-links a b{font-size:9px;color:var(--gold);margin-top:3px}
+.partner-links a:hover,.directory-grid a:hover{border-color:var(--gold)}
+.page-directory{margin-top:32px}
+.directory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.directory-grid a{min-height:86px;justify-content:center}
+@media(max-width:1180px){.agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.global-partner-panel{grid-template-columns:1fr}.directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.agent-grid,.directory-grid{grid-template-columns:1fr}.agent-action-card{min-height:220px}.global-partner-panel{padding:16px}}
