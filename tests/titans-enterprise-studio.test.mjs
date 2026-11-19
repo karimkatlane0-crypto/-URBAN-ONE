@@ -27,7 +27,7 @@ test('governance and safety requirements are visible', () => {
   assert.match(html, /BUILD → VERIFY → RELEASE → SCALE/);
   assert.match(html, /Nessun mega-merge, deploy o rilascio automatico/i);
   assert.match(html, /Consenso esplicito/i);
-  assert.match(html, /repository, tenant, ruoli e responsabilità/i);
+  assert.match(html, /repository, autorizzazioni e release/i);
 });
 
 test('responsive, reduced-motion and keyboard accessibility rules exist', () => {
