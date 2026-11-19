@@ -93,3 +93,5 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
   - GitHub.IA / repository: bounded public READ-ONLY integration.
 - These labels describe verified implementation boundaries, not active agent certification. No provider credentials, write scopes, merge, deployment or release permissions were added.
 - Regression tests cover service labels, truthful status states, byte-identical web/mobile theme assets and stylesheet coverage for every Web/Mobile HTML route.
+
+- The live connected-services panel now reads PR #209 and the Android compatibility workflow on `feat/titans-unified-visual-system-2026-11-19`, so the displayed GitHub signal follows this current design-system change rather than the preceding observability PR.
