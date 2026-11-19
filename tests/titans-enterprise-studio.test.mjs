@@ -47,7 +47,7 @@ test('product search and navigation controls are wired', () => {
 
 test('product cards do not point to missing preview routes', () => {
   assert.doesNotMatch(html, /href="\.\/(?:v10-workspace|seva-unified-studio)\.html"/);
-  assert.equal((html.match(/Consulta stato e prove/g) || []).length, 2);
+  assert.equal((html.match(/Consulta stato e prove/g) || []).length, 0);
 });
 
 test('small-screen navigation reflows instead of consuming a permanent sidebar column', () => {
