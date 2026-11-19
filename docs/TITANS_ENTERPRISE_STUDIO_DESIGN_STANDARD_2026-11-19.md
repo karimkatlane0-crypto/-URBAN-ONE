@@ -57,3 +57,8 @@ No metric, health status, agent activity, deployment, test result, payment, webh
 
 ## Governance
 Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a release approval. No automatic mega-merge, no automatic closure of pull requests and no production deployment from this change.
+
+## Follow-up quality patch — 19 November 2026
+- Removed two preview-card links that returned HTTP 404; both now navigate to the evidence register until their dedicated workspaces have verified public routes.
+- Added a narrow-screen navigation reflow so the fixed desktop sidebar no longer permanently reduces the phone viewport width.
+- Added regression tests for both defects. This patch remains subject to CI and human review; it does not activate live integrations or change the production entrypoint.
