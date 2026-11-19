@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
+const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
@@ -66,7 +67,9 @@ test('GitHub public read-only integration renders live PR and Android CI signals
 });
 
 test('preview links stay inside the current deployment and resolve to mirrored web/mobile files', () => {
-  assert.match(html, /href="\/apps\/web\/titans-enterprise-studio\.html"/);
-  assert.match(html, /href="\/apps\/mobile\/www\/titans-enterprise-studio\.html"/);
-  assert.doesNotMatch(html, /titans-enterprise-studio-k0bdeayr5/);
+  assert.match(html, /href="\.\/titans-enterprise-studio\.html"/);
+  assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html"/);
+  assert.match(mobileHtml, /href="\.\.\/web\/titans-enterprise-studio\.html"/);
+  assert.match(mobileHtml, /href="\.\/titans-enterprise-studio\.html"/);
+  assert.doesNotMatch(html + mobileHtml, /titans-enterprise-studio-k0bdeayr5/);
 });
