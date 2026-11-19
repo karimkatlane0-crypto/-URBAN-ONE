@@ -142,8 +142,8 @@ test('all local Web and Mobile navigation, script, stylesheet and form destinati
     for (const page of pages) {
       const pageUrl = new URL('../apps/' + (root === 'web' ? 'web/' : 'mobile/www/') + page, import.meta.url);
       const source = await readFile(pageUrl, 'utf8');
-      const ids = new Set([...source.matchAll(/\\bid=["']([^"']+)["']/gi)].map(match => match[1]));
-      const destinations = [...source.matchAll(/\\b(?:href|src|action)=["']([^"']+)["']/gi)].map(match => match[1]);
+      const ids = new Set([...source.matchAll(/\bid=["']([^"']+)["']/gi)].map(match => match[1]));
+      const destinations = [...source.matchAll(/\b(?:href|src|action)=["']([^"']+)["']/gi)].map(match => match[1]);
       for (const destination of destinations) {
         if (/^(?:https?:|mailto:|tel:|javascript:|data:|blob:)/i.test(destination) || destination.startsWith('/')) continue;
         const [pathPart, fragmentPart] = destination.split('#');
