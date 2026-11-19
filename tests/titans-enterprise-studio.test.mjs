@@ -112,7 +112,7 @@ test('all Web and Mobile HTML pages load the shared TITANS theme or the matching
   ];
   const mobilePages = [
     'discovery.html','europe-immobili.html','index.html','pole-position.html','pole-premium.html',
-    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html','titans-enterprise-studio.html','seva-titans-hub.html'
+    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html','titans-enterprise-studio.html','seva-titans-hub.html','seva-titans-relations.html'
   ];
   for (const page of webPages) {
     const content = await readFile(new URL('../apps/web/' + page, import.meta.url), 'utf8');
