@@ -64,3 +64,9 @@ test('GitHub public read-only integration renders live PR and Android CI signals
   assert.match(html, /No credentials, writes, or release actions/);
   assert.match(html, /target="_blank" rel="noopener noreferrer"/);
 });
+
+test('preview links stay inside the current deployment and resolve to mirrored web/mobile files', () => {
+  assert.match(html, /href="\/apps\/web\/titans-enterprise-studio\.html"/);
+  assert.match(html, /href="\/apps\/mobile\/www\/titans-enterprise-studio\.html"/);
+  assert.doesNotMatch(html, /titans-enterprise-studio-k0bdeayr5/);
+});
