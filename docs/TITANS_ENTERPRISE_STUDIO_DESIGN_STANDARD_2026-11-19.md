@@ -70,3 +70,9 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - Repository, PR, CI and Vercel preview destinations are direct links. Vercel links are previews only.
 - This is a bounded read-only integration, not a general GitHub connector, not a synchronized evidence register and not a live MLOps pipeline.
 - Verification requires CI, browser/network testing, and checking the mobile mirror after deployment.
+
+## Preview routing note — 19 November 2026
+- Vercel project root serves the repository root and preserves the existing root entrypoint.
+- TITANS preview routes are therefore explicit static paths: `/apps/web/titans-enterprise-studio.html` and `/apps/mobile/www/titans-enterprise-studio.html`.
+- The preview cards use same-deployment paths so they do not point back to an older deployment URL.
+- The production root redirect is unchanged.
