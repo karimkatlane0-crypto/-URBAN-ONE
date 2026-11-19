@@ -95,3 +95,10 @@ Follow **BUILD → VERIFY → RELEASE → SCALE**. A green CI run is not a relea
 - Regression tests cover service labels, truthful status states, byte-identical web/mobile theme assets and stylesheet coverage for every Web/Mobile HTML route.
 
 - The live connected-services panel now reads PR #209 and the Android compatibility workflow on `feat/titans-unified-visual-system-2026-11-19`, so the displayed GitHub signal follows this current design-system change rather than the preceding observability PR.
+
+
+## Mobile navigation completion — 19 November 2026
+- Added mobile copies of the EU locale selector and SEVA Research & Relations script.
+- Added mobile SEVA TITANS Hub and Research & Relations destination pages to complete the existing navigation paths.
+- A new automated regression test checks relative local `href`, `src` and `action` destinations across every Web and Mobile HTML page.
+- This follow-up is tracked separately in PR #210; PR #209 was merged into the observability branch before these additional mobile corrections. No production release is implied.

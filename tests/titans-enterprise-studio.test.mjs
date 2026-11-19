@@ -60,7 +60,7 @@ test('small-screen navigation reflows instead of consuming a permanent sidebar c
 test('GitHub public read-only integration renders live PR and Android CI signals with safe fallbacks', () => {
   assert.match(html, /id="services"/);
   assert.match(html, /https:\/\/api\.github\.com\/repos\//);
-  assert.match(html, /pulls\/209/);
+  assert.match(html, /pulls\/210/);
   assert.match(html, /actions\/runs\?branch=feat%2Ftitans-unified-visual-system-2026-11-19/);
   assert.match(html, /NOT VERIFIED/);
   assert.match(html, /cache: 'no-store'/);
@@ -112,7 +112,7 @@ test('all Web and Mobile HTML pages load the shared TITANS theme or the matching
   ];
   const mobilePages = [
     'discovery.html','europe-immobili.html','index.html','pole-position.html','pole-premium.html',
-    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html','titans-enterprise-studio.html'
+    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html','titans-enterprise-studio.html','seva-titans-hub.html','seva-titans-relations.html'
   ];
   for (const page of webPages) {
     const content = await readFile(new URL('../apps/web/' + page, import.meta.url), 'utf8');
@@ -121,5 +121,43 @@ test('all Web and Mobile HTML pages load the shared TITANS theme or the matching
   for (const page of mobilePages) {
     const content = await readFile(new URL('../apps/mobile/www/' + page, import.meta.url), 'utf8');
     assert.ok(content.includes(page === 'titans-enterprise-studio.html' ? './titans-enterprise-studio.css' : './executive-system.css'), 'Mobile theme missing: ' + page);
+  }
+});
+
+test('all local Web and Mobile navigation, script, stylesheet and form destinations resolve', async () => {
+  const webPages = [
+    'checkin-checkout.html','discovery.html','europe-de.html','europe-en.html','europe-es.html','europe-fr.html',
+    'europe-immobili.html','europe-it.html','financial-dashboard.html','financial-insights.html',
+    'hospitality-de.html','hospitality-en.html','hospitality-es.html','hospitality-fr.html','hospitality-it.html',
+    'index.html','pole-position.html','pole-premium.html','press.html','psd2-x-ai.html','science.html',
+    'seva-crm-studio.html','seva-titans-hub.html','seva-titans-onboarding.html','seva-titans-relations.html',
+    'seva-unified-studio.html','travel-preview.html','v10-workspace.html','titans-enterprise-studio.html'
+  ];
+  const mobilePages = [
+    'discovery.html','europe-immobili.html','index.html','pole-position.html','pole-premium.html',
+    'science.html','seva-crm-studio.html','seva-unified-studio.html','v10-workspace.html',
+    'titans-enterprise-studio.html','seva-titans-hub.html','seva-titans-relations.html'
+  ];
+  for (const [root, pages] of [['web', webPages], ['mobile', mobilePages]]) {
+    for (const page of pages) {
+      const pageUrl = new URL('../apps/' + (root === 'web' ? 'web/' : 'mobile/www/') + page, import.meta.url);
+      const source = await readFile(pageUrl, 'utf8');
+      const ids = new Set([...source.matchAll(/\bid=["']([^"']+)["']/gi)].map(match => match[1]));
+      const destinations = [...source.matchAll(/\b(?:href|src|action)=["']([^"']+)["']/gi)].map(match => match[1]);
+      for (const destination of destinations) {
+        if (/^(?:https?:|mailto:|tel:|javascript:|data:|blob:)/i.test(destination) || destination.startsWith('/')) continue;
+        const [pathPart, fragmentPart] = destination.split('#');
+        if (fragmentPart && !pathPart && fragmentPart && !ids.has(fragmentPart)) {
+          assert.fail(root + '/' + page + ' has broken fragment #' + fragmentPart);
+        }
+        if (!pathPart) continue;
+        const targetUrl = new URL(pathPart, pageUrl);
+        try {
+          await readFile(targetUrl);
+        } catch {
+          assert.fail(root + '/' + page + ' has unresolved local destination ' + destination);
+        }
+      }
+    }
   }
 });
