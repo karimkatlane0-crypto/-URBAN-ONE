@@ -74,3 +74,10 @@ test('preview links use the stable branch preview alias for web and mobile', () 
   assert.ok(mobileHtml.includes(preview + '/apps/mobile/www/titans-enterprise-studio.html'));
   assert.doesNotMatch(html + mobileHtml, /titans-enterprise-studio-k0bdeayr5/);
 });
+
+test('URBAN ONE and SEVA product cards link to verified preview workspaces while SYNAPSY remains evidence-gated', () => {
+  const preview = 'https://titans-enterprise-studio-git-feat-tit-1f647a-karimkatlane0-7632.vercel.app';
+  assert.ok(html.includes(preview + '/apps/web/v10-workspace.html'));
+  assert.ok(html.includes(preview + '/apps/web/seva-unified-studio.html'));
+  assert.match(html, /P0 BLOCKED · WEBHOOK PROOF/);
+});
