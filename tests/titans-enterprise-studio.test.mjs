@@ -66,10 +66,11 @@ test('GitHub public read-only integration renders live PR and Android CI signals
   assert.match(html, /target="_blank" rel="noopener noreferrer"/);
 });
 
-test('preview links stay inside the current deployment and resolve to mirrored web/mobile files', () => {
-  assert.match(html, /href="\.\/titans-enterprise-studio\.html"/);
-  assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html"/);
-  assert.match(mobileHtml, /href="\.\.\/web\/titans-enterprise-studio\.html"/);
-  assert.match(mobileHtml, /href="\.\/titans-enterprise-studio\.html"/);
+test('preview links use the stable branch preview alias for web and mobile', () => {
+  const preview = 'https://titans-enterprise-studio-git-feat-tit-1f647a-karimkatlane0-7632.vercel.app';
+  assert.ok(html.includes(preview + '/apps/web/titans-enterprise-studio.html'));
+  assert.ok(html.includes(preview + '/apps/mobile/www/titans-enterprise-studio.html'));
+  assert.ok(mobileHtml.includes(preview + '/apps/web/titans-enterprise-studio.html'));
+  assert.ok(mobileHtml.includes(preview + '/apps/mobile/www/titans-enterprise-studio.html'));
   assert.doesNotMatch(html + mobileHtml, /titans-enterprise-studio-k0bdeayr5/);
 });
