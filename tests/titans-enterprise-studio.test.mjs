@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
+const sharedTheme = await readFile(new URL('../apps/web/executive-system.css', import.meta.url), 'utf8');
+const mobileSharedTheme = await readFile(new URL('../apps/mobile/www/executive-system.css', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
   for (const id of ['overview', 'intelligence', 'products', 'mlops', 'evidence', 'lifecycle', 'principles']) {
@@ -80,4 +82,21 @@ test('URBAN ONE and SEVA product cards link to verified preview workspaces while
   assert.ok(html.includes(preview + '/apps/web/v10-workspace.html'));
   assert.ok(html.includes(preview + '/apps/web/seva-unified-studio.html'));
   assert.match(html, /P0 BLOCKED · WEBHOOK PROOF/);
+});
+
+test('GITA, Copilot and GitHub are represented with truthful integration boundaries', () => {
+  for (const label of ['GITA.IA', 'Copilot.IA', 'GitHub.IA']) assert.ok(html.includes(label), label + ' must be visible');
+  assert.match(html, /NOT CONNECTED/);
+  assert.match(html, /NOT VERIFIED/);
+  assert.match(html, /READ ONLY/);
+  assert.match(mobileHtml, /GITA.IA/);
+  assert.match(mobileHtml, /Copilot.IA/);
+  assert.match(mobileHtml, /GitHub.IA/);
+});
+
+test('shared pages use the TITANS graphite and champagne-gold design system on web and mobile', () => {
+  assert.match(sharedTheme, /--exec-bg:#10161d/);
+  assert.match(sharedTheme, /--exec-gold:#e7c77e/);
+  assert.match(sharedTheme, /prefers-reduced-motion:reduce/);
+  assert.equal(mobileSharedTheme, sharedTheme);
 });
