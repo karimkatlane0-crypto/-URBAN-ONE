@@ -40,6 +40,6 @@ test('responsive, reduced-motion and keyboard accessibility rules exist', () => 
 
 test('product search and navigation controls are wired', () => {
   assert.match(html, /id="product-search"/);
-  assert.match(js, /addEventListener\('input'/);
+  assert.match(html, /addEventListener\('input'/);
   assert.match(html, /aria-current/);
 });
