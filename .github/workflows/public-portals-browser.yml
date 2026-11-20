@@ -2,6 +2,7 @@ name: public-portals-browser
 on:
   push:
     paths:
+      - 'apps/web/universal-36.html'
       - 'apps/web/discovery.html'
       - 'apps/web/seva-crm-studio.html'
       - 'apps/web/seva-unified-studio.html'
@@ -11,6 +12,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'apps/web/universal-36.html'
       - 'apps/web/discovery.html'
       - 'apps/web/seva-crm-studio.html'
       - 'apps/web/seva-unified-studio.html'
@@ -25,13 +27,27 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
       - name: Install Playwright Chromium
         run: |
-          npm install --no-save --no-package-lock playwright
+          npm install --no-save --no-package-lock playwright @axe-core/playwright
           npx playwright install --with-deps chromium
-      - name: Verify the three public portals in a real browser
+      - name: Serve the checked-out PR preview
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory . > /tmp/titans-pr-preview.log 2>&1 &
+          echo $! > /tmp/titans-pr-preview.pid
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --silent http://127.0.0.1:4173/apps/web/seva-unified-studio.html > /dev/null && curl --fail --silent http://127.0.0.1:4173/apps/web/universal-36.html > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/titans-pr-preview.log
+          exit 1
+      - name: Verify the three PR-preview portals in a real browser
+        env:
+          PUBLIC_PORTAL_BASE_URL: http://127.0.0.1:4173/apps/web
         run: node scripts/public-portals-browser-smoke.mjs
       - uses: actions/upload-artifact@v4
         if: always()
