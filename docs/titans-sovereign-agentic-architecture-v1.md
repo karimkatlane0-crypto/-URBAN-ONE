@@ -23,9 +23,9 @@ The civic route planner accepts coordinates only after explicit consent. It vali
 
 ## Reconciliation TEST boundary
 
-The in-memory reconciliation ledger is a deterministic test fixture only. It supports simulated settled-payment and refund events, idempotency keys, duplicate detection, integer minor-unit amounts, currency consistency, refund caps, append-only ledger entries, and a SHA-256-linked audit sequence.
+The original in-memory reconciliation ledger remains a deterministic fixture. A separate persistent TEST adapter (`services/titans/persistent-test-reconciliation.mjs`) uses Node's built-in SQLite driver, explicit TEST-only initialization, transactional event ingestion, unique event/idempotency keys, integer minor-unit amounts, currency checks, settlement-before-refund ordering, cumulative refund caps, balanced two-line journal transactions, and a SHA-256-linked audit sequence. It supports integrity verification and a deterministic aggregate report.
 
-It is not connected to Stripe, banks, webhooks, databases, queues, or production accounts. It does not process real payments. Durable storage, provider signature verification, chargebacks, settlement matching, operational replay, and external audit export are separate acceptance gates.
+The persistent adapter writes only to a caller-supplied local SQLite file in TEST; it is not connected to Stripe, banks, external webhooks, provider APIs, queues, or production accounts. It does not process real payments. The hash chain is tamper-evident, not legally immutable, and does not establish independent audit assurance. The journal accounts are illustrative TEST accounts, not a chart of accounts or statutory accounting opinion. Provider signature verification, chargebacks, external settlement matching, operational replay, encrypted backups, retention controls, and independent audit export remain separate acceptance gates.
 
 ## Verification and release
 
@@ -37,3 +37,11 @@ It is not connected to Stripe, banks, webhooks, databases, queues, or production
 ## Reversibility
 
 All implementation changes are isolated in a pull request. No production configuration, secrets, external account, provider setting, payment, webhook, partner approval, or live service is changed by this scaffold. Rollback is by closing the unmerged PR or reverting its commits. Preserve the evidence and do not rewrite shared history.
+
+
+## Corrective-cycle boundaries (2026-11-20)
+
+- Android API 24 previously failed while resolving Gradle/Maven dependencies before emulator execution; API 36 completed. A bounded retry is being added without changing dependency versions.
+- The current browser smoke covers three public portals, locale selection, JavaScript errors, and mobile viewport. Automated WCAG checks and keyboard-focus checks are being added; manual assistive-technology validation remains a separate gate.
+- SYNAPSY webhook proof requires its administrator to configure the repository environment secret. No secret value is handled by this project change.
+- Branch protection was observed disabled on the default branch. Enabling it is an administrative governance change and is not performed by this PR.
