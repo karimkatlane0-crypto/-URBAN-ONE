@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {TitanRequestStore,TitansRequestError} from '../packages/titans/request-ledger.mjs';
+import {TitansRequestStore,TitansRequestError} from '../packages/titans/request-ledger.mjs';
 import {handleTitansApi,resolveTitansActor} from '../services/api/titans-http.mjs';
 
 const aliceToken='alice-test-token-0123456789-abcdefghijkl';
@@ -17,7 +17,7 @@ const env={
   ])
 };
 const auth=t=>'Bearer '+t;
-const store=()=>new TitanRequestStore(':memory:');
+const store=()=>new TitansRequestStore(':memory:');
 test('staging bearer authentication resolves server-owned identity and scopes only',()=>{
   const actor=resolveTitansActor(auth(aliceToken),env);
   assert.equal(actor.id,'alice');
