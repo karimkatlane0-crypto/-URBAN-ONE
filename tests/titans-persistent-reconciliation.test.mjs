@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { createPersistentTestReconciliationStore } from '../services/titans/persistent-test-reconciliation.mjs';
 
 function fixture(t) {
@@ -91,7 +92,6 @@ test('integrity verifier detects a modified audit hash', (t) => {
   const store = createPersistentTestReconciliationStore({ databasePath });
   store.apply(settled());
   store.close();
-  const { DatabaseSync } = await import('node:sqlite');
   const db = new DatabaseSync(databasePath);
   db.prepare("UPDATE audit SET hash='tampered' WHERE sequence=1").run();
   db.close();
