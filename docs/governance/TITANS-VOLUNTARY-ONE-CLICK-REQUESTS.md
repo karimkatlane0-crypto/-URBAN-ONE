@@ -57,3 +57,11 @@ The module is not an authentication adapter, durable ledger, API route, or produ
 - Tests cover two-party isolation, wrong-recipient denial, exact scope grants, decline-without-grant, expiry, replay, revocation, audit-chain verification and fail-closed auth.
 
 **Important boundary:** this is a private staging API and SQLite ledger, not D1 and not a production IAM service. No user-facing inbox/buttons, downstream data enforcement, OAuth/SSO, external provider action, contact sync or production deployment is included yet. A grant record does not itself execute or authorize a provider action unless that provider adapter checks the grant at the point of use.
+
+## Partner Skill Creator BUILD
+
+- `packages/titans/skill-manifest.mjs` validates versioned skill drafts against allowlisted purpose, scopes and tools.
+- `apps/web/titans-skill-studio.html` creates and exports a local JSON draft only.
+- Tool allowlist is limited to read/search/analyze/draft/propose capabilities; send, payment, export, deploy, merge, delete, shell and provider-write actions are excluded.
+- Drafts are marked DRAFT, executionEnabled=false, publishable=false, signature=null and requiresHumanApproval=true.
+- This is not a sandbox runtime, signing service, marketplace publication or install mechanism.
