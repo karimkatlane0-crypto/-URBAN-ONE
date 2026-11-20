@@ -1,12 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 
 const base = process.env.PUBLIC_PORTAL_BASE_URL || 'https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web';
 const targets = [
   { name: 'Discovery', file: 'discovery.html', title: /soggiorni e immobili/i },
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
-  { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i }
+  { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
+  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -17,7 +19,8 @@ try {
   for (const target of targets) {
     const url = new URL(target.file, base.endsWith('/') ? base : base + '/').href;
     const result = { name: target.name, url, status: 'FAIL' };
-    const page = await browser.newPage({ viewport: { width: 1365, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 1365, height: 900 } });
+    const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
@@ -29,17 +32,63 @@ try {
       result.title = await page.title();
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
 
-      await page.waitForSelector('#titans-locale-select', { timeout: 15000 });
-      result.languageOptions = await page.locator('#titans-locale-select option').count();
-      if (result.languageOptions !== 24) throw new Error('Expected 24 language options; found ' + result.languageOptions);
+      if (target.localeSelector !== false) {
+        await page.waitForSelector('#titans-locale-select', { timeout: 15000 });
+        result.languageOptions = await page.locator('#titans-locale-select option').count();
+        if (result.languageOptions !== 24) throw new Error('Expected 24 language options; found ' + result.languageOptions);
+        await page.selectOption('#titans-locale-select', 'de');
+        result.localeChange = await page.locator('html').getAttribute('lang');
+        if (result.localeChange !== 'de') throw new Error('Locale selector did not update document lang');
+      } else {
+        result.localeChange = 'not-applicable';
+        result.moduleCards = await page.locator('.card').count();
+        if (result.moduleCards < 8) throw new Error('Universal 36 module cards missing');
+        const hrefs = await page.locator('a[href]').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+        for (const required of ['./titans-enterprise-studio.html','./seva-unified-studio.html','./discovery.html','./v10-workspace.html','./insights-free.html','./maps-europe.html']) {
+          if (!hrefs.includes(required)) throw new Error('Universal 36 missing module link: ' + required);
+        }
+        result.moduleLinksVerified = true;
+      }
 
-      await page.selectOption('#titans-locale-select', 'de');
-      result.localeChange = await page.locator('html').getAttribute('lang');
-      if (result.localeChange !== 'de') throw new Error('Locale selector did not update document lang');
+      await page.locator('body').click({ position: { x: 1, y: 1 } });
+      await page.keyboard.press('Tab');
+      result.keyboardFocus = await page.evaluate(() => {
+        const element = document.activeElement;
+        if (!element || element === document.body) return null;
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          tag: element.tagName,
+          id: element.id || null,
+          visible: rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none',
+        };
+      });
+      if (!result.keyboardFocus?.visible) throw new Error('Keyboard Tab did not reach a visible focus target');
+
+      const accessibility = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      result.accessibility = {
+        violations: accessibility.violations.map((item) => ({
+          id: item.id, impact: item.impact, description: item.help,
+          helpUrl: item.helpUrl,
+          affectedNodes: item.nodes.length,
+          nodes: item.nodes.map((node) => ({
+            target: node.target,
+            failureSummary: node.failureSummary,
+            html: node.html,
+          })),
+        })),
+        passes: accessibility.passes.length,
+      };
+      if (accessibility.violations.length) {
+        throw new Error('WCAG automated violations: ' + accessibility.violations.map((item) => item.id).join(', '));
+      }
 
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
       result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+      if (target.file === 'universal-36.html' && result.horizontalOverflow) throw new Error('Universal 36 horizontal overflow at mobile viewport');
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
@@ -51,7 +100,7 @@ try {
       result.error = error.message;
       result.pageErrors = pageErrors;
     } finally {
-      await page.close();
+      await context.close();
       results.push(result);
     }
   }
