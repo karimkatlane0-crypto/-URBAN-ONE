@@ -165,8 +165,8 @@ test('all local Web and Mobile navigation, script, stylesheet and form destinati
 
 test('the short mobile preview route redirects to the canonical mobile Studio page', async () => {
   const mobileEntry = await readFile(new URL('../mobile/index.html', import.meta.url), 'utf8');
-  assert.match(mobileEntry, /url=\\/apps\\/mobile\\/www\\/titans-enterprise-studio\\.html/);
-  assert.match(mobileEntry, /href="\\/apps\\/mobile\\/www\\/titans-enterprise-studio\\.html"/);
+  assert.ok(mobileEntry.includes('url=/apps/mobile/www/titans-enterprise-studio.html'));
+  assert.ok(mobileEntry.includes('href="/apps/mobile/www/titans-enterprise-studio.html"'));
 });
 
 test('provider integrations show verified permission and evidence boundaries', () => {
