@@ -71,6 +71,7 @@ export function createInsightsAnalytics({
 } = {}) {
   assertIdentifier(tenantId, 'TENANT_ID_INVALID');
   if (purpose !== PURPOSE) throw new Error('INSIGHTS_TEST_PURPOSE_REQUIRED');
+  if (consent?.purpose !== PURPOSE) throw new Error('INSIGHTS_TEST_CONSENT_PURPOSE_REQUIRED');
   const consentProof = requireConsent({ consent, purpose });
   const events = new Map();
   const audit = [];
