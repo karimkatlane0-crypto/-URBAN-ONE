@@ -55,7 +55,7 @@ try {
       ws.send(JSON.stringify({id,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:false,userGesture:true}}));
     });
   }
-  await evaluate('document.readyState');
+  report.phase='webview-session-ready';
   // A debuggable WebView can exist before its local document has finished loading.
   async function evaluateReadWithRetry(expression,attempts=3){
     let lastError;
