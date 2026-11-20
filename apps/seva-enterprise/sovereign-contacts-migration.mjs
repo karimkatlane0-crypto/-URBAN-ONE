@@ -1,44 +1,41 @@
 // TITANS sovereign contacts migration core.
 // Provider-neutral, user-mediated file workflow. No OAuth, network calls, or LIVE writes.
-// Google export files may be used by the user; Exchange is intentionally rejected by default.
+// Google export files may be used by the user; Exchange is intentionally rejected.
 import { createHash, randomUUID } from 'node:crypto';
 
-const FIELDS = ['givenName','familyName','email','phone','company'];
-const CONSENT_STATES = new Set(['unknown','granted','denied','revoked']);
+const FIELDS = ['givenName', 'familyName', 'email', 'phone', 'company'];
+const CONSENT_STATES = new Set(['unknown', 'granted', 'denied', 'revoked']);
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const clean = value => typeof value === 'string' ? value.trim() : '';
-const canonical = value => JSON.stringify(value, Object.keys(value ?? {}).sort());
 
 function normalizeRecord(input, index) {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError(`record_${index}_invalid`);
+  if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError('record_' + index + '_invalid');
   const record = Object.fromEntries(FIELDS.map(field => [field, clean(input[field])]));
   record.email = record.email.toLowerCase();
-  record.phone = record.phone.replace(/[\\s().-]/g, '');
+  record.phone = record.phone.replace(/[\s().-]/g, '');
   if (!record.givenName && !record.familyName && !record.email && !record.phone) {
-    throw new TypeError(`record_${index}_has_no_identity_fields`);
+    throw new TypeError('record_' + index + '_has_no_identity_fields');
   }
-  const consent = CONSENT_STATES.has(input.consent) ? input.consent : 'unknown';
   return Object.freeze({
     ...record,
-    id: clean(input.id) || `import-${index + 1}`,
+    id: clean(input.id) || ('import-' + (index + 1)),
     source: clean(input.source) || 'user-upload',
-    consent,
+    consent: CONSENT_STATES.has(input.consent) ? input.consent : 'unknown',
     provenance: clean(input.provenance) || 'user-supplied-file',
   });
 }
 
 function identityKeys(record) {
-  return [record.email && `e:${record.email}`, record.phone && `p:${record.phone}`].filter(Boolean);
+  return [record.email && ('e:' + record.email), record.phone && ('p:' + record.phone)].filter(Boolean);
 }
-
 function csvCell(value) {
   const text = String(value ?? '');
-  return /[",\\r\\n]/.test(text) ? `"${text.replace(/"/g,'""')}"` : text;
+  return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
 }
 
 export function exportContactsCsv(records) {
   const rows = [FIELDS.join(','), ...records.map(record => FIELDS.map(field => csvCell(record[field])).join(','))];
-  return rows.join('\\r\\n') + '\\r\\n';
+  return rows.join('\r\n') + '\r\n';
 }
 
 export function parseContactsCsv(input) {
@@ -51,8 +48,8 @@ export function parseContactsCsv(input) {
       if (quoted && input[i + 1] === '"') { cell += '"'; i++; }
       else quoted = !quoted;
     } else if (char === ',' && !quoted) { row.push(cell); cell = ''; }
-    else if ((char === '\\n' || char === '\\r') && !quoted) {
-      if (char === '\\r' && input[i + 1] === '\\n') i++;
+    else if ((char === '\n' || char === '\r') && !quoted) {
+      if (char === '\r' && input[i + 1] === '\n') i++;
       row.push(cell); cell = '';
       if (row.some(value => value !== '')) rows.push(row);
       row = [];
@@ -79,52 +76,48 @@ export function parseContactsCsv(input) {
 }
 
 export function exportContactsVCard(records) {
-  const escape = value => String(value ?? '').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');
+  const escape = value => String(value ?? '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
   return records.map(record => [
-    'BEGIN:VCARD','VERSION:3.0',
-    `N:${escape(record.familyName)};${escape(record.givenName)};;;`,
-    `FN:${escape([record.givenName,record.familyName].filter(Boolean).join(' '))}`,
-    ...(record.email ? [`EMAIL;TYPE=INTERNET:${escape(record.email)}`] : []),
-    ...(record.phone ? [`TEL;TYPE=CELL:${escape(record.phone)}`] : []),
-    ...(record.company ? [`ORG:${escape(record.company)}`] : []),
+    'BEGIN:VCARD', 'VERSION:3.0',
+    'N:' + escape(record.familyName) + ';' + escape(record.givenName) + ';;;',
+    'FN:' + escape([record.givenName, record.familyName].filter(Boolean).join(' ')),
+    ...(record.email ? ['EMAIL;TYPE=INTERNET:' + escape(record.email)] : []),
+    ...(record.phone ? ['TEL;TYPE=CELL:' + escape(record.phone)] : []),
+    ...(record.company ? ['ORG:' + escape(record.company)] : []),
     'END:VCARD',
-  ].join('\\r\\n')).join('\\r\\n') + (records.length ? '\\r\\n' : '');
+  ].join('\r\n')).join('\r\n') + (records.length ? '\r\n' : '');
 }
 
 export function parseContactsVCard(input) {
   if (typeof input !== 'string') throw new TypeError('vcard_must_be_text');
-  const unfolded = input.replace(/\\r?\\n[ \\t]/g, '');
+  const unfolded = input.replace(/\r?\n[ \t]/g, '');
   const cards = unfolded.split(/BEGIN:VCARD/i).slice(1);
   return cards.map((card, index) => {
     const value = key => {
-      const line = card.split(/\\r?\\n/).find(item => item.toUpperCase().startsWith(key));
-      return line ? line.slice(line.indexOf(':') + 1).replace(/\\\\n/gi,'\n').replace(/\\\\([,;\\\\])/g,'$1').trim() : '';
+      const line = card.split(/\r?\n/).find(item => item.toUpperCase().startsWith(key));
+      return line ? line.slice(line.indexOf(':') + 1).replace(/\\n/gi, '\n').replace(/\\([,;\\])/g, '$1').trim() : '';
     };
     const name = value('N:').split(';');
-    const full = value('FN:').split(/\\s+/);
+    const full = value('FN:').split(/\s+/);
     return {
       familyName: name[0] || full.slice(-1)[0] || '',
-      givenName: name[1] || full.slice(0,-1).join(' ') || '',
+      givenName: name[1] || full.slice(0, -1).join(' ') || '',
       email: value('EMAIL').toLowerCase(),
       phone: value('TEL'),
       company: value('ORG'),
       consent: 'unknown',
       source: 'google-contacts-export',
-      provenance: `user-uploaded-vcard:${index + 1}`,
+      provenance: 'user-uploaded-vcard:' + (index + 1),
     };
   });
 }
 
 export function createContactsMigrationPlan({
-  sourceType,
-  sourceRecords,
-  targetRecords = [],
-  consentConfirmed = false,
-  rightToUseConfirmed = false,
-  exchangeAllowed = false,
+  sourceType, sourceRecords, targetRecords = [],
+  consentConfirmed = false, rightToUseConfirmed = false,
 } = {}) {
-  if (sourceType === 'exchange' && exchangeAllowed !== true) throw new Error('EXCHANGE_SOURCE_DISABLED');
-  if (!['google_contacts_export','csv','vcard','manual'].includes(sourceType)) throw new Error('UNSUPPORTED_SOURCE_TYPE');
+  if (sourceType === 'exchange') throw new Error('EXCHANGE_SOURCE_DISABLED');
+  if (!['google_contacts_export', 'csv', 'vcard', 'manual'].includes(sourceType)) throw new Error('UNSUPPORTED_SOURCE_TYPE');
   if (consentConfirmed !== true || rightToUseConfirmed !== true) throw new Error('EXPLICIT_CONSENT_REQUIRED');
   if (!Array.isArray(sourceRecords) || !Array.isArray(targetRecords)) throw new TypeError('records_must_be_arrays');
   const incoming = sourceRecords.map(normalizeRecord);
@@ -145,7 +138,7 @@ export function createContactsMigrationPlan({
       values.push(record.id);
       seenIncoming.set(key, values);
     }
-    const status = existingIds.length && priorImports.length ? 'conflict'
+    const status = (existingIds.length > 1 || (existingIds.length && priorImports.length)) ? 'conflict'
       : existingIds.length ? 'duplicate'
       : priorImports.length ? 'duplicate_in_upload'
       : 'insert';
@@ -158,22 +151,21 @@ export function createContactsMigrationPlan({
     conflict: entries.filter(item => item.status === 'conflict').length,
   });
   const planId = randomUUID();
-  const digestPayload = { planId, sourceType, summary, entries };
-  const digest = sha256(JSON.stringify(digestPayload));
+  const digest = sha256(JSON.stringify({ planId, sourceType, summary, entries }));
   return Object.freeze({ planId, sourceType, summary, entries, digest, createdAt: new Date().toISOString(), mode: 'DRY_RUN' });
 }
 
-// Adapter contract: snapshot(), begin(), insert(record,{migrationId}), commit(), rollback(),
-// restoreMigration(migrationId, backupRef). Adapter must be tenant-scoped and durable.
-// This function deliberately supports inserts only; it never updates or deletes contacts.
+// Adapter must enforce tenant scope, durable encrypted backups and database transactions.
+// Supported mutation is insert-only. Updates/deletes and external provider writes are not exposed.
 export async function applyContactsMigration({ plan, confirmationDigest, adapter } = {}) {
   if (!plan || plan.mode !== 'DRY_RUN' || typeof plan.digest !== 'string') throw new Error('VALID_PLAN_REQUIRED');
   if (confirmationDigest !== plan.digest) throw new Error('EXPLICIT_PLAN_CONFIRMATION_REQUIRED');
-  if (!adapter || !['snapshot','begin','insert','commit','rollback'].every(name => typeof adapter[name] === 'function')) {
+  if (!adapter || !['snapshot', 'begin', 'insert', 'commit', 'rollback'].every(name => typeof adapter[name] === 'function')) {
     throw new TypeError('TRANSACTIONAL_ADAPTER_REQUIRED');
   }
   if (plan.summary.conflict > 0) throw new Error('CONFLICTS_REQUIRE_MANUAL_RESOLUTION');
   const backupRef = await adapter.snapshot();
+  if (!backupRef) throw new Error('BACKUP_REFERENCE_REQUIRED');
   const migrationId = randomUUID();
   let started = false;
   try {
@@ -192,7 +184,12 @@ export async function applyContactsMigration({ plan, confirmationDigest, adapter
       status: 'COMMITTED', reversible: typeof adapter.restoreMigration === 'function',
     });
   } catch (error) {
-    if (started) await adapter.rollback().catch(() => {});
+    if (started) {
+      try { await adapter.rollback(); }
+      catch (rollbackError) {
+        throw new AggregateError([error, rollbackError], 'MIGRATION_FAILED_AND_ROLLBACK_FAILED');
+      }
+    }
     throw error;
   }
 }
