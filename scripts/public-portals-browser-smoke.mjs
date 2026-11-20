@@ -18,7 +18,8 @@ try {
   for (const target of targets) {
     const url = new URL(target.file, base.endsWith('/') ? base : base + '/').href;
     const result = { name: target.name, url, status: 'FAIL' };
-    const page = await browser.newPage({ viewport: { width: 1365, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 1365, height: 900 } });
+    const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
 
