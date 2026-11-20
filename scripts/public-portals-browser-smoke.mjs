@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 
 const base = process.env.PUBLIC_PORTAL_BASE_URL || 'https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web';
 const targets = [
@@ -36,6 +37,35 @@ try {
       await page.selectOption('#titans-locale-select', 'de');
       result.localeChange = await page.locator('html').getAttribute('lang');
       if (result.localeChange !== 'de') throw new Error('Locale selector did not update document lang');
+
+      await page.locator('body').click({ position: { x: 1, y: 1 } });
+      await page.keyboard.press('Tab');
+      result.keyboardFocus = await page.evaluate(() => {
+        const element = document.activeElement;
+        if (!element || element === document.body) return null;
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          tag: element.tagName,
+          id: element.id || null,
+          visible: rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none',
+        };
+      });
+      if (!result.keyboardFocus?.visible) throw new Error('Keyboard Tab did not reach a visible focus target');
+
+      const accessibility = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      result.accessibility = {
+        violations: accessibility.violations.map((item) => ({
+          id: item.id, impact: item.impact, description: item.help,
+          affectedNodes: item.nodes.length,
+        })),
+        passes: accessibility.passes.length,
+      };
+      if (accessibility.violations.length) {
+        throw new Error('WCAG automated violations: ' + accessibility.violations.map((item) => item.id).join(', '));
+      }
 
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
