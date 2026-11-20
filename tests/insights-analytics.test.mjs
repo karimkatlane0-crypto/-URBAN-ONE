@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createInsightsAnalytics, INSIGHTS_TEST_PURPOSE } from '../packages/insights/analytics.mjs';
 
 const consent = { granted: true, purpose: INSIGHTS_TEST_PURPOSE, at: '2026-11-20T18:00:00.000Z' };
@@ -74,14 +75,7 @@ test('creates a verifiable append-only audit hash chain', () => {
 });
 
 test('keeps all state in memory and performs no provider dispatch', () => {
-  const source = ledgerSource();
+  const source = readFileSync(new URL('../packages/insights/analytics.mjs', import.meta.url), 'utf8');
   assert.match(source, /In-memory/);
   assert.doesNotMatch(source, /fetch\s*\(|XMLHttpRequest|localStorage|process\.env|https:\/\//);
 });
-
-function ledgerSource() {
-  return (awaitlessRead());
-}
-function awaitlessRead() {
-  return String(createInsightsAnalytics);
-}
