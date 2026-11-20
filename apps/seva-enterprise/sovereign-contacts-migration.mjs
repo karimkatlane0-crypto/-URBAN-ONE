@@ -65,7 +65,7 @@ export function parseContactsCsv(input) {
     return {
       givenName: item.givenName || item.name || '',
       familyName: item.familyName || item.surname || '',
-      email: item.email || '',
+      email: (item.email || '').toLowerCase(),
       phone: item.phone || '',
       company: item.company || '',
       consent: 'unknown',
