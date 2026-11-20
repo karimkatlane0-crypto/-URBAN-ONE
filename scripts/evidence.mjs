@@ -18,6 +18,7 @@ const expectedPortals = ['Discovery', 'SEVA CRM Studio', 'SEVA Unified Studio'];
 const portalResults = portalProof?.results || [];
 const publicBrowserVerified = Boolean(
   portalProof &&
+  portalProof.sourceCommit === sourceCommit &&
   portalProof.passed === 3 &&
   portalProof.failed === 0 &&
   portalResults.length === 3 &&
@@ -40,6 +41,7 @@ const publicBrowserVerified = Boolean(
 const androidResults = androidProof?.results || [];
 const androidEmulatorsVerified = Boolean(
   androidProof &&
+  androidProof.sourceCommit === sourceCommit &&
   androidProof.run?.id === 44065748392 &&
   androidResults.length === 2 &&
   [24, 36].every(api => {
