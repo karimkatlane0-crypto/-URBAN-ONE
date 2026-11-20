@@ -34,12 +34,17 @@ export function createProvenanceRecord({ env, gitHead, eventPayload, generatedAt
       number: pr.number ?? eventPayload.number ?? null,
       headSha: validSha(pr.head?.sha, 'pull_request.head.sha'),
       baseSha: validSha(pr.base?.sha, 'pull_request.base.sha'),
-      mergeCommitSha: pr.merge_commit_sha ? validSha(pr.merge_commit_sha, 'pull_request.merge_commit_sha') : null
+      // GITHUB_SHA is the merge ref actually checked out by this workflow.
+      mergeCommitSha: sourceCommit,
+      // Preserve the webhook value separately; it can lag behind the merge ref during rapid PR updates.
+      eventReportedMergeCommitSha: pr.merge_commit_sha
+        ? validSha(pr.merge_commit_sha, 'pull_request.merge_commit_sha')
+        : null
     };
   }
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     generatedAt,
     sourceCommit,
     checkedOutSha,
