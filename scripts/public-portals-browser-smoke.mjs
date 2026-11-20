@@ -43,7 +43,7 @@ try {
       } else {
         result.localeChange = 'not-applicable';
         if (target.file === 'titans-request-inbox.html') {
-          await page.addInitScript(() => {
+          await page.evaluate(() => {
             let requests=[
               {id:'11111111-1111-4111-8111-111111111111',requesterId:'alice-test',recipientId:'bob-test',purpose:'data_sharing',scopes:['contacts:read'],note:'Synthetic browser test',expiresAt:new Date(Date.now()+86400000).toISOString()},
               {id:'22222222-2222-4222-8222-222222222222',requesterId:'alice-test',recipientId:'bob-test',purpose:'partner_collaboration',scopes:['profile:read'],note:'Synthetic decline test',expiresAt:new Date(Date.now()+86400000).toISOString()}
