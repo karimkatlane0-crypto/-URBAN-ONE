@@ -148,3 +148,42 @@ footer span{color:#8192a4!important}
  html{scroll-behavior:auto}
  *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
+
+
+/* SEVA commercial offer hub — presentation only; no connected order workflow. */
+.offer-hub{margin:18px 0;padding:25px;border:1px solid var(--line);border-radius:11px;background:linear-gradient(145deg,#172538,#101b29);box-shadow:var(--shadow)}
+.offer-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:19px}
+.offer-heading h2,.totem-copy h2{margin:7px 0;color:#f4f1e9;font:700 clamp(22px,2.6vw,30px)/1.2 "Manrope",system-ui,sans-serif;letter-spacing:-.025em}
+.offer-heading p,.totem-copy p{max-width:650px;color:#aab7c5;font-size:12px;line-height:1.75}
+.offer-note,.totem-form-title span{padding:7px 9px;border:1px solid #66583b;border-radius:5px;color:var(--gold-bright);font-size:8px;font-weight:800;letter-spacing:.1em;white-space:nowrap}
+.offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.offer-card{display:flex;flex-direction:column;min-width:0;padding:19px;border:1px solid #34465a;border-radius:9px;background:linear-gradient(155deg,#1a2a3d,#111d2c)}
+.offer-card-featured{border-color:#8f784c;background:linear-gradient(155deg,#292b2a,#172538)}
+.offer-number{color:var(--gold);font-size:8px;font-weight:800;letter-spacing:.14em}
+.offer-card h3{margin:12px 0 8px;color:#f4f1e9;font:800 16px "Manrope",system-ui,sans-serif;letter-spacing:.04em}
+.offer-card p,.offer-card li{color:#afbdca;font-size:11px;line-height:1.7}
+.offer-card ul{padding-left:17px;margin:9px 0 16px}
+.offer-status{margin-top:auto;padding-top:12px;border-top:1px solid #34465a;color:#9eacbb;font-size:9px}
+.offer-link{margin-top:auto;padding-top:12px;color:var(--gold-bright);font-size:11px;font-weight:800;text-decoration:none}
+.offer-architecture{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:13px;padding:12px 14px;border:1px solid #34465a;border-radius:7px;color:#aab7c5;font-size:10px}
+.offer-architecture strong{color:var(--gold-bright);font-size:12px}
+.offer-architecture i{width:24px;height:1px;background:#8c7548}
+.totem-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:26px;margin:18px 0}
+.totem-points{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.totem-points span{padding:8px 10px;border:1px solid #3c5066;border-radius:6px;color:#d2dce5;font-size:9px}
+.totem-form-shell{padding:18px;border:1px solid #67583a;border-radius:9px;background:linear-gradient(145deg,#202b36,#111c2a)}
+.totem-form-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}
+.totem-form-title strong{color:#f3f0e8;font:700 13px "Manrope",system-ui,sans-serif}
+.totem-fields{display:grid;gap:7px}
+.totem-fields label{margin-top:5px;color:#c0cad4;font-size:10px;font-weight:700}
+.totem-fields input,.totem-fields select,.totem-fields textarea{width:100%;min-height:39px;padding:10px;border:1px solid #40536a;border-radius:6px;background:#0c1725;color:#f2f5f7;font:inherit;font-size:11px}
+.totem-fields textarea{resize:vertical}
+.totem-submit{width:100%;margin-top:13px;padding:11px;border:1px solid #536276;border-radius:6px;background:#273647;color:#9eacbb;font-size:10px;font-weight:800;cursor:not-allowed}
+.totem-disclaimer{margin:10px 0 0;color:#8f9eae;font-size:9px;line-height:1.6}
+.pilot-status{display:flex;align-items:center;gap:12px;margin:18px 0;padding:15px 18px;border:1px solid #40536a;border-radius:8px;background:#111d2b}
+.pilot-indicator{flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#d1ad62}
+.pilot-status strong{color:#f1eee6;font-size:11px}
+.pilot-status p{margin:4px 0 0;color:#aab7c5;font-size:10px;line-height:1.6}
+.pilot-label{margin-left:auto;color:#e1c780;font-size:8px;font-weight:800;letter-spacing:.1em;text-align:right}
+@media(max-width:900px){.offer-grid{grid-template-columns:1fr}.offer-heading{align-items:flex-start;flex-direction:column}.totem-panel{grid-template-columns:1fr}}
+@media(max-width:560px){.offer-hub{padding:17px 13px}.offer-card{padding:16px}.totem-form-title{align-items:flex-start;flex-direction:column}.pilot-status{align-items:flex-start;flex-wrap:wrap}.pilot-label{width:100%;margin-left:20px;text-align:left}}
