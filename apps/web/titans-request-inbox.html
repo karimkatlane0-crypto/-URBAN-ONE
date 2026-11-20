@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101216"><meta name="description" content="TITANS private staging request inbox and one-click consent decisions."><title>TITANS · Request Inbox · Private Staging</title>
+<style>
+:root{color-scheme:dark;--bg:#101216;--panel:#1b2028;--line:#343a45;--text:#f4f5f7;--muted:#a7aebb;--gold:#f4ca54;--green:#8dd7ad;--red:#e28b83;font:14px/1.6 system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--gold)}button,input,select,textarea{font:inherit}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}.wrap{max-width:1050px;margin:auto;padding:22px 16px 50px}header,.panel,.request{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:13px}h1{font-size:clamp(26px,4vw,40px);margin:4px 0 8px}h2{font-size:17px;margin:0 0 7px}.muted{color:var(--muted);font-size:12px;overflow-wrap:anywhere}.pill{display:inline-block;border:1px solid #66552b;color:var(--gold);border-radius:30px;padding:5px 10px;font-size:10px;letter-spacing:.08em}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:210px}label{display:block;color:#d4d8df;font-size:11px;margin:12px 0 6px}input,select,textarea{width:100%;background:#11151c;border:1px solid #4a5260;border-radius:7px;color:var(--text);padding:11px 12px}input[type=checkbox]{width:auto;margin-right:7px}button{border:1px solid #78632b;background:#27251e;color:var(--gold);border-radius:7px;padding:10px 14px;min-height:42px;cursor:pointer;font-weight:700}button.primary{background:var(--gold);color:#171717;border-color:var(--gold)}button.decline{border-color:#8a4b45;color:#ffb1a9}button:disabled{opacity:.5;cursor:not-allowed}.status{padding:11px 13px;border-left:3px solid var(--gold);background:#151a21;color:var(--muted);font-size:12px;margin:12px 0}.status.ok{border-color:var(--green);color:var(--green)}.status.error{border-color:var(--red);color:#ffb1a9}.list{display:grid;gap:10px}.request h3{font-size:16px;margin:0 0 5px}.request p{font-size:12px;color:#c4c8cf;margin:6px 0;overflow-wrap:anywhere;word-break:break-word}.scopes{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.scope{border:1px solid #5a513b;border-radius:5px;padding:3px 7px;color:var(--gold2);font-size:10px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.checkgrid label{margin:3px 0}.receipt{border-top:1px solid var(--line);margin-top:12px;padding-top:12px;font-size:12px;overflow-wrap:anywhere;word-break:break-word}.hidden,[hidden]{display:none!important}footer{margin-top:25px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}@media(max-width:600px){.grid,.checkgrid{grid-template-columns:1fr}.wrap{padding:14px}.row>*{width:100%}}
+</style></head>
+<body><main class="wrap">
+<header><span class="pill">PRIVATE STAGING · NO PRODUCTION TOKENS</span><h1>TITANS Request Inbox</h1><p class="muted">Richieste individuali, consenso specifico e ricevute. L'identità proviene dal token verificato dal server. ACCEPT concede soltanto la finalità e gli scope mostrati nella richiesta.</p><p class="status">Nessun invio, importazione contatti, sincronizzazione, marketing, pagamento o condivisione esterna viene avviato da ACCEPT.</p></header>
+<section class="panel" aria-labelledby="auth-title"><h2 id="auth-title">Autenticazione staging</h2><p class="muted">Inserisci un token di test autorizzato dall'amministratore dell'ambiente staging. Il token resta soltanto in memoria e viene perso chiudendo o aggiornando la pagina. Non inserire password o token di produzione.</p><div class="row"><div class="grow"><label for="token">Bearer token staging</label><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Token staging autorizzato"></div><button id="connect" class="primary" type="button">Connetti</button><button id="disconnect" type="button" disabled>Disconnetti</button></div><div id="status" class="status" role="status" aria-live="polite">API non ancora verificata. Questa pagina funziona soltanto su un host con TITANS_STAGING_ENABLED.</div><p id="identity" class="muted" hidden></p></section>
+<section id="create-panel" class="panel" hidden><h2>Crea una richiesta individuale</h2><p class="muted">Richiedi al destinatario solo i permessi necessari per uno scopo preciso.</p><form id="create-form"><div class="grid"><div><label for="recipient">ID destinatario registrato</label><input id="recipient" required maxlength="90" autocomplete="off"></div><div><label for="purpose">Finalità</label><select id="purpose"><option value="service_access">Accesso a un servizio</option><option value="data_sharing">Condivisione dati</option><option value="partner_collaboration">Collaborazione partner</option><option value="skill_installation">Installazione skill</option><option value="analytics_access">Accesso analytics</option></select></div></div><label>Scope richiesti</label><div class="checkgrid">
+<label><input type="checkbox" name="scope" value="profile:read"> profile:read</label><label><input type="checkbox" name="scope" value="contacts:read"> contacts:read</label><label><input type="checkbox" name="scope" value="calendar:read"> calendar:read</label><label><input type="checkbox" name="scope" value="analytics:read"> analytics:read</label><label><input type="checkbox" name="scope" value="marketplace:read"> marketplace:read</label><label><input type="checkbox" name="scope" value="skill:execute"> skill:execute</label></div><label for="note">Descrizione breve (facoltativa)</label><textarea id="note" rows="2" maxlength="500"></textarea><label for="expiry">Scadenza (facoltativa, max 30 giorni)</label><input id="expiry" type="datetime-local"><div class="actions"><button class="primary" type="submit">Invia richiesta specifica</button></div></form></section>
+<section id="inbox-panel" class="panel" hidden><div class="row"><div class="grow"><h2>Richieste ricevute</h2><p class="muted">Solo richieste indirizzate all'identità autenticata.</p></div><button id="refresh" type="button">Aggiorna</button></div><div id="inbox" class="list" aria-live="polite"></div></section>
+<section id="receipt-panel" class="panel" hidden><h2>Ricevuta della decisione</h2><div id="receipt" class="receipt" aria-live="polite"></div></section>
+<footer>TITANS · BUILD → VERIFY → RELEASE → SCALE · SQLite staging · non è un IAM di produzione · nessuna autorizzazione implicita per azioni downstream.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let bearerToken='',actor=null;
+const purposeLabels={service_access:'Accesso a un servizio',data_sharing:'Condivisione dati',partner_collaboration:'Collaborazione partner',skill_installation:'Installazione skill',analytics_access:'Accesso analytics'};
+function status(message,kind=''){const el=$('status');el.textContent=message;el.className='status'+(kind?' '+kind:'');}
+function hidePrivate(){ $('create-panel').hidden=true;$('inbox-panel').hidden=true;$('receipt-panel').hidden=true;$('identity').hidden=true; }
+async function api(path,method='GET',body){
+ const headers={authorization:'Bearer '+bearerToken,accept:'application/json'};
+ const options={method,headers,cache:'no-store',credentials:'same-origin'};
+ if(body!==undefined){headers['content-type']='application/json';options.body=JSON.stringify(body);}
+ const response=await fetch(path,options);
+ let data={};try{data=await response.json()}catch{}
+ if(!response.ok)throw new Error(data.error||('HTTP '+response.status));
+ return data;
+}
+function appendText(parent,tag,text,cls){const node=document.createElement(tag);node.textContent=String(text??'');if(cls)node.className=cls;parent.append(node);return node;}
+function renderReceipt(r){
+ $('receipt-panel').hidden=false;const root=$('receipt');root.replaceChildren();
+ appendText(root,'p','Richiesta: '+r.requestId);
+ appendText(root,'p','Stato: '+r.state+' · Finalità: '+(purposeLabels[r.purpose]||r.purpose));
+ appendText(root,'p','Scope: '+r.scopes.join(', '));
+ appendText(root,'p','Ricevuta audit SHA-256: '+(r.auditHash||'non disponibile'));
+ if(r.grant){appendText(root,'p','Grant: '+r.grant.grantId+' · '+(r.grant.active?'ATTIVO':'REVOCATO'));
+  if(r.grant.active&&actor?.scopes.includes('titans:grant:revoke')&&actor.actorId===r.grant.subjectId){
+   const b=document.createElement('button');b.type='button';b.className='decline';b.textContent='Revoca autorizzazione';
+   b.addEventListener('click',async()=>{b.disabled=true;try{const result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});appendText(root,'p','Revoca registrata: '+result.revokedAt,'status ok');await refreshInbox()}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false}});
+   root.append(b);
+  }
+ }
+}
+function renderInbox(rows){
+ const root=$('inbox');root.replaceChildren();
+ if(!rows.length){appendText(root,'p','Nessuna richiesta in attesa.','muted');return;}
+ for(const r of rows){
+  const card=document.createElement('article');card.className='request';
+  appendText(card,'h3','Richiesta da '+r.requesterId);
+  appendText(card,'p','Finalità: '+(purposeLabels[r.purpose]||r.purpose));
+  appendText(card,'p','Scadenza: '+new Date(r.expiresAt).toLocaleString());
+  if(r.note)appendText(card,'p','Dettagli: '+r.note);
+  const scopes=document.createElement('div');scopes.className='scopes';for(const scope of r.scopes)appendText(scopes,'span',scope,'scope');card.append(scopes);
+  const actions=document.createElement('div');actions.className='actions';
+  const accept=document.createElement('button');accept.type='button';accept.className='primary';accept.textContent='ACCEPT';
+  const decline=document.createElement('button');decline.type='button';decline.className='decline';decline.textContent='DECLINE';
+  async function decide(decision,button){accept.disabled=true;decline.disabled=true;try{const receipt=await api('/api/titans/requests/'+r.id+'/decision','POST',{decision});renderReceipt(receipt);status(decision==='accept'?'Consenso specifico registrato.':'Richiesta rifiutata.','ok');await refreshInbox()}catch(e){status('Decisione non registrata: '+e.message,'error');accept.disabled=false;decline.disabled=false;}}
+  accept.addEventListener('click',()=>decide('accept',accept));decline.addEventListener('click',()=>decide('decline',decline));
+  actions.append(accept,decline);card.append(actions);root.append(card);
+ }
+}
+async function refreshInbox(){
+ if(!actor?.scopes.includes('titans:request:respond'))return;
+ const data=await api('/api/titans/requests/inbox');renderInbox(data.requests||[]);
+}
+$('connect').addEventListener('click',async()=>{
+ const candidate=$('token').value.trim();$('token').value='';
+ if(candidate.length<32){status('Token staging non valido.','error');return;}
+ bearerToken=candidate;$('connect').disabled=true;
+ try{
+  actor=await api('/api/titans/session');$('disconnect').disabled=false;
+  $('identity').hidden=false;$('identity').textContent='Identità verificata: '+actor.actorId+' · scope: '+actor.scopes.join(', ');
+  $('create-panel').hidden=!actor.scopes.includes('titans:request:create');
+  $('inbox-panel').hidden=!actor.scopes.includes('titans:request:respond');
+  if(actor.scopes.includes('titans:request:respond'))await refreshInbox();
+  status('Sessione staging verificata. Token mantenuto solo in memoria.','ok');
+ }catch(e){bearerToken='';actor=null;hidePrivate();$('disconnect').disabled=true;status('Connessione staging non riuscita: '+e.message,'error');}
+ finally{$('connect').disabled=false;}
+});
+$('disconnect').addEventListener('click',()=>{bearerToken='';actor=null;hidePrivate();$('disconnect').disabled=true;status('Sessione locale terminata. Nessun token conservato.');});
+$('refresh').addEventListener('click',async()=>{try{await refreshInbox();status('Inbox aggiornata.','ok')}catch(e){status('Inbox non disponibile: '+e.message,'error')}});
+$('create-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(!actor?.scopes.includes('titans:request:create'))return;
+ const scopes=[...document.querySelectorAll('input[name="scope"]:checked')].map(x=>x.value);
+ if(!scopes.length){status('Seleziona almeno uno scope specifico.','error');return;}
+ const body={recipientId:$('recipient').value.trim(),purpose:$('purpose').value,scopes,note:$('note').value.trim()};
+ if($('expiry').value){const expiry=new Date($('expiry').value);if(!Number.isFinite(expiry.getTime())){status('Scadenza non valida.','error');return;}body.expiresAt=expiry.toISOString();}
+ const button=e.submitter;if(button)button.disabled=true;
+ try{const receipt=await api('/api/titans/requests','POST',body);renderReceipt(receipt);status('Richiesta individuale creata. Nessun messaggio esterno è stato inviato.','ok');e.currentTarget.reset();}
+ catch(err){status('Creazione non riuscita: '+err.message,'error');}
+ finally{if(button)button.disabled=false;}
+});
+window.addEventListener('pagehide',()=>{bearerToken='';actor=null;});
+</script></body></html>
