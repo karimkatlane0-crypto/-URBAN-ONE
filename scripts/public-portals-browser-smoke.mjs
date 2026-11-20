@@ -66,7 +66,7 @@ try {
           });
           await page.locator('#token').fill('synthetic-browser-token-0123456789-abcdef');
           await page.locator('#connect').click();
-          await page.getByRole('button',{name:'ACCEPT'}).waitFor({timeout:10000});
+          await page.getByRole('button',{name:'ACCEPT'}).first().waitFor({timeout:10000});
           result.inboxRequests=await page.locator('.request').count();
           if(result.inboxRequests!==2)throw new Error('Expected two synthetic inbox requests');
           await page.getByRole('button',{name:'ACCEPT'}).first().click();
