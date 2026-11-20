@@ -1,5 +1,5 @@
 import {createHash,timingSafeEqual} from 'node:crypto';
-import {TitanRequestStore,TitansRequestError} from '../../packages/titans/request-ledger.mjs';
+import {TitansRequestStore,TitansRequestError} from '../../packages/titans/request-ledger.mjs';
 
 let store=null,storePath=null;
 function actorsFrom(env){
