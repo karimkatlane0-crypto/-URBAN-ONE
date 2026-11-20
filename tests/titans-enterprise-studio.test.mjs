@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
@@ -164,6 +165,45 @@ test('all local Web and Mobile navigation, script, stylesheet and form destinati
 
 test('the short mobile preview route redirects to the canonical mobile Studio page', async () => {
   const mobileEntry = await readFile(new URL('../mobile/index.html', import.meta.url), 'utf8');
-  assert.match(mobileEntry, /url=\\/apps\\/mobile\\/www\\/titans-enterprise-studio\\.html/);
-  assert.match(mobileEntry, /href="\\/apps\\/mobile\\/www\\/titans-enterprise-studio\\.html"/);
+  assert.ok(mobileEntry.includes('url=/apps/mobile/www/titans-enterprise-studio.html'));
+  assert.ok(mobileEntry.includes('href="/apps/mobile/www/titans-enterprise-studio.html"'));
+});
+
+test('provider integrations show verified permission and evidence boundaries', () => {
+  for (const label of ['HubSpot CRM', 'Microsoft Power BI', 'Stripe', 'Amazon Associates / Awin', 'Google Play Console', 'Booking.com / CJ']) {
+    assert.ok(html.includes(label), label + ' integration card must be visible');
+  }
+  assert.match(html, /CHATGPT READ · WRITE BLOCKED/);
+  assert.match(html, /TENANT NOT VERIFIED/);
+  assert.match(html, /CHECKOUT → ACCESS UNVERIFIED/);
+  assert.match(html, /PRODUCTION NOT SUBMITTED/);
+  assert.match(html, /No credentials, writes, or release actions/);
+});
+
+test('global work queues cover URBAN ONE, SEVA, KKUBERA and SYNAPSY without implying autonomous execution', () => {
+  for (const label of ['global-operations', 'URBAN ONE', 'SEVA', 'KKUBERA', 'SYNAPSY', 'Agent operating model']) {
+    assert.ok(html.includes(label), label + ' work queue content must be present');
+  }
+  assert.match(html, /Nessun ruolo può autorizzare o eseguire RELEASE/i);
+  assert.match(mobileHtml, /global-operations/);
+});
+
+test('inline scripts remain syntactically valid on web and mobile', () => {
+  for (const [page, source] of [['web', html], ['mobile', mobileHtml]]) {
+    const scripts = [...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+    assert.ok(scripts.length > 0, page + ' inline script must exist');
+    for (const script of scripts) new vm.Script(script[1], { filename: page });
+  }
+});
+
+test('web and mobile render the same provider and operations cards', () => {
+  for (const id of ['services', 'global-operations']) {
+    const extract = source => {
+      const start = source.indexOf('<section id="' + id + '"');
+      const end = source.indexOf('</section>', start);
+      return start >= 0 && end >= 0 ? source.slice(start, end + '</section>'.length) : null;
+    };
+    assert.ok(extract(html), 'web section ' + id);
+    assert.equal(extract(html), extract(mobileHtml), id + ' must match across platforms');
+  }
 });
