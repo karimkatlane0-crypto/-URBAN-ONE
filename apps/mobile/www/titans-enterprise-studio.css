@@ -10,7 +10,7 @@
 .live-state.is-live,.connector-status.live{color:#8de0b4;border-color:rgba(70,190,130,.4);background:rgba(70,190,130,.08)}
 .live-state.is-error,.connector-status.blocked{color:#f2a7a7;border-color:rgba(220,90,90,.4);background:rgba(220,90,90,.08)}
 .connector-status.pending{color:#e7c98b;border-color:rgba(210,170,90,.35)}
-.refresh-button{border:1px solid rgba(110,190,170,.45);border-radius:10px;background:#173c3a;color:#d8fff1;padding:9px 13px;font:700 12px inherit;cursor:pointer}
+.refresh-button{border:1px solid rgba(110,190,170,.45);border-radius:10px;background:#173c3a;color:#d8fff1;padding:9px 13px;font:700 12px Manrope,sans-serif;cursor:pointer}
 .refresh-button:disabled{opacity:.55;cursor:wait}
 .live-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
 .live-metric,.connector-card{min-width:0;border:1px solid rgba(130,155,170,.2);border-radius:14px;background:rgba(255,255,255,.025);padding:17px}
