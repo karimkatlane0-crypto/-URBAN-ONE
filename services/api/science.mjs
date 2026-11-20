@@ -58,7 +58,11 @@ export function createScienceHandler({fetchImpl = fetch, now = Date.now} = {}) {
           if (!response.ok) return {provider: id, model, state: 'provider_error', httpStatus: response.status, elapsedMs: now() - started};
           const data = await response.json();
           const text = id === 'claude' ? (data.content || []).filter(i => i.type === 'text').map(i => i.text).join('\n') : id === 'gemini' ? (data.candidates?.[0]?.content?.parts || []).map(i => i.text || '').join('\n') : responseText(data);
-          return {provider: id, model, state: text.trim() ? 'completed' : 'empty_output', text: text.slice(0, 50000), elapsedMs: now() - started};
+          // A local requestId is correlation metadata, not proof of a provider response.
+          // Do not label or expose generated content as completed without the provider's own trace ID.
+          const providerResponseId = typeof data.id === 'string' ? data.id.trim() : typeof data.responseId === 'string' ? data.responseId.trim() : '';
+          if (!providerResponseId || providerResponseId.length > 200) return {provider: id, model, state: 'untraceable_response', elapsedMs: now() - started};
+          return {provider: id, model, providerResponseId, state: text.trim() ? 'completed' : 'empty_output', text: text.slice(0, 50000), elapsedMs: now() - started};
         } catch { return {provider: id, model, state: 'connection_failed', elapsedMs: now() - started}; }
       }));
       return reply(200, {requestId, generatedAt: new Date(time).toISOString(), results});
