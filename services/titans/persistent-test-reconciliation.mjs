@@ -68,7 +68,8 @@ export function createPersistentTestReconciliationStore({ databasePath, environm
   }
   db.prepare("INSERT OR IGNORE INTO metadata(key,value) VALUES('environment','TEST')").run();
 
-  const selectEvent = db.prepare('SELECT * FROM events WHERE event_id = ? OR idempotency_key = ?');
+  const selectEventById = db.prepare('SELECT * FROM events WHERE event_id = ?');
+  const selectEventByKey = db.prepare('SELECT * FROM events WHERE idempotency_key = ?');
   const selectPayment = db.prepare('SELECT * FROM payments WHERE payment_id = ?');
   const insertEvent = db.prepare('INSERT INTO events(event_id,idempotency_key,fingerprint,event_type,payment_id,amount_minor,currency) VALUES(?,?,?,?,?,?,?)');
   const insertTransaction = db.prepare('INSERT INTO journal_transactions(event_id,payment_id,event_type,amount_minor,currency) VALUES(?,?,?,?,?)');
@@ -90,10 +91,15 @@ export function createPersistentTestReconciliationStore({ databasePath, environm
 
     db.exec('BEGIN IMMEDIATE');
     try {
-      const prior = selectEvent.get(eventId, key);
+      const priorById = selectEventById.get(eventId);
+      const priorByKey = selectEventByKey.get(key);
+      if (priorById && priorById.fingerprint !== fingerprint) throw new Error('EVENT_ID_PAYLOAD_CONFLICT');
+      if (priorByKey && priorByKey.fingerprint !== fingerprint) throw new Error('IDEMPOTENCY_KEY_PAYLOAD_CONFLICT');
+      if (priorById && priorByKey && priorById.event_id !== priorByKey.event_id) {
+        throw new Error('EVENT_ID_AND_IDEMPOTENCY_KEY_COLLISION');
+      }
+      const prior = priorById ?? priorByKey;
       if (prior) {
-        if (prior.fingerprint !== fingerprint) throw new Error(prior.event_id === eventId
-          ? 'EVENT_ID_PAYLOAD_CONFLICT' : 'IDEMPOTENCY_KEY_PAYLOAD_CONFLICT');
         db.exec('COMMIT');
         return Object.freeze({ duplicate: true, eventId: prior.event_id });
       }
