@@ -34,12 +34,10 @@ jobs:
           for attempt in 1 2 3; do
             echo "Gradle assembleDebug attempt ${attempt}/3"
             if [ "$attempt" -eq 1 ]; then
-              ./gradlew --no-daemon assembleDebug
+              if ./gradlew --no-daemon assembleDebug; then break; else status=$?; fi
             else
-              ./gradlew --no-daemon --refresh-dependencies assembleDebug
+              if ./gradlew --no-daemon --refresh-dependencies assembleDebug; then break; else status=$?; fi
             fi
-            status=$?
-            if [ "$status" -eq 0 ]; then break; fi
             if [ "$attempt" -eq 3 ]; then exit "$status"; fi
             sleep $((attempt * 15))
           done
