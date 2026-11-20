@@ -126,7 +126,7 @@ try {
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
       result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
-      if (target.file === 'universal-36.html' && result.horizontalOverflow) throw new Error('Universal 36 horizontal overflow at mobile viewport');
+      if ((target.file === 'universal-36.html' || target.file.startsWith('titans-')) && result.horizontalOverflow) throw new Error(target.file + ' horizontal overflow at mobile viewport');
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
