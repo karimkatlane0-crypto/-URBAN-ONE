@@ -120,3 +120,23 @@ test('HTTP boundary ignores client-supplied actor identity and fails closed when
     assert.equal(disabled.status,503);
   }finally{db.close();}
 });
+
+test('authenticated HTTP decision, receipt and revocation routes bind actor to Bearer token',async()=>{
+  const db=store();
+  try{
+    const created=await handleTitansApi({method:'POST',path:'/api/titans/requests',headers:{authorization:auth(aliceToken)},
+      body:{recipientId:'bob',purpose:'data_sharing',scopes:['contacts:read']},env,storeOverride:db});
+    assert.equal(created.status,201);
+    const session=await handleTitansApi({method:'GET',path:'/api/titans/session',headers:{authorization:auth(bobToken)},env,storeOverride:db});
+    assert.equal(session.status,200);assert.equal(session.body.actorId,'bob');
+    const decided=await handleTitansApi({method:'POST',path:'/api/titans/requests/'+created.body.requestId+'/decision',
+      headers:{authorization:auth(bobToken)},body:{decision:'accept',actorId:'alice'},env,storeOverride:db});
+    assert.equal(decided.status,200);assert.equal(decided.body.decisionBy,'bob');
+    const receipt=await handleTitansApi({method:'GET',path:'/api/titans/requests/'+created.body.requestId+'/receipt',
+      headers:{authorization:auth(aliceToken)},env,storeOverride:db});
+    assert.equal(receipt.status,200);assert.equal(receipt.body.grant.subjectId,'bob');
+    const revoked=await handleTitansApi({method:'POST',path:'/api/titans/grants/'+receipt.body.grant.grantId+'/revoke',
+      headers:{authorization:auth(bobToken)},body:{},env,storeOverride:db});
+    assert.equal(revoked.status,200);assert.equal(revoked.body.revoked,true);
+  }finally{db.close();}
+});
