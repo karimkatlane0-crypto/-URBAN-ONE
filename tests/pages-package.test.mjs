@@ -13,7 +13,7 @@ test('Pages package resolves its entry and every relative page/asset link withou
     const redirect=entry.match(/http-equiv="refresh" content="0; url=([^"]+)"/)[1];
     assert.ok(existsSync(join(output,redirect)));
     const landing=readFileSync(join(output,redirect),'utf8');
-    assert.match(landing,/UNICORN WORKSPACE/);
+    assert.match(landing,/Universal <em>36\.<\/em>/);
     assert.match(landing,/href="\.\/index\.html"/);
     assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
     let checked=0;
