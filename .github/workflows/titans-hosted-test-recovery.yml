@@ -1,0 +1,38 @@
+name: titans-hosted-test-recovery
+on:
+  push:
+    branches:
+      - fix/titans-corrective-cycle-2026-11-20
+  pull_request:
+    branches:
+      - main-@URBAN-ONE
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-test-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run repository tests
+        run: npm test
+      - name: Run synthetic TEST reconciliation and backup/restore
+        run: node scripts/titans-hosted-test-recovery.mjs
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+      - name: Upload TEST evidence and SQLite backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: titans-hosted-test-recovery
+          path: |
+            release/titans-test-recovery.json
+            release/titans-test-recovery.sqlite
+          if-no-files-found: error
+          retention-days: 14
