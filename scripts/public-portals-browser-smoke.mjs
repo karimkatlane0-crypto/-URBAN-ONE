@@ -60,7 +60,13 @@ try {
       result.accessibility = {
         violations: accessibility.violations.map((item) => ({
           id: item.id, impact: item.impact, description: item.help,
+          helpUrl: item.helpUrl,
           affectedNodes: item.nodes.length,
+          nodes: item.nodes.map((node) => ({
+            target: node.target,
+            failureSummary: node.failureSummary,
+            html: node.html,
+          })),
         })),
         passes: accessibility.passes.length,
       };
