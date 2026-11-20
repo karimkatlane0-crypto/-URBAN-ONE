@@ -37,10 +37,14 @@ try {
   report.checks.launch=true;report.origin=page.url;
   ws=new WebSocket(page.webSocketDebuggerUrl);await once(ws,'open');
   let next=0;
+  const evaluationTimeoutMs=30000;
+  report.evaluationTimeoutMs=evaluationTimeoutMs;
+  const diagnostics=[];
+  ws.addEventListener('message',event=>{try{const message=JSON.parse(event.data);if(message.method==='Runtime.exceptionThrown')diagnostics.push({type:'exception',text:message.params?.exceptionDetails?.text||'unknown'});if(message.method==='Runtime.consoleAPICalled'&&['error','warning'].includes(message.params?.type))diagnostics.push({type:message.params.type,args:(message.params.args||[]).map(x=>x.value??x.description??'').slice(0,4)});}catch{}});
   async function evaluate(expression){
     const id=++next;
     return new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>{ws.removeEventListener('message',receive);reject(Error('WEBVIEW_EVALUATION_TIMEOUT'));},12000);
+      const timer=setTimeout(()=>{ws.removeEventListener('message',receive);report.lastEvaluation=expression.slice(0,180);reject(Error('WEBVIEW_EVALUATION_TIMEOUT'));},evaluationTimeoutMs);
       function receive(event){
         const m=JSON.parse(event.data);if(m.id!==id)return;
         clearTimeout(timer);ws.removeEventListener('message',receive);
@@ -48,9 +52,10 @@ try {
         else resolve(m.result?.result?.value);
       }
       ws.addEventListener('message',receive);
-      ws.send(JSON.stringify({id,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:true}}));
+      ws.send(JSON.stringify({id,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:false,userGesture:true}}));
     });
   }
+  await evaluate('document.readyState');
   // A debuggable WebView can exist before its local document has finished loading.
   async function evaluateReadWithRetry(expression,attempts=3){
     let lastError;
@@ -73,21 +78,29 @@ try {
     await pause(1000);
   }
   if(!loaded)throw Error('LOCAL_DOCUMENT_NOT_READY'+(lastReadError?': '+lastReadError:''));
+  report.phase='initial-dom-check';
   const initial=await evaluateReadWithRetry("({title:document.title,pool:document.getElementById('bnbPool').textContent})");
   if(!initial.title.includes('URBAN ONE')||!initial.pool.includes('720'))throw Error('LOCAL_CALCULATOR_NOT_INITIALIZED');
   report.checks.initialCalculation=true;
+  report.phase='calculator-interaction';
   const changed=await evaluate("document.getElementById('bnbFee').value='2000';document.getElementById('bnbCalc').click();document.getElementById('bnbPool').textContent");
   if(!changed.includes('440'))throw Error('LOCAL_CALCULATOR_INTERACTION_FAILED');
   report.checks.calculate=true;
-  await evaluate("document.getElementById('checkIntegrations').click();true");
-  let status='';
-  for(let i=0;i<12;i++){
-    status=await evaluate("document.getElementById('integrationStatus').textContent");
+  report.phase='integration-button-click';
+  await evaluate("document.getElementById('checkIntegrations').click();'clicked'");
+  let status='',lastStatusReadError='';
+  report.phase='integration-status-poll';
+  for(let i=0;i<15;i++){
+    try{status=await evaluateReadWithRetry("document.getElementById('integrationStatus')?.textContent || ''",2);}
+    catch(error){lastStatusReadError=error.message;}
     if(status.includes('non disponibile'))break;
     await pause(1000);
   }
+  report.integrationStatusReadError=lastStatusReadError||null;
+  report.integrationDiagnostics=diagnostics.slice(-20);
   if(!status.includes('non disponibile')){report.fallbackStatus=status;throw Error('LOCAL_SERVER_FALLBACK_FAILED');}
   report.checks.unconfiguredBackendFallback=true;
+  report.phase='relaunch-check';
   ws.close();ws=undefined;
   device('shell','am','force-stop',pkg);
   device('shell','am','start','-W','-n',pkg+'/.MainActivity');
@@ -95,7 +108,7 @@ try {
   if(!device('shell','pidof',pkg))throw Error('RELAUNCH_FAILED');
   report.checks.relaunchProcess=true;report.result='PASS';
 }catch(error){
-  report.result='FAIL';report.error=error.message;process.exitCode=1;
+  report.result='FAIL';report.error=error.message;report.phase=report.phase||'startup';report.integrationDiagnostics=diagnostics.slice(-20);process.exitCode=1;
 }finally{
   ws?.close();
   if(serial)try{adb('-s',serial,'forward','--remove','tcp:9222');}catch{}
