@@ -81,7 +81,7 @@ try {
       result.error = error.message;
       result.pageErrors = pageErrors;
     } finally {
-      await page.close();
+      await context.close();
       results.push(result);
     }
   }
