@@ -9,7 +9,7 @@ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const pkg='com.urbanone.universal';
 const apk='apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk';
 const report={kind:'android_emulator_only',physicalRedmiVerified:false,providerLiveVerified:false,checks:{}};
-let serial, api='unknown', ws;
+let serial, api='unknown', ws, diagnostics=[];
 try {
   const devices=adb('devices').split('\n').slice(1).map(x=>x.trim().split(/\s+/)).filter(x=>x[1]==='device');
   if(devices.length!==1||!/^emulator-\d+$/.test(devices[0][0]))throw Error('SINGLE_EMULATOR_REQUIRED');
@@ -39,7 +39,7 @@ try {
   let next=0;
   const evaluationTimeoutMs=30000;
   report.evaluationTimeoutMs=evaluationTimeoutMs;
-  const diagnostics=[];
+  diagnostics=[];
   ws.addEventListener('message',event=>{try{const message=JSON.parse(event.data);if(message.method==='Runtime.exceptionThrown')diagnostics.push({type:'exception',text:message.params?.exceptionDetails?.text||'unknown'});if(message.method==='Runtime.consoleAPICalled'&&['error','warning'].includes(message.params?.type))diagnostics.push({type:message.params.type,args:(message.params.args||[]).map(x=>x.value??x.description??'').slice(0,4)});}catch{}});
   async function evaluate(expression){
     const id=++next;
@@ -91,7 +91,7 @@ try {
   let status='',lastStatusReadError='';
   report.phase='integration-status-poll';
   for(let i=0;i<15;i++){
-    try{status=await evaluateReadWithRetry("document.getElementById('integrationStatus')?.textContent || ''",2);}
+    try{status=await evaluateReadWithRetry("document.getElementById('integrationStatus') ? document.getElementById('integrationStatus').textContent : ''",2);}
     catch(error){lastStatusReadError=error.message;}
     if(status.includes('non disponibile'))break;
     await pause(1000);
