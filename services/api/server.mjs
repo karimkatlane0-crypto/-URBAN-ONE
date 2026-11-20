@@ -4,6 +4,7 @@ import {route} from './router.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
 import {serveWeb} from './web.mjs';
 import {handlePoleApi} from './pole-http.mjs';
+import {handleTitansApi} from './titans-http.mjs';
 
 const port=Number(process.env.PORT||8787);
 const headers={'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff'};
@@ -26,6 +27,18 @@ const server=http.createServer(async(req,res)=>{
       let body={};
       if(rawBody.length){try{body=JSON.parse(rawBody.toString('utf8'));}catch{res.writeHead(400,headers);res.end(JSON.stringify({error:'INVALID_JSON'}));return;}}
       const result=await handleScienceApi({method:req.method,path,headers:req.headers,body,env:process.env});
+      res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
+    }
+    if(path.startsWith('/api/titans/')){
+      let body={};
+      if(rawBody.length){
+        try{body=JSON.parse(rawBody.toString('utf8'));}
+        catch{res.writeHead(400,headers);res.end(JSON.stringify({error:'INVALID_JSON'}));return;}
+      }
+      if(!body||typeof body!=='object'||Array.isArray(body)){
+        res.writeHead(400,headers);res.end(JSON.stringify({error:'INVALID_JSON'}));return;
+      }
+      const result=await handleTitansApi({method:req.method,path,headers:req.headers,body,env:process.env});
       res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
     }
     if(path.startsWith('/api/pole/')){
