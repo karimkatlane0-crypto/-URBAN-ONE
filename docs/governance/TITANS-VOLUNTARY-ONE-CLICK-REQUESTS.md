@@ -48,3 +48,12 @@ The module is not an authentication adapter, durable ledger, API route, or produ
 7. Confirm no contact, message, payment or provider action occurs as a side effect of ACCEPT alone.
 
 **Release gate:** staging acceptance plus separate explicit human authorization. No production activation is authorized.
+## Staging API implementation added in the follow-up BUILD
+
+- `packages/titans/request-ledger.mjs` adds a SQLite request/grant/audit ledger with atomic `BEGIN IMMEDIATE` transitions, recipient ownership, expiry, exact allowlisted purpose/scopes, one-time decisions, receipt lookup and recipient-controlled revocation.
+- `services/api/titans-http.mjs` adds a staging-only Bearer-token boundary. Identity and scopes are resolved from server-owned SHA-256 token hashes in `TITANS_STAGING_ACTORS_JSON`; client actor IDs are ignored.
+- `services/api/server.mjs` mounts `/api/titans/*` only as a private API route. Staging requires `TITANS_STAGING_ENABLED=true`, an absolute `TITANS_DB_PATH`, and at least two server-configured synthetic/authorized actors.
+- API routes: create request, recipient inbox, ACCEPT/DECLINE, participant receipt, recipient revocation.
+- Tests cover two-party isolation, wrong-recipient denial, exact scope grants, decline-without-grant, expiry, replay, revocation, audit-chain verification and fail-closed auth.
+
+**Important boundary:** this is a private staging API and SQLite ledger, not D1 and not a production IAM service. No user-facing inbox/buttons, downstream data enforcement, OAuth/SSO, external provider action, contact sync or production deployment is included yet. A grant record does not itself execute or authorize a provider action unless that provider adapter checks the grant at the point of use.
