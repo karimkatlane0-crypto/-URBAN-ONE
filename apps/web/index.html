@@ -48,10 +48,51 @@ footer{margin-top:32px;border-top:1px solid #4b402b;padding:26px 0 42px;color:va
 <a class="card" href="./universal-v7-catalog.html" data-search="catalogue modules legacy v7 universal"><div class="meta"><span>MODULE CATALOGUE</span><span class="state">SOURCE</span></div><h3>Catalogo completo v7</h3><p>Accesso alla precedente pagina con i collegamenti ai moduli esistenti, conservata senza rimuovere il percorso storico.</p><div class="open">Apri catalogo <span>↗</span></div></a>
 </div></section>
 <section id="evidence" class="section"><div class="section-head"><div><h2>Evidence snapshot</h2><p>Ultime verifiche consultate durante questo BUILD.</p></div></div><div class="statusline"><div class="metric"><small>PR #224 · policy CI</small><b style="color:var(--green)">PASS · 4/4</b></div><div class="metric"><small>PR #219 · browser / CI</small><b style="color:var(--green)">PASS</b></div><div class="metric"><small>Android API 24</small><b style="color:var(--green)">PASS</b></div><div class="metric"><small>Android API 36</small><b style="color:var(--red)">BLOCKED</b></div></div><div class="notice">Queste evidenze si riferiscono ai commit e ai workflow citati nelle rispettive PR; non certificano un rilascio in produzione, un dispositivo fisico, provider LIVE o la piena operatività dell'ecosistema.</div></section>
-<footer><div><strong>UNIVERSAL 36 · TITANS × SYNAPSY × KKUBERA</strong><br>ONE INTELLIGENCE. ONE ECOSYSTEM. TITANS GO GLOBAL. AD MAIORA SEMPER.</div><p>Homepage candidata · BUILD only · nessun merge o deploy automatico.<br><a href="./universal-v7-catalog.html">Catalogo storico v7</a> · <a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE">Repository GitHub</a></p></footer>
+
+<section class="section" id="services" aria-label="Catalogo servizi e collegamenti storici">
+<details class="notice"><summary><strong>Catalogo completo servizi e percorsi legacy v7</strong> — apri per accedere ai moduli esistenti</summary>
+<nav aria-label="Tutti i moduli" style="display:flex;flex-wrap:wrap;gap:12px;padding-top:14px">
+<a href="./europe-it.html">Servizi UE IT</a><a href="./europe-en.html">EU services EN</a><a href="./europe-de.html">EU services DE</a><a href="./europe-fr.html">EU services FR</a><a href="./europe-es.html">EU services ES</a>
+<a href="./hospitality-it.html">Hospitality IT</a><a href="./hospitality-en.html">Hospitality EN</a><a href="./hospitality-de.html">Hospitality DE</a><a href="./hospitality-fr.html">Hospitality FR</a><a href="./hospitality-es.html">Hospitality ES</a>
+<a href="./press.html">Press kit</a><a href="./travel-preview.html">Travel 24h</a><a href="./financial-insights.html">Financial Insights</a><a href="./psd2-x-ai.html">PSD2 X AI</a><a href="./checkin-checkout.html">Check-in / Check-out</a>
+<a href="./discovery.html">Discovery</a><a href="./europe-immobili.html">Immobili Europa</a><a href="./pole-position.html">Pole Position</a><a href="./pole-premium.html">Pole Intelligence LAB</a><a href="./v10-workspace.html">Unified Workspace</a>
+<a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE/issues/39" target="_blank" rel="noopener noreferrer">B&amp;B pilot request</a>
+<a href="https://buy.stripe.com/7sYbJ351fghgei7auSb7y05" target="_blank" rel="noopener noreferrer">Pagamento incarico concordato</a>
+</nav>
+<p>Il pagamento richiede un accordo scritto, importo pattuito e riferimento del contratto; non attiva automaticamente PSD2, provider, prenotazioni o abbonamenti.</p>
+<div id="connections"><button id="checkIntegrations" type="button">Controlla collegamenti</button><p id="integrationStatus" role="status" aria-live="polite">Server non ancora verificato.</p><ul id="integrationItems"></ul><span id="bnbPool" hidden>720</span></div>
+<div id="eu-b2b"></div><div id="eu-press"></div><div id="hospitality-eu"></div><div id="travel-24h"></div>
+</details>
+</section>
+\n<footer><div><strong>UNIVERSAL 36 · TITANS × SYNAPSY × KKUBERA</strong><br>ONE INTELLIGENCE. ONE ECOSYSTEM. TITANS GO GLOBAL. AD MAIORA SEMPER.</div><p>Homepage candidata · BUILD only · nessun merge o deploy automatico.<br><a href="./universal-v7-catalog.html">Catalogo storico v7</a> · <a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE">Repository GitHub</a></p></footer>
 </main>
 <script>
 const field=document.getElementById('filter');
+const checkButton=document.getElementById('checkIntegrations');
+if(checkButton){
+ checkButton.addEventListener('click',async()=>{
+  checkButton.disabled=true;
+  const status=document.getElementById('integrationStatus');
+  const items=document.getElementById('integrationItems');
+  if(items)items.textContent='';
+  if(status)status.textContent='Verifica in corso…';
+  try{
+   const response=await fetch('/api/integrations/readiness',{credentials:'same-origin',cache:'no-store'});
+   if(!response.ok)throw new Error('unavailable');
+   const data=await response.json();
+   if(data.version!=='7.0.0'||!Array.isArray(data.items)||data.liveProvidersVerified!==false)throw new Error('invalid');
+   for(const item of data.items){
+    const li=document.createElement('li');
+    li.textContent=String(item.label)+': '+String(item.state);
+    if(items)items.appendChild(li);
+   }
+   if(status)status.textContent='Server raggiungibile · v'+data.version+'. Provider LIVE non certificati.';
+  }catch{
+   if(status)status.textContent='Server non disponibile. Le funzioni locali restano utilizzabili.';
+  }finally{checkButton.disabled=false;}
+ });
+}
+const pool=document.getElementById('bnbPool');if(pool)pool.textContent='720';
 field.addEventListener('input',()=>{const q=field.value.trim().toLocaleLowerCase();for(const card of document.querySelectorAll('#modules .card')){const hay=(card.innerText+' '+(card.dataset.search||'')).toLocaleLowerCase();card.hidden=!hay.includes(q);}});
 </script>
 </body></html>
