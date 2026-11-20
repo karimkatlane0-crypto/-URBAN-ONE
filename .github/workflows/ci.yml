@@ -12,8 +12,11 @@ jobs:
       - run: npm run security:secrets
       - run: npm test
       - run: npm run verify
+      - run: npm run provenance
       - run: npm run evidence
       - uses: actions/upload-artifact@v4
         with:
           name: evidence-ledger
-          path: release/evidence-ledger.json
+          path: |
+            release/evidence-ledger.json
+            release/build-provenance.json
