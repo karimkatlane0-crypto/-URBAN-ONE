@@ -44,6 +44,7 @@ export async function handleTitansApi({method='GET',path='/',headers={},body={},
   try{
     const actor=resolveTitansActor(headers.authorization,env),directory=actorsFrom(env);
     const db=storeOverride||acquireStore(env);
+    if(method==='GET'&&path==='/api/titans/session')return {status:200,body:{actorId:actor.id,scopes:actor.scopes}};
     if(method==='POST'&&path==='/api/titans/requests'){
       requireScope(actor,'titans:request:create');
       const recipient=directory.find(a=>a.id===body.recipientId);
