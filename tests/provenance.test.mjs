@@ -17,16 +17,15 @@ function fixture(overrides = {}) {
       GITHUB_REPOSITORY: 'karimkatlane0-crypto/-URBAN-ONE',
       ...overrides.env
     },
-    gitHead: mergeSha,
-    eventPayload: {
+    gitHead: overrides.gitHead ?? mergeSha,
+    eventPayload: overrides.eventPayload ?? {
       number: 232,
       pull_request: {
         number: 232,
         head: { sha: headSha },
         base: { sha: baseSha },
         merge_commit_sha: null
-      },
-      ...overrides.eventPayload
+      }
     },
     generatedAt: '2026-11-20T22:31:53.000Z'
   };
