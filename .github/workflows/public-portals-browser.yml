@@ -29,7 +29,7 @@ jobs:
         with: {node-version: 22}
       - name: Install Playwright Chromium
         run: |
-          npm install --no-save --no-package-lock playwright
+          npm install --no-save --no-package-lock playwright @axe-core/playwright
           npx playwright install --with-deps chromium
       - name: Verify the three public portals in a real browser
         run: node scripts/public-portals-browser-smoke.mjs
