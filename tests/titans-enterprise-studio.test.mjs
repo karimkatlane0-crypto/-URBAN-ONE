@@ -198,7 +198,11 @@ test('inline scripts remain syntactically valid on web and mobile', () => {
 
 test('web and mobile render the same provider and operations cards', () => {
   for (const id of ['services', 'global-operations']) {
-    const extract = source => source.match(new RegExp('<section id="' + id + '"[\s\S]*?<\/section>'))?.[0];
+    const extract = source => {
+      const start = source.indexOf('<section id="' + id + '"');
+      const end = source.indexOf('</section>', start);
+      return start >= 0 && end >= 0 ? source.slice(start, end + '</section>'.length) : null;
+    };
     assert.ok(extract(html), 'web section ' + id);
     assert.equal(extract(html), extract(mobileHtml), id + ' must match across platforms');
   }
