@@ -27,7 +27,7 @@
         <a class="nav-link" href="#intelligence"><span>✳</span> Intelligence layer</a>
         <a class="nav-link" href="#products"><span>▦</span> Product ecosystem</a>
         <a class="nav-link" href="#mlops"><span>⌁</span> MLOps orchestration</a>
-        <a class="nav-link" href="#evidence"><span>◎</span> Evidence register</a>
+        <a class="nav-link" href="#evidence"><span>◎</span> Evidence register</a>\n        <a class="nav-link" href="#live-operations"><span>◉</span> Live operations</a>
         <p class="nav-label nav-spaced">GOVERNANCE</p>
         <a class="nav-link" href="#lifecycle"><span>◇</span> Release lifecycle</a>
         <a class="nav-link" href="#principles"><span>◈</span> Trust & safeguards</a>
@@ -41,7 +41,7 @@
     <main id="main" class="main-content">
       <header class="topbar">
         <div class="breadcrumb"><span>Global ecosystem</span><span class="slash">/</span><strong>Executive overview</strong></div>
-        <div class="top-actions"><span class="prototype-pill"><i></i> DESIGN PREVIEW · LIVE DATA NOT CONNECTED</span><button class="avatar-button" type="button" aria-label="Profilo workspace">K</button></div>
+        <div class="top-actions"><span class="prototype-pill"><i></i> PREVIEW · GITHUB LIVE / READ-ONLY</span><button class="avatar-button" type="button" aria-label="Profilo workspace">K</button></div>
       </header>
 
       <section id="overview" class="hero">
@@ -63,7 +63,7 @@
         <div><small>INTELLIGENCE DOMAINS</small><strong>04</strong><span>ruoli architetturali</span></div>
         <div><small>GOVERNED PRODUCTS</small><strong>03</strong><span>confini distinti</span></div>
         <div><small>DELIVERY GATES</small><strong>04</strong><span>BUILD → SCALE</span></div>
-        <div><small>DATA CONNECTION</small><strong class="metric-state">NOT CONNECTED</strong><span>nessun dato live simulato</span></div>
+        <div><small>DATA CONNECTION</small><strong class="metric-state">GITHUB PARTIAL</strong><span>Public API · provider separati</span></div>
       </section>
 
       <section id="intelligence" class="section-block">
@@ -106,7 +106,7 @@
       </section>
 
       <section id="evidence" class="section-block">
-        <div class="section-heading"><div><p class="eyebrow">04 / MASTER EVIDENCE REGISTER</p><h2>Proof before progress.</h2><p>Ogni stato deve essere riconducibile a commit, run, artefatto, checksum, responsabile e review.</p></div><span class="architecture-label">SYNC PENDING</span></div>
+        <div class="section-heading"><div><p class="eyebrow">04 / MASTER EVIDENCE REGISTER</p><h2>Proof before progress.</h2><p>Ogni stato deve essere riconducibile a commit, run, artefatto, checksum, responsabile e review.</p></div><span class="architecture-label">GITHUB LIVE · READ-ONLY</span></div>
         <div class="evidence-table-wrap"><table><thead><tr><th>PROJECT</th><th>REQUIRED PROOF</th><th>REGISTER STATE</th><th>RELEASE GATE</th></tr></thead><tbody>
           <tr><td><strong>URBAN ONE</strong></td><td>Rulesets · AAB · signing · device tests</td><td><span class="table-state amber-state">NOT VERIFIED</span></td><td>BLOCKED</td></tr>
           <tr><td><strong>SEVA</strong></td><td>Provider trace · auth · payment · recovery</td><td><span class="table-state amber-state">PARTIAL EVIDENCE</span></td><td>BLOCKED</td></tr>
@@ -125,7 +125,32 @@
         <div class="principle-list"><p><span>01</span> Privacy, sicurezza e minimizzazione dei dati.</p><p><span>02</span> Consenso esplicito per servizi premium e pagamenti.</p><p><span>03</span> Separazione di repository, tenant, ruoli e responsabilità.</p><p><span>04</span> Evidenze verificabili; nessuna certificazione dichiarata senza prova.</p></div>
       </section>
 
-      <footer class="footer"><div><strong>TITANS</strong><span>ONE INTELLIGENCE. ONE ECOSYSTEM. LOVE ALL SERVE ALL.</span></div><p>Executive Intelligence Studio · Design preview<br>Con Amore da Trieste · AD MAIORA SEMPER.</p></footer>
+      
+      <section id="live-operations" class="section-block live-operations" aria-labelledby="live-operations-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">09 / LIVE OPERATIONS & CONNECTORS</p><h2 id="live-operations-title">One control plane. Verified connections.</h2>
+            <p>Stato aggiornabile delle fonti pubbliche e registro esplicito delle integrazioni. Nessuna credenziale è esposta nel browser.</p>
+          </div>
+          <div class="live-controls"><span id="live-sync-state" class="live-state" role="status" aria-live="polite">CHECKING SOURCES</span><button id="refresh-evidence" class="refresh-button" type="button">Refresh evidence ↻</button></div>
+        </div>
+        <div class="live-metrics" aria-label="GitHub live evidence">
+          <article class="live-metric"><small>REPOSITORY</small><strong id="live-repo-state">Checking…</strong><span id="live-repo-branch">Public GitHub API</span></article>
+          <article class="live-metric"><small>LATEST WORKFLOW</small><strong id="live-ci-state">Checking…</strong><span id="live-ci-detail">Latest GitHub Actions run</span></article>
+          <article class="live-metric"><small>OPEN PULL REQUESTS</small><strong id="live-pr-count">—</strong><span id="live-pr-detail">Read-only repository query</span></article>
+          <article class="live-metric"><small>LAST COMMIT</small><strong id="live-commit-sha">—</strong><span id="live-commit-detail">Default branch · latest commit</span></article>
+        </div>
+        <div class="connector-grid" aria-label="Integration readiness">
+          <article class="connector-card"><div class="connector-card-head"><strong>GitHub · URBAN ONE</strong><span id="github-connector-status" class="connector-status pending">CHECKING</span></div><p>Public repository metadata, recent commit, open pull requests and Actions run. Read-only; no token or write operation.</p><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer">Open repository ↗</a></article>
+          <article class="connector-card"><div class="connector-card-head"><strong>HubSpot CRM</strong><span class="connector-status blocked">READ ONLY / WRITE BLOCKED</span></div><p>ChatGPT connector can read Contacts, Companies and Deals. Write permissions are missing; direct TITANS-to-HubSpot integration is not configured.</p><a href="https://app.hubspot.com/" target="_blank" rel="noopener noreferrer">Open HubSpot ↗</a></article>
+          <article class="connector-card"><div class="connector-card-head"><strong>Microsoft Power BI</strong><span class="connector-status pending">TENANT NOT VERIFIED</span></div><p>Destination link only. Workspace authorization, dataset binding, scheduled refresh and row-level security require separate verification.</p><a href="https://app.powerbi.com/" target="_blank" rel="noopener noreferrer">Open Power BI ↗</a></article>
+          <article class="connector-card"><div class="connector-card-head"><strong>Stripe · Payments</strong><span class="connector-status blocked">PAYMENT → ACCESS UNVERIFIED</span></div><p>Do not infer enabled payment methods or paid entitlements from account connectivity. Checkout, signed webhook, entitlement and refund/revocation tests remain separate gates.</p><a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer">Open Stripe Dashboard ↗</a></article>
+          <article class="connector-card"><div class="connector-card-head"><strong>Amazon Associates / Awin</strong><span class="connector-status pending">PARTNER PROOF PENDING</span></div><p>Affiliate destinations are not live TITANS integrations. Approval, eligible conversions, attribution and commission settlement need evidence.</p><a href="https://affiliate-program.amazon.com/" target="_blank" rel="noopener noreferrer">Amazon Associates ↗</a><a href="https://ui.awin.com/" target="_blank" rel="noopener noreferrer">Awin ↗</a></article>
+          <article class="connector-card"><div class="connector-card-head"><strong>GITA.IA / Copilot / SAI.IA</strong><span class="connector-status pending">RUNTIME NOT VERIFIED</span></div><p>Agent roles are architectural definitions until authenticated endpoints, successful runtime traces, permissions and outputs are independently verified.</p><a href="#intelligence">Review intelligence layer ↗</a></article>
+        </div>
+        <div class="live-boundary"><strong>Execution boundary</strong><span>Questa dashboard interroga esclusivamente API pubbliche GitHub in lettura. Non legge dati CRM o pagamenti, non scrive record, non avvia workflow, non effettua deploy e non abilita integrazioni.</span></div>
+        <p id="live-last-updated" class="data-disclaimer">Live evidence not yet loaded.</p>
+      </section>
+\n      <footer class="footer"><div><strong>TITANS</strong><span>ONE INTELLIGENCE. ONE ECOSYSTEM. LOVE ALL SERVE ALL.</span></div><p>Executive Intelligence Studio · Design preview<br>Con Amore da Trieste · AD MAIORA SEMPER.</p></footer>
     </main>
   </div>
 <script>
@@ -157,6 +182,88 @@ for (const link of navLinks) {
     link.setAttribute('aria-current', 'location');
   });
 }
-</script>
+
+async function loadTitansLiveEvidence() {
+  const state = document.querySelector('#live-sync-state');
+  const refresh = document.querySelector('#refresh-evidence');
+  const setText = (selector, value) => {
+    const node = document.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+  const setConnector = (selector, label, stateName) => {
+    const node = document.querySelector(selector);
+    if (!node) return;
+    node.textContent = label;
+    node.className = 'connector-status ' + stateName;
+  };
+  const api = 'https://api.github.com/repos/karimkatlane0-crypto/-URBAN-ONE';
+  const request = async (path) => {
+    const response = await fetch(api + path, {
+      headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('GitHub API HTTP ' + response.status);
+    return response.json();
+  };
+  if (refresh) refresh.disabled = true;
+  if (state) { state.textContent = 'CHECKING SOURCES'; state.className = 'live-state'; }
+  try {
+    const [repoResult, pullsResult, runsResult, commitsResult] = await Promise.allSettled([
+      request(''),
+      request('/pulls?state=open&per_page=100'),
+      request('/actions/runs?per_page=5'),
+      request('/commits?per_page=1')
+    ]);
+    if (repoResult.status !== 'fulfilled') throw repoResult.reason;
+    const repo = repoResult.value;
+    setText('#live-repo-state', repo.private ? 'PRIVATE' : 'PUBLIC · LIVE');
+    setText('#live-repo-branch', 'Default branch: ' + (repo.default_branch || 'unknown'));
+    setConnector('#github-connector-status', 'LIVE · READ ONLY', 'live');
+    if (pullsResult.status === 'fulfilled') {
+      const pulls = pullsResult.value;
+      setText('#live-pr-count', String(pulls.length));
+      const first = pulls[0];
+      setText('#live-pr-detail', first ? 'Latest: #' + first.number + ' · ' + first.title : 'No open pull requests');
+    } else {
+      setText('#live-pr-count', 'UNAVAILABLE');
+      setText('#live-pr-detail', 'Pull request endpoint unavailable');
+    }
+    if (runsResult.status === 'fulfilled') {
+      const runs = runsResult.value.workflow_runs || [];
+      const latest = runs[0];
+      setText('#live-ci-state', latest ? (latest.conclusion || latest.status || 'UNKNOWN').toUpperCase() : 'NO RUNS');
+      setText('#live-ci-detail', latest ? latest.name + ' · ' + new Date(latest.updated_at).toLocaleString() : 'No recent Actions run returned');
+    } else {
+      setText('#live-ci-state', 'UNAVAILABLE');
+      setText('#live-ci-detail', 'Actions endpoint unavailable');
+    }
+    if (commitsResult.status === 'fulfilled') {
+      const commit = commitsResult.value[0];
+      setText('#live-commit-sha', commit ? commit.sha.slice(0, 8) : '—');
+      setText('#live-commit-detail', commit ? (commit.commit.message.split('\n')[0].slice(0, 80)) : 'No commit returned');
+    } else {
+      setText('#live-commit-sha', 'UNAVAILABLE');
+      setText('#live-commit-detail', 'Commit endpoint unavailable');
+    }
+    if (state) { state.textContent = 'GITHUB API LIVE · READ ONLY'; state.className = 'live-state is-live'; }
+    const pill = document.querySelector('.prototype-pill');
+    if (pill) pill.innerHTML = '<i></i> PREVIEW · GITHUB LIVE / READ-ONLY';
+    setText('#live-last-updated', 'Evidence refreshed: ' + new Date().toLocaleString() + ' · GitHub public API only.');
+  } catch (error) {
+    setText('#live-repo-state', 'UNAVAILABLE');
+    setText('#live-repo-branch', error && error.message ? error.message : 'GitHub API request failed');
+    setConnector('#github-connector-status', 'UNAVAILABLE', 'blocked');
+    if (state) { state.textContent = 'GITHUB SOURCE UNAVAILABLE'; state.className = 'live-state is-error'; }
+    const pill = document.querySelector('.prototype-pill');
+    if (pill) pill.innerHTML = '<i></i> PREVIEW · LIVE SOURCE UNAVAILABLE';
+    setText('#live-last-updated', 'Refresh failed: ' + (error && error.message ? error.message : 'Unknown error') + '. Other provider states remain unverified.');
+  } finally {
+    if (refresh) refresh.disabled = false;
+  }
+}
+const evidenceRefresh = document.querySelector('#refresh-evidence');
+if (evidenceRefresh) evidenceRefresh.addEventListener('click', loadTitansLiveEvidence);
+loadTitansLiveEvidence();
+\n</script>
 </body>
 </html>
