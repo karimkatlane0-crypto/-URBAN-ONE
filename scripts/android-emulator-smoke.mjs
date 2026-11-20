@@ -52,14 +52,28 @@ try {
     });
   }
   // A debuggable WebView can exist before its local document has finished loading.
-  let loaded=false;
+  async function evaluateReadWithRetry(expression,attempts=3){
+    let lastError;
+    for(let attempt=0;attempt<attempts;attempt++){
+      try{return await evaluate(expression);}
+      catch(error){
+        lastError=error;
+        if(!String(error.message).includes('WEBVIEW_EVALUATION_TIMEOUT'))throw error;
+        if(attempt+1<attempts)await pause(500);
+      }
+    }
+    throw lastError;
+  }
+  let loaded=false,lastReadError='';
   for(let i=0;i<30;i++){
-    loaded=await evaluate("document.readyState==='complete' && Boolean(document.getElementById('bnbPool'))");
-    if(loaded)break;
+    try{
+      loaded=await evaluateReadWithRetry("document.readyState==='complete' && Boolean(document.getElementById('bnbPool'))",2);
+      if(loaded)break;
+    }catch(error){lastReadError=error.message;}
     await pause(1000);
   }
-  if(!loaded)throw Error('LOCAL_DOCUMENT_NOT_READY');
-  const initial=await evaluate("({title:document.title,pool:document.getElementById('bnbPool').textContent})");
+  if(!loaded)throw Error('LOCAL_DOCUMENT_NOT_READY'+(lastReadError?': '+lastReadError:''));
+  const initial=await evaluateReadWithRetry("({title:document.title,pool:document.getElementById('bnbPool').textContent})");
   if(!initial.title.includes('URBAN ONE')||!initial.pool.includes('720'))throw Error('LOCAL_CALCULATOR_NOT_INITIALIZED');
   report.checks.initialCalculation=true;
   const changed=await evaluate("document.getElementById('bnbFee').value='2000';document.getElementById('bnbCalc').click();document.getElementById('bnbPool').textContent");

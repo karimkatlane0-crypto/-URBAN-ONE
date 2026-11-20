@@ -4,3 +4,47 @@
 @media(max-width:820px){.sidebar{width:68px;padding:18px 9px}.brand{padding:0 5px 26px}.brand-copy,.workspace-switch>span:not(.workspace-dot),.workspace-switch .chevron,.nav-label,.nav-link:not(.active),.nav-link.active{font-size:0}.workspace-switch{justify-content:center;padding:12px 0}.side-nav{align-items:center}.nav-link{width:42px;height:42px;padding:0;justify-content:center;font-size:0}.nav-link span{font-size:17px}.operator-card{justify-content:center}.operator-card>span:not(.operator-avatar){display:none}.sidebar-foot{display:none}.main-content{margin-left:68px;padding:0 22px 28px}.hero{grid-template-columns:1fr;min-height:auto}.hero-copy{padding:42px 0 10px}.hero-art{height:230px;margin-top:-5px}.metric-strip{grid-template-columns:repeat(2,1fr);row-gap:18px}.metric-strip>div:nth-child(2){border:0}.metric-strip>div:nth-child(3){padding-left:0}.lifecycle-block,.principles-block{grid-template-columns:1fr;gap:18px}.pipeline{overflow-x:auto}.pipeline-step{min-width:70px}.section-heading{align-items:start;flex-direction:column}.search-box{width:100%}}
 @media(max-width:560px){.main-content{padding:0 15px 24px}.topbar{height:58px}.breadcrumb{font-size:9px}.prototype-pill{font-size:6px;padding:6px}.top-actions{gap:8px}.avatar-button{width:26px;height:26px}.hero h1{font-size:43px}.hero-lead{font-size:12px}.hero-art{height:190px}.metric-strip{padding:16px 0}.metric-strip>div{padding:0 10px}.metric-strip strong{font-size:21px}.section-block{padding-top:35px}.intelligence-grid,.product-grid{grid-template-columns:1fr}.intelligence-card{min-height:180px}.product-card{min-height:195px}.pipeline{padding:15px 8px;gap:4px}.pipeline-arrow{font-size:10px}.pipeline-step small{font-size:6px}.lifecycle-block{padding:17px}.lifecycle-steps{grid-template-columns:repeat(2,1fr);row-gap:16px}.footer{align-items:start;flex-direction:column;gap:15px}.footer p{text-align:left}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+/* TITANS Global Operations extension */
+.global-operations{padding-bottom:18px}
+.agent-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.agent-action-card{background:linear-gradient(145deg,#1b2731,#141d25);border:1px solid #34424d;padding:18px;min-height:250px;display:flex;flex-direction:column}
+.agent-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.agent-avatar{width:34px;height:34px;display:grid;place-items:center;background:#d8bd82;color:#17212a;font:800 15px var(--display)}
+.agent-action-card h3{font:700 19px var(--display);margin:17px 0 5px}
+.agent-action-card p,.agent-action-card small{font-size:10px;line-height:1.7;color:#9caab3}
+.agent-action-card>strong{font-size:9px;letter-spacing:.12em;color:#e5d09b;margin-top:12px}
+.agent-action-card .text-link{margin-top:auto}
+.global-partner-panel{display:grid;grid-template-columns:.8fr 1.2fr;gap:24px;margin-top:28px;padding:22px;background:#17222b;border:1px solid #34424d;border-top:2px solid var(--gold)}
+.global-partner-panel h2{font:600 23px/1.2 var(--display);letter-spacing:-.04em;margin:0 0 8px}
+.global-partner-panel>div:first-child>p:last-child{font-size:10px;color:#9caab3;line-height:1.8}
+.partner-links{display:grid;grid-template-columns:1fr;gap:8px}
+.partner-links a,.directory-grid a{padding:13px 14px;background:#1d2933;border:1px solid #34424d;display:flex;flex-direction:column;gap:4px}
+.partner-links a strong,.directory-grid a strong{font-size:11px;color:#f1f2ef}
+.partner-links a span,.directory-grid a span{font-size:9px;color:#9caab3}
+.partner-links a b{font-size:9px;color:var(--gold);margin-top:3px}
+.partner-links a:hover,.directory-grid a:hover{border-color:var(--gold)}
+.page-directory{margin-top:32px}
+.directory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.directory-grid a{min-height:86px;justify-content:center}
+@media(max-width:1180px){.agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.global-partner-panel{grid-template-columns:1fr}.directory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.agent-grid,.directory-grid{grid-template-columns:1fr}.agent-action-card{min-height:220px}.global-partner-panel{padding:16px}}
+
+/* TITANS global workspace directory — text-first, image-free cards */
+.workspace-directory{scroll-margin-top:82px}
+.workspace-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.workspace-link{min-width:0;min-height:82px;display:flex;align-items:center;gap:12px;padding:13px;background:linear-gradient(145deg,#1b2731,#141d25);border:1px solid #34424d;transition:border-color .18s,transform .18s}
+.workspace-link:hover,.workspace-link:focus-visible{border-color:var(--gold);transform:translateY(-1px)}
+.workspace-link-icon{width:35px;height:35px;flex:0 0 35px;display:grid;place-items:center;background:#d8bd82;color:#17212a;font:800 11px var(--display);letter-spacing:-.04em}
+.workspace-link>span:nth-child(2){min-width:0;display:flex;flex-direction:column;gap:3px}
+.workspace-link strong{font-size:10px;letter-spacing:.08em;color:#f1f2ef}
+.workspace-link small{font-size:9px;line-height:1.45;color:#9caab3}
+.workspace-link>b{margin-left:auto;color:var(--gold);font-size:15px}
+.microsoft-copilot-card{isolation:isolate;position:relative;display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:16px;margin-top:14px;padding:18px 20px;overflow:hidden;background:linear-gradient(110deg,#18242d,#111a22);border:1px solid #3b4b56;border-left:3px solid var(--gold)}
+.microsoft-brand-mark{width:46px;height:46px;display:grid;place-items:center;background:#263845;border:1px solid #536675;color:#f0d89e;font:800 13px var(--display);letter-spacing:.02em}
+.microsoft-copilot-copy .eyebrow{margin-bottom:5px}.microsoft-copilot-copy h3{font:700 17px var(--display);margin:0 0 5px;color:#f3f2ed}.microsoft-copilot-copy p:last-child{font-size:9px;line-height:1.65;color:#9caab3;margin:0;max-width:700px}
+.microsoft-actions{display:flex;flex-direction:column;gap:7px;min-width:170px}.microsoft-actions a{font-size:9px;color:#e7cf96;border-bottom:1px solid #3a4650;padding:4px 0}
+/* Prevent decorative raster assets from obscuring the Microsoft entry panel. The panel intentionally uses CSS typography, not JPEGs. */
+#microsoft-insights-copilot img,#microsoft-insights-copilot picture,#microsoft-insights-copilot canvas{display:none!important}
+@media(max-width:1050px){.workspace-links{grid-template-columns:repeat(2,minmax(0,1fr))}.microsoft-copilot-card{grid-template-columns:46px 1fr}.microsoft-actions{grid-column:2;flex-direction:row;flex-wrap:wrap;min-width:0;gap:12px}}
+@media(max-width:560px){.workspace-links{grid-template-columns:1fr}.workspace-link{min-height:72px}.microsoft-copilot-card{grid-template-columns:40px 1fr;padding:14px;gap:10px}.microsoft-brand-mark{width:38px;height:38px}.microsoft-copilot-copy h3{font-size:15px}.microsoft-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr;gap:3px}.microsoft-actions a{padding:8px 0}}
