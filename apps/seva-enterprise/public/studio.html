@@ -16,6 +16,7 @@
   <script defer src="/pwa-global.js"></script>
   <script defer src="/backup-global.js"></script>
   <link rel="stylesheet" href="/executive-ey.css">
+  <link rel="stylesheet" href="/studio-premium.css">
 </head>
 <body>
   <a class="skip" href="#workspace">Vai al contenuto</a>
@@ -35,6 +36,8 @@
         <a href="#developers"><span>⌘</span> Developer API</a>
         <a href="/control-plane.html"><span>◈</span> System Control Plane</a>
         <a href="#plans"><span>◈</span> Abbonamento</a>
+        <a href="#business-offers"><span>▤</span> Offerte SEVA</a>
+        <a href="#totem-request"><span>▣</span> Richiedi TOTEM</a>
       </nav>
       <div class="rail-bottom">
         <div class="integration"><span class="pulse" id="service-dot"></span><span id="service-state">Verifica connessione…</span></div>
@@ -48,6 +51,16 @@
         <div class="top-right"><button class="small-btn" id="install-seva" type="button" hidden>Installa SEVA</button><span class="pill" id="user-state">Sessione non verificata</span><a class="small-btn" href="https://seva.karimkatlane0.chatgpt.site/" target="_blank" rel="noopener noreferrer">Account SEVA (sito separato) ↗</a></div>
       </header>
       <div class="main-content">
+        <section class="ecosystem-ribbon" aria-label="Architettura SEVA Intelligence Studio">
+          <div class="ecosystem-heading"><span>ECOSISTEMA</span><strong>Un’unica regia. Moduli specializzati.</strong></div>
+          <div class="ecosystem-modules">
+            <div class="ecosystem-module primary-module"><span class="module-index">01</span><strong>SEVA</strong><small>INTELLIGENCE STUDIO</small><em>Identità centrale</em></div>
+            <div class="ecosystem-module"><span class="module-index">02</span><strong>SYNAPSY</strong><small>IDENTITY · CRM · GOVERNANCE</small><em>Modulo specialistico</em></div>
+            <div class="ecosystem-module"><span class="module-index">03</span><strong>INSIGHTS</strong><small>ANALYTICS · BI</small><em>Intelligenza dati</em></div>
+            <div class="ecosystem-module"><span class="module-index">04</span><strong>TITANS</strong><small>ORCHESTRATION</small><em>Regia operativa</em></div>
+            <div class="ecosystem-module"><span class="module-index">05</span><strong>URBAN ONE</strong><small>UNIVERSAL PLATFORM</small><em>Piattaforma digitale</em></div>
+          </div>
+        </section>
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-glow" aria-hidden="true"></div>
           <div class="eyebrow"><span class="sparkle">✦</span> GOLDEN AGE · EXECUTIVE TIER-1</div>
@@ -109,6 +122,61 @@
         <section class="panel price-panel" id="plans">
           <div><div class="eyebrow muted">04 / COMMERCIAL GATE</div><h2>SEVA Enterprise</h2><p>Il prezzo è tratto dal catalogo SEVA verificato. Nessun abbonamento viene avviato senza checkout autentico e servizio validato.</p></div>
           <div class="price-box"><div class="money">€50<span>/mese</span></div><small>Canone ricorrente · IVA da verificare</small><button id="checkout" class="primary price-button" type="button" disabled>Acquisto non ancora disponibile</button><div id="purchase-state" class="purchase-state">Il go-live rimane subordinato a backend, webhook, AI e verifica fiscale. Bonifico SEPA richiede beneficiario, termini e conto verificati su backend separato.</div></div>
+        </section>
+        <section class="offer-hub" id="business-offers" aria-labelledby="offers-title">
+          <div class="offer-heading">
+            <div><div class="eyebrow muted">05 / SOLUZIONI COMMERCIALI</div><h2 id="offers-title">Un ecosistema. Tre offerte distinte.</h2><p>Un solo ambiente WordPress; prodotti, preventivi e condizioni commerciali separati.</p></div>
+            <span class="offer-note">STRUTTURA PROPOSTA · ATTIVAZIONE DA VERIFICARE</span>
+          </div>
+          <div class="offer-grid">
+            <article class="offer-card">
+              <span class="offer-number">01 · SOFTWARE</span><h3>SEVA CMS</h3>
+              <p>Gestione dei contenuti, pagine, aggiornamenti e pubblicazione tramite WordPress come CMS canonico.</p>
+              <ul><li>Ambiente pubblico</li><li>Offerta professionale separata</li><li>Accessi e abbonamenti soggetti a verifica</li></ul>
+              <span class="offer-status">Checkout e attivazione: da verificare</span>
+            </article>
+            <article class="offer-card offer-card-featured">
+              <span class="offer-number">02 · HARDWARE + SOFTWARE</span><h3>SEVA DIGITAL SIGNAGE</h3>
+              <p>Soluzioni per monitor, display e TOTEM digitali, con configurazione commisurata all'attività.</p>
+              <ul><li>Richiesta per uno o più TOTEM</li><li>Preventivo personalizzato</li><li>Installazione e CMS secondo offerta</li></ul>
+              <a class="offer-link" href="#totem-request">Configura una richiesta <span aria-hidden="true">↗</span></a>
+            </article>
+            <article class="offer-card">
+              <span class="offer-number">03 · SOLUZIONE INTEGRATA</span><h3>SEVA BUSINESS</h3>
+              <p>Combinazione modulare di CMS, Digital Signage, CRM e analytics, definita sulle esigenze del cliente.</p>
+              <ul><li>SEVA CMS</li><li>Digital Signage</li><li>SYNAPSY e INSIGHTS, ove disponibili</li></ul>
+              <span class="offer-status">Componenti e integrazioni: da verificare</span>
+            </article>
+          </div>
+          <div class="offer-architecture"><strong>WordPress</strong><span>CMS unico</span><i aria-hidden="true"></i><span>Offerte distinte · dati e permessi separati</span></div>
+        </section>
+        <section class="panel totem-panel" id="totem-request" aria-labelledby="totem-title">
+          <div class="totem-copy">
+            <div class="eyebrow muted">06 / RICHIESTA COMMERCIALE</div>
+            <h2 id="totem-title">Richiedi uno o più TOTEM.</h2>
+            <p>La richiesta di preventivo è distinta dal pilot territoriale di Trieste. Puoi indicare quantità e configurazione desiderata; disponibilità, prezzi, consegna, installazione e condizioni saranno confermati in un'offerta.</p>
+            <div class="totem-points"><span>Preventivo su misura</span><span>Acquisto singolo o multiplo</span><span>Opzioni di fornitura da confermare</span></div>
+          </div>
+          <div class="totem-form-shell">
+            <div class="totem-form-title"><strong>Configurazione preliminare</strong><span>ANTEPRIMA · NON INVIATA</span></div>
+            <div class="totem-fields">
+              <label for="totem-quantity">Numero di TOTEM</label>
+              <input id="totem-quantity" type="number" min="1" max="100" value="1" inputmode="numeric">
+              <label for="totem-type">Tipologia richiesta</label>
+              <select id="totem-type"><option>Da definire con preventivo</option><option>Display digitale</option><option>TOTEM touchscreen</option><option>Soluzione mista</option></select>
+              <label for="totem-location">Città / sede di installazione</label>
+              <input id="totem-location" type="text" maxlength="120" placeholder="Es. Trieste">
+              <label for="totem-needs">Esigenze e note</label>
+              <textarea id="totem-needs" rows="3" maxlength="600" placeholder="Dimensioni, uso previsto, installazione, connettività…"></textarea>
+            </div>
+            <button class="totem-submit" type="button" disabled>Invio richiesta non ancora attivo</button>
+            <p class="totem-disclaimer">Questa anteprima non trasmette dati, non crea ordini e non avvia pagamenti. Il modulo sarà collegato solo dopo verifica di WordPress, backend, privacy e processo commerciale.</p>
+          </div>
+        </section>
+        <section class="pilot-status" aria-label="Stato pilot Trieste">
+          <span class="pilot-indicator" aria-hidden="true"></span>
+          <div><strong>Pilot TOTEM · Trieste</strong><p>Domanda dichiarata presentata; approvazione, sede, partner e calendario non ancora verificati. Non costituisce disponibilità commerciale o promessa di attivazione.</p></div>
+          <span class="pilot-label">IN ATTESA DI CONFERMA</span>
         </section>
         <footer>SEVA · URBAN ONE Enterprise <span>Un progetto indipendente. Non affiliato a OpenAI, Google o Anthropic.</span><span>AD MAIORA SEMPER</span></footer>
       </div>
