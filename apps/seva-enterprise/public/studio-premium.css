@@ -187,3 +187,22 @@ footer span{color:#8192a4!important}
 .pilot-label{margin-left:auto;color:#e1c780;font-size:8px;font-weight:800;letter-spacing:.1em;text-align:right}
 @media(max-width:900px){.offer-grid{grid-template-columns:1fr}.offer-heading{align-items:flex-start;flex-direction:column}.totem-panel{grid-template-columns:1fr}}
 @media(max-width:560px){.offer-hub{padding:17px 13px}.offer-card{padding:16px}.totem-form-title{align-items:flex-start;flex-direction:column}.pilot-status{align-items:flex-start;flex-wrap:wrap}.pilot-label{width:100%;margin-left:20px;text-align:left}}
+
+
+/* Approved subscription model disclosure: no unapproved prices or quotas. */
+.tier-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tier-card{display:flex;flex-direction:column;min-width:0;padding:19px;border:1px solid #3a4d62;border-radius:9px;background:linear-gradient(150deg,#172538,#101b29)}
+.tier-featured{border-color:#9b8050;background:linear-gradient(150deg,#2a2b2a,#172435);box-shadow:inset 0 2px #e6c77b}
+.tier-kicker{color:#d6bd82;font-size:8px;font-weight:800;letter-spacing:.14em}
+.tier-card h3{margin:10px 0 8px;color:#f4f1e9;font:800 17px "Manrope",system-ui,sans-serif;letter-spacing:.06em}
+.tier-price{color:#f2dfaa;font-size:19px;font-weight:800;line-height:1.35}
+.tier-price span{color:#aab7c5;font-size:10px;font-weight:500}
+.tier-summary{min-height:44px;color:#c0cad4;font-size:11px;line-height:1.6}
+.tier-card ul{padding-left:17px;margin:8px 0 17px}
+.tier-card li{margin:5px 0;color:#afbdca;font-size:10px;line-height:1.55}
+.tier-status{margin-top:auto;padding-top:12px;border-top:1px solid #34465a;color:#c6b17e;font-size:9px;line-height:1.5;font-weight:700}
+.tier-checkout{display:grid;gap:10px;padding:15px;border:1px solid #34465a;border-radius:8px;background:#111d2b}
+.tier-checkout .price-button{justify-content:center;max-width:260px}
+.tier-checkout .price-button:disabled{opacity:.65;cursor:not-allowed}
+.tier-checkout .purchase-state{color:#b7c2cb;font-size:10px;line-height:1.65}
+@media(max-width:760px){.tier-grid{grid-template-columns:1fr}.tier-summary{min-height:0}.tier-card{padding:16px}}
