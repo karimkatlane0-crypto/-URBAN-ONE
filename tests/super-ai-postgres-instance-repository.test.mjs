@@ -77,3 +77,10 @@ test('request hash helper is deterministic and content-sensitive', () => {
   assert.equal(sha256Request({ a: 1 }), sha256Request({ a: 1 }));
   assert.notEqual(sha256Request({ a: 1 }), sha256Request({ a: 2 }));
 });
+
+test('create denies read-only tenant roles from provisioning instances', async () => {
+  const pool = fakePool({ membership: [{ role: 'viewer' }] });
+  const repo = createPostgresInstanceRepository({ pool });
+  await assert.rejects(repo.create(base), /INSTANCE_PROVISION_FORBIDDEN/);
+  assert.ok(pool.calls.some(call => call.sql === 'ROLLBACK'));
+});
