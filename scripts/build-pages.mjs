@@ -18,6 +18,18 @@ export function buildPages(output){
     }
   }
   copyPublic('apps/web');
+  // Publish only the approved TITANS mobile-first entry and its local styles.
+  // The rest of apps/mobile/www remains outside this public Pages package.
+  const mobileFiles = [
+    'apps/mobile/www/titans-enterprise-studio.html',
+    'apps/mobile/www/titans-enterprise-studio.css',
+    'apps/mobile/www/executive-system.css'
+  ];
+  for (const path of mobileFiles) {
+    const destination = join(output, path);
+    mkdirSync(dirname(destination), {recursive:true});
+    copyFileSync(join(root, path), destination);
+  }
   return output;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))console.log(buildPages(join(root,'dist/pages')));
