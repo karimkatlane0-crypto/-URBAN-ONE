@@ -273,7 +273,7 @@ const boundaries = Object.fromEntries([...new Set(results.map(item => boundaryFo
 }));
 const report = {
   generatedAt: new Date().toISOString(),
-  sourceCommit: process.env.GITHUB_SHA || 'UNPINNED',
+  sourceCommit: process.env.SOURCE_COMMIT || process.env.GITHUB_SHA || 'UNPINNED',
   publicBaseUrl: base,
   browser: 'Playwright Chromium',
   viewportWidths: [320, 360, 390, 768, 1024, 1280, 1440],
