@@ -16,6 +16,8 @@ test('Pages package resolves its entry and every relative page/asset link withou
     assert.match(landing,/Universal <em>36\.<\/em>/);
     assert.match(landing,/href="\.\/universal-36\.html"/);
     assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
+    assert.ok(existsSync(join(output,'apps/web/titans-executive-theme.js')));
+    assert.match(readFileSync(join(output,'apps/web/titans-executive-theme.js'),'utf8'),/titans-enterprise-theme/);
     let checked=0;
     function walk(path){
       for(const file of readdirSync(path,{withFileTypes:true})){
