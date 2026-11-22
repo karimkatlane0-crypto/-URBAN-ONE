@@ -20,6 +20,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'apps/mobile/www/**'
       - 'apps/web/super-ai.html'
       - 'apps/web/super-ai-settings.html'
       - 'apps/web/executive-system.css'
