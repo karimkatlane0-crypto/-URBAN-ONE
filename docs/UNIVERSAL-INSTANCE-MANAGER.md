@@ -39,3 +39,19 @@ Run `npm test`, `npm run verify` and `npm run security:secrets` on the branch. A
 - `FAILED`, `STOPPED`, `DELETED`: lifecycle outcomes, not proof of provider cleanup unless adapter receipts are retained.
 
 **Governance:** BUILD → VERIFY → RELEASE → SCALE. Merge and deployment remain separate human approval gates.
+
+## Sandbox adapter and click-to-instance UI
+
+The SEVA enterprise candidate now wires the manager to `apps/seva-enterprise/instance-sandbox.mjs`, an in-process simulation adapter. It accepts only `test` and `staging`, requires tenant scope, dedicated identity, deny-by-default network policy and instance-only secret scope, and returns synthetic provider receipts. It does not start containers, allocate cloud resources, invoke a shell, contact external networks or use provider credentials.
+
+The authenticated UI is served at `/instances.html` and linked from the SEVA command center. It calls:
+- `GET /api/instances/catalog`
+- `GET /api/instances`
+- `GET /api/instances/adapter`
+- `POST /api/instances`
+- `POST /api/instances/:uuid/stop`
+- `DELETE /api/instances/:uuid`
+
+API routes require a valid SEVA session. Mutating requests require same-origin validation and are rate limited. Tenant identity is derived from the authenticated server session, never accepted from the browser. Cross-tenant reads and lifecycle operations fail closed.
+
+The sandbox registry is volatile and process-local. A server restart clears instances. The manager must not be described as a cloud/container deployment product until a separate, authenticated provider adapter, durable state store, sandbox environment and independent provider-side verification are implemented.
