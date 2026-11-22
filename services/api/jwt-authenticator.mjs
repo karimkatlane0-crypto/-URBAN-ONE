@@ -101,7 +101,8 @@ export function createJwtAuthenticator({
       throw new Error('IAM_TOKEN_ISSUED_IN_FUTURE');
     }
 
-    const ttl = Math.min(900, Math.max(30, Number(env.IAM_JWKS_CACHE_SECONDS || 300)));
+    const ttl = Number(env.IAM_JWKS_CACHE_SECONDS || 300);
+    if (!Number.isFinite(ttl) || ttl < 30 || ttl > 900) throw new Error('IAM_JWKS_CACHE_CONFIGURATION_INVALID');
     if (!cachedJwks || now >= cacheExpiresAt) {
       if (typeof fetchImpl !== 'function') throw new Error('IAM_JWKS_FETCH_UNAVAILABLE');
       const response = await fetchImpl(url.href, { headers: { accept: 'application/json' }, cache: 'no-store' });
