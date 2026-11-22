@@ -17,7 +17,8 @@ const targets = [
   { name: 'Europe Maps', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false },
   { name: 'SYNAPSY', file: 'synapsy.html', title: /SYNAPSY/i, localeSelector: false },
   { name: 'URBAN ONE Universal', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false },
-  { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false }
+  { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false },
+  { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -40,6 +41,15 @@ try {
 
       result.title = await page.title();
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
+
+      if (target.verifyInstanceManager) {
+        await page.waitForFunction(() => document.querySelector('#connection')?.textContent !== 'Verifica backend…', null, { timeout: 10000 }).catch(() => {});
+        result.backendGate = await page.locator('#connection').textContent();
+        if (!/API non installata|autenticazione SEVA richiesta|Backend non raggiungibile/i.test(result.backendGate || '')) throw new Error('Instance Manager must fail closed when its API is absent');
+        const createButtons = await page.locator('#catalog button').count();
+        if (createButtons !== 0) throw new Error('Instance creation must remain disabled without a verified API');
+        result.failClosed = true;
+      }
 
       if (target.localeSelector !== false) {
         await page.waitForSelector('#titans-locale-select', { timeout: 15000 });
