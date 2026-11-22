@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
+const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
   for (const id of ['overview', 'intelligence', 'products', 'mlops', 'evidence', 'lifecycle', 'principles']) {
@@ -46,8 +47,7 @@ test('product search and navigation controls are wired', () => {
 
 test('desktop and mobile workspace links point to distinct reciprocal destinations', () => {
   assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html"[\s\S]*?TITANS MOBILE/);
-  const mobile = html.replace(/apps\/web\/titans-enterprise-studio\.html/, 'apps/mobile/www/titans-enterprise-studio.html');
-  assert.ok(mobile.includes('TITANS WEB'));
+  assert.match(mobileHtml, /href="\.\.\/\.\.\/web\/titans-enterprise-studio\.html"[\s\S]*?TITANS WEB/);
 });
 
 test('product search is explicitly described as a local filter, not AI search', () => {
