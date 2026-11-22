@@ -7,7 +7,7 @@ const instanceId = '22222222-2222-4222-8222-222222222222';
 const base = {
   tenantId, instanceId, actorId: 'actor-1', moduleId: 'seva',
   moduleVersion: '1.0.0', environment: 'test', provider: 'sandbox',
-  idempotencyKey: 'request-0001', requestSha256: sha256Request({ module: 'seva' })
+  idempotencyKey: 'request-0001'
 };
 
 function fakePool({ membership = [{ role: 'owner' }], prior = [], count = 0, inserted = [] } = {}) {
@@ -35,7 +35,6 @@ test('create validates tenant, environment, idempotency and hash before connecti
   const repo = createPostgresInstanceRepository({ pool });
   await assert.rejects(repo.create({ ...base, tenantId: 'not-a-uuid' }), /INSTANCE_ID_INVALID/);
   await assert.rejects(repo.create({ ...base, environment: 'production-ish' }), /INSTANCE_ENVIRONMENT_INVALID/);
-  await assert.rejects(repo.create({ ...base, requestSha256: 'bad' }), /INSTANCE_REQUEST_HASH_INVALID/);
   assert.equal(pool.calls.length, 0);
 });
 
@@ -49,8 +48,8 @@ test('create rejects actors without active tenant membership and rolls back', as
 
 test('create checks tenant quota under a transaction-scoped advisory lock', async () => {
   const pool = fakePool({ count: 1 });
-  const repo = createPostgresInstanceRepository({ pool });
-  await assert.rejects(repo.create({ ...base, quota: 1 }), /INSTANCE_TENANT_QUOTA_REACHED/);
+  const repo = createPostgresInstanceRepository({ pool, defaultQuota: 1 });
+  await assert.rejects(repo.create({ ...base, quota: 999999 }), /INSTANCE_TENANT_QUOTA_REACHED/);
   assert.ok(pool.calls.some(call => call.sql.includes('pg_advisory_xact_lock')));
   assert.ok(pool.calls.some(call => call.sql === 'ROLLBACK'));
 });
@@ -87,10 +86,26 @@ test('create denies read-only tenant roles from provisioning instances', async (
 
 test('matching idempotency request replays its stored response without creating a second instance', async () => {
   const response = { instance: { id: instanceId, state: 'queued' }, replayed: false };
-  const pool = fakePool({ prior: [{ request_sha256: base.requestSha256, instance_id: instanceId, response }] });
+  const pool = fakePool({ prior: [{ request_sha256: sha256Request({ tenantId, actorId: base.actorId, instanceId, moduleId: base.moduleId, moduleVersion: base.moduleVersion, environment: base.environment, provider: base.provider, resourceProfile: {} }), instance_id: instanceId, response }] });
   const repo = createPostgresInstanceRepository({ pool });
   const result = await repo.create(base);
   assert.deepEqual(result, { ...response, replayed: true });
   assert.equal(pool.calls.some(call => call.sql.startsWith('INSERT INTO super_ai.service_instances')), false);
   assert.ok(pool.calls.some(call => call.sql === 'COMMIT'));
+});
+
+test('request hash is canonical and independent of object key order', () => {
+  assert.equal(sha256Request({ a: 1, nested: { x: 2, y: 3 } }), sha256Request({ nested: { y: 3, x: 2 }, a: 1 }));
+});
+
+test('quota resolver is trusted server-side configuration, not caller input', async () => {
+  const pool = fakePool({ count: 1 });
+  const repo = createPostgresInstanceRepository({ pool, resolveQuota: async () => 1 });
+  await assert.rejects(repo.create({ ...base, quota: 100000 }), /INSTANCE_TENANT_QUOTA_REACHED/);
+});
+
+test('invalid quota resolver result fails closed', async () => {
+  const pool = fakePool();
+  const repo = createPostgresInstanceRepository({ pool, resolveQuota: async () => 0 });
+  await assert.rejects(repo.create(base), /INSTANCE_TENANT_QUOTA_INVALID/);
 });
