@@ -213,3 +213,15 @@ footer a{color:var(--exec-gold-soft)!important;font-weight:800}
  :root{--exec-line:#71808c;--sa-line:#71808c}
  :where(a,button,input,select,textarea){outline-offset:3px}
 }
+
+
+/* Narrow-width fixes verified against the SEVA TITANS 320px overflow case. */
+:where(.app,.app > *,main,.stats,.stats > *, .links,.links > *, .top,.top > *, .layout,.formgrid){min-width:0}
+:where(.stats > *, .links > *, .contact, .provider, .panel, .stat){overflow-wrap:anywhere}
+:where(.stat span,.stat b,.links a,.links b,.links small){min-width:0;overflow-wrap:anywhere}
+@media(max-width:360px){
+ .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .links{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .app{grid-template-columns:minmax(0,1fr)}
+ .row > *{max-width:100%}
+}
