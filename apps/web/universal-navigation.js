@@ -23,7 +23,7 @@
       if (actual !== node.href) failures.push({ id:node.id, reason:'href mismatch', expected:node.href, actual });
       link.dataset.productBoundary = node.boundary;
       link.dataset.requiredPermission = node.permission;
-      link.setAttribute('aria-label', 'Apri ' + node.label + ' — confine ' + node.boundary);
+      link.setAttribute('aria-label', node.label + ' — apri');
       if (node.boundary === 'external') {
         link.setAttribute('target','_blank');
         link.setAttribute('rel','noopener noreferrer');
