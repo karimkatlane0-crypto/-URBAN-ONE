@@ -21,10 +21,10 @@ test('four provider HTTP contracts, normalized output and trusted endpoints',asy
  const calls=[];
  const h=createScienceHandler({fetchImpl:async(url,options)=>{
   calls.push({url,options,payload:JSON.parse(options.body)});
-  return {ok:true,json:async()=>url.includes('anthropic')?{content:[{type:'text',text:'claude answer'}]}:url.includes('googleapis')?{candidates:[{content:{parts:[{text:'gemini answer'}]}}]}:{output:[{content:[{type:'output_text',text:'response answer'}]}]}};
+  return {ok:true,json:async()=>url.includes('anthropic')?{id:'msg_test_claude',content:[{type:'text',text:'claude answer'}]}:url.includes('googleapis')?{responseId:'gemini_test_response',candidates:[{content:{parts:[{text:'gemini answer'}]}}]}:{id:url.includes('x.ai')?'resp_test_xai':'resp_test_openai',output:[{content:[{type:'output_text',text:'response answer'}]}]}};
  }});
  const r=await h(request({body:{prompt:'units and assumptions',providers:['openai','claude','gemini','xai'],consent:true}}));
- assert.equal(r.body.results.length,4);assert.ok(r.body.results.every(i=>i.state==='completed'&&i.text));
+ assert.equal(r.body.results.length,4);assert.ok(r.body.results.every(i=>i.state==='completed'&&i.text&&i.providerResponseId));assert.deepEqual(r.body.results.map(i=>i.providerResponseId),['resp_test_openai','msg_test_claude','gemini_test_response','resp_test_xai']);
  assert.equal(calls[0].url,'https://api.openai.com/v1/responses');assert.equal(calls[0].payload.store,false);assert.equal(calls[0].payload.max_output_tokens,2048);
  assert.equal(calls[1].options.headers['anthropic-version'],'2023-06-01');assert.equal(calls[1].payload.max_tokens,2048);
  assert.equal(calls[2].options.headers['x-goog-api-key'],'test-key');assert.ok(!calls[2].url.includes('test-key'));
@@ -32,22 +32,32 @@ test('four provider HTTP contracts, normalized output and trusted endpoints',asy
  for(const c of calls){assert.equal(c.options.redirect,'error');assert.ok(c.options.signal);}
  assert.ok(!JSON.stringify(r).includes('test-key'));
 });
+
+test('provider output without a provider-owned trace ID is not reported as completed',async()=>{
+ const h=createScienceHandler({fetchImpl:async()=>({ok:true,json:async()=>({output_text:'untraceable answer'})})});
+ const r=await h(request());
+ assert.equal(r.status,200);
+ assert.equal(r.body.results[0].state,'untraceable_response');
+ assert.equal(Object.hasOwn(r.body.results[0],'text'),false);
+ assert.equal(Object.hasOwn(r.body.results[0],'providerResponseId'),false);
+});
+
 test('failures are isolated and upstream error bodies are never exposed',async()=>{
  const h=createScienceHandler({fetchImpl:async url=>{
   if(url.includes('anthropic'))throw Error('private-secret');
   if(url.includes('openai'))return {ok:false,status:429,json:async()=>({error:'private-secret'})};
-  return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:'ok'}]}}]})};
+  return {ok:true,json:async()=>({responseId:'gemini_test_ok',candidates:[{content:{parts:[{text:'ok'}]}}]})};
  }});
  const r=await h(request({body:{prompt:'x',providers:['openai','claude','gemini','xai'],consent:true},env:{...env,XAI_API_KEY:''}}));
  assert.deepEqual(r.body.results.map(i=>i.state),['provider_error','connection_failed','completed','not_configured']);assert.ok(!JSON.stringify(r).includes('private-secret'));
 });
 test('requests are rate limited and recover after the time window',async()=>{
- let time=100000;const h=createScienceHandler({now:()=>time,fetchImpl:async()=>({ok:true,json:async()=>({output_text:'ok'})})});
+ let time=100000;const h=createScienceHandler({now:()=>time,fetchImpl:async()=>({ok:true,json:async()=>({id:'resp_rate_test',output_text:'ok'})})});
  for(let i=0;i<10;i++)assert.equal((await h(request())).status,200);
  assert.equal((await h(request())).status,429);time+=60001;assert.equal((await h(request())).status,200);
 });
 test('concurrency is capped and slots recover',async()=>{
- let release;const gate=new Promise(r=>{release=r;});const h=createScienceHandler({fetchImpl:async()=>{await gate;return {ok:true,json:async()=>({output_text:'ok'})};}});
+ let release;const gate=new Promise(r=>{release=r;});const h=createScienceHandler({fetchImpl:async()=>{await gate;return {ok:true,json:async()=>({id:'resp_concurrency_test',output_text:'ok'})};}});
  const a=h(request()),b=h(request());assert.equal((await h(request())).status,429);release();await Promise.all([a,b]);assert.equal((await h(request())).status,200);
 });
 test('web and Android source parity; outputs render as text and secrets are not stored',()=>{
