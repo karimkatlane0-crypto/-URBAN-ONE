@@ -5,7 +5,7 @@ import {classifyStripeEvent,handleStripeWebhook,verifyStripeSignature} from '../
 
 const secret='whsec_test_secret';
 const now=1_800_000_000;
-const payload=Buffer.from(JSON.stringify({id:'evt_123',type:'invoice.paid'}));
+const payload=Buffer.from(JSON.stringify({id:'evt_123',type:'invoice.paid',livemode:false,data:{object:{id:'in_123'}}}));
 const signature=createHmac('sha256',secret).update(String(now)).update('.').update(payload).digest('hex');
 const header=`t=${now},v1=${signature}`;
 
@@ -35,14 +35,46 @@ test('classifies subscription lifecycle events',()=>{
   assert.equal(classifyStripeEvent('customer.created'),'IGNORE');
 });
 
-test('webhook handler returns a verified event envelope',()=>{
-  const result=handleStripeWebhook({rawBody:payload,headers:{'stripe-signature':header},env:{STRIPE_WEBHOOK_SECRET:secret},now});
+test('webhook handler does not acknowledge an event without a durable store',async()=>{
+  const result=await handleStripeWebhook({rawBody:payload,headers:{'stripe-signature':header},env:{STRIPE_WEBHOOK_SECRET:secret},now});
+  assert.equal(result.status,503);
+  assert.equal(result.body.error,'STRIPE_EVENT_STORE_UNAVAILABLE');
+  assert.equal(result.body.received,false);
+});
+
+test('webhook handler acknowledges only after an idempotent durable receipt',async()=>{
+  let recorded;
+  const result=await handleStripeWebhook({
+    rawBody:payload,
+    headers:{'stripe-signature':header},
+    env:{
+      STRIPE_WEBHOOK_SECRET:secret,
+      stripeEventStore:{record:async event=>{recorded=event;return {stored:true,duplicate:false};}}
+    },
+    now
+  });
+  assert.equal(recorded.id,'evt_123');
   assert.equal(result.status,200);
   assert.equal(result.body.received,true);
+  assert.equal(result.body.stored,true);
+  assert.equal(result.body.duplicate,false);
   assert.equal(result.body.eventId,'evt_123');
   assert.equal(result.body.action,'CONTINUE_ENTITLEMENT');
+  assert.equal(result.body.processingStatus,'received');
   assert.equal(result.body.paymentVerified,false);
   assert.equal(result.body.fulfillmentAuthorized,false);
+});
+
+test('webhook handler returns a retryable failure when durable storage fails',async()=>{
+  const result=await handleStripeWebhook({
+    rawBody:payload,
+    headers:{'stripe-signature':header},
+    env:{STRIPE_WEBHOOK_SECRET:secret,stripeEventStore:{record:async()=>{throw new Error('database unavailable');}}},
+    now
+  });
+  assert.equal(result.status,503);
+  assert.equal(result.body.error,'STRIPE_EVENT_STORE_UNAVAILABLE');
+  assert.equal(result.body.received,false);
 });
 
 

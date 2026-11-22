@@ -36,5 +36,5 @@ test('same-origin runtime serves the app and assets while withholding repository
     assert.equal((await fetch(base+path)).status,404,path);
   }
   assert.equal((await fetch(base+'/api/integrations/readiness')).status,200);
-  assert.equal((await fetch(base+'/api/contacts/import-preview',{method:'POST'})).status,403);
+  assert.equal((await fetch(base+'/api/contacts/import-preview',{method:'POST'})).status,401);
 });

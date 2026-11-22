@@ -4,21 +4,46 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 
 const base = process.env.PUBLIC_PORTAL_BASE_URL || 'https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web';
+const mobileBase = process.env.MOBILE_PORTAL_BASE_URL || base;
 const targets = [
   { name: 'Discovery', file: 'discovery.html', title: /soggiorni e immobili/i },
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
-  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true },
+  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true, verifyInternalLinks: true, verifyNavigation: 'instance-manager.html' },
+  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai-settings.html', verifyNavigationGraph: true },
+  { name: 'SUPER.AI Settings', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
+  { name: 'URBAN ONE Workspace', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Partner and SEVA Enterprise Onboarding', file: 'seva-titans-onboarding.html', title: /Sovereign Onboarding/i, localeSelector: false },
+  { name: 'SEVA TITANS Hub', file: 'seva-titans-hub.html', title: /SEVA TITANS.*People.*Browser/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'SEVA TITANS Relations', file: 'seva-titans-relations.html', title: /SEVA TITANS.*Research.*Relations/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'INSIDERS Finance Control Scenario', file: 'financial-insights.html', title: /Financial Insights AI/i, localeSelector: false },
-  { name: 'INSIGHTS Free', file: 'insights-free.html', title: /INSIGHTS Free/i, localeSelector: false },
+  { name: 'INSIGHTS.ai Unified', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'INSIGHTS legacy route', file: 'insights-free.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false },
   { name: 'Europe Maps', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false },
   { name: 'SYNAPSY', file: 'synapsy.html', title: /SYNAPSY/i, localeSelector: false },
   { name: 'URBAN ONE Universal', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false },
   { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false },
-  { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true }
+  { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
+  { name: 'Mobile SUPER.AI Hub', root: 'mobile', file: 'super-ai.html', title: /SUPER.AI.*Universal Mobile Hub/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'maps-europe.html' },
+  { name: 'Mobile SUPER.AI Settings', root: 'mobile', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile URBAN ONE Home', root: 'mobile', file: 'index.html', title: /URBAN ONE UNIVERSAL/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile Discovery', root: 'mobile', file: 'discovery.html', title: /soggiorni e immobili/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
+  { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
+  { name: 'Mobile Europe Immobili', root: 'mobile', file: 'europe-immobili.html', title: /Immobili e civici d'Europa/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile INSIGHTS.ai', root: 'mobile', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Pole Position', root: 'mobile', file: 'pole-position.html', title: /Pole Position.*URBAN ONE/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Pole Premium', root: 'mobile', file: 'pole-premium.html', title: /URBAN ONE.*Pole Position Intelligence LAB/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile AI Science', root: 'mobile', file: 'science.html', title: /URBAN ONE.*AI Science Computer/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA CRM', root: 'mobile', file: 'seva-crm-studio.html', title: /SEVA Unified CRM.*Customer Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA Unified Studio', root: 'mobile', file: 'seva-unified-studio.html', title: /SEVA Intelligence Studio.*Unified SaaS Portal/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile TITANS Enterprise Studio', root: 'mobile', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA TITANS Hub', root: 'mobile', file: 'seva-titans-hub.html', title: /SEVA TITANS.*People.*Browser/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA TITANS Relations', root: 'mobile', file: 'seva-titans-relations.html', title: /SEVA TITANS.*Research.*Relations/i, localeSelector: false, verifyInternalLinks: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -27,7 +52,8 @@ const results = [];
 
 try {
   for (const target of targets) {
-    const url = new URL(target.file, base.endsWith('/') ? base : base + '/').href;
+    const rootBase = target.root === 'mobile' ? mobileBase : base;
+    const url = new URL(target.file, rootBase.endsWith('/') ? rootBase : rootBase + '/').href;
     const result = { name: target.name, url, status: 'FAIL' };
     const context = await browser.newContext({ viewport: { width: 1365, height: 900 } });
     const page = await context.newPage();
@@ -41,6 +67,98 @@ try {
 
       result.title = await page.title();
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
+
+
+      if (target.verifyInternalLinks !== false) {
+        result.internalNavigation = await page.evaluate(async () => {
+          const links = [...document.querySelectorAll('a[href]')];
+          const failures = [];
+          const checked = new Set();
+          for (const link of links) {
+            const raw = link.getAttribute('href') || '';
+            if (!raw || /^(mailto:|tel:|javascript:|data:)/i.test(raw)) continue;
+            const url = new URL(raw, location.href);
+            if (url.origin !== location.origin || !/\.html$/i.test(url.pathname) || checked.has(url.pathname + url.hash)) continue;
+            checked.add(url.pathname + url.hash);
+            if (url.pathname === location.pathname && url.hash) {
+              const id = decodeURIComponent(url.hash.slice(1));
+              if (!document.getElementById(id) && !document.getElementsByName(id).length) failures.push({ href: raw, reason: 'missing in-page anchor' });
+              continue;
+            }
+            try {
+              const response = await fetch(url.href, { method: 'GET', credentials: 'same-origin' });
+              if (!response.ok) {
+                failures.push({ href: raw, status: response.status });
+                continue;
+              }
+              if (url.hash) {
+                const html = await response.text();
+                const targetDoc = new DOMParser().parseFromString(html, 'text/html');
+                const id = decodeURIComponent(url.hash.slice(1));
+                if (!targetDoc.getElementById(id) && !targetDoc.getElementsByName(id).length) failures.push({ href: raw, reason: 'missing destination anchor' });
+              }
+            } catch (error) {
+              failures.push({ href: raw, reason: String(error) });
+            }
+          }
+          return { checked: checked.size, failures };
+        });
+        if (result.internalNavigation.failures.length) throw new Error('Broken internal navigation: ' + JSON.stringify(result.internalNavigation.failures));
+      }
+
+
+      if (target.verifyNavigationGraph) {
+        result.navigationGraph = await page.evaluate(() => window.SUPER_AI_NAVIGATION?.verify?.() || null);
+        if (!result.navigationGraph || result.navigationGraph.total !== 11 || result.navigationGraph.failed !== 0) {
+          throw new Error('Universal navigation graph failed: ' + JSON.stringify(result.navigationGraph));
+        }
+      }
+
+      if (target.verifyNavigation) {
+        const navLink = page.locator('a[href="./' + target.verifyNavigation + '"]').first();
+        if (await navLink.count() === 0) throw new Error('Expected navigation link missing: ' + target.verifyNavigation);
+        await Promise.all([
+          page.waitForURL(url => url.pathname.endsWith('/' + target.verifyNavigation)),
+          navLink.click()
+        ]);
+        result.navigation = { destination: target.verifyNavigation, reached: true };
+        await page.goBack();
+        await page.waitForURL(url => url.pathname.endsWith('/' + target.file));
+      }
+
+      if (target.verifyWorkspaceFilters) {
+        const before = await page.locator('article[data-category]:visible').count();
+        const filter = page.locator('[data-filter]:not([data-filter="all"])').first();
+        if (await filter.count() === 0) throw new Error('Workspace category filters missing');
+        await filter.click();
+        const after = await page.locator('article[data-category]:visible').count();
+        if (after === 0 || after >= before) throw new Error('Workspace category filter did not narrow visible modules');
+        await page.locator('#q').fill('front-end-e2e-no-match-7f9c');
+        await page.waitForFunction(() => document.getElementById('empty') && document.getElementById('empty').hidden === false);
+        const emptyCount = await page.locator('article[data-category]:visible').count();
+        if (emptyCount !== 0) throw new Error('Workspace search did not show the empty state');
+        await page.locator('#reset').click();
+        const restored = await page.locator('article[data-category]:visible').count();
+        if (restored !== before) throw new Error('Workspace reset did not restore all modules');
+        result.workspaceFilters = { before, after, restored };
+      }
+
+      if (target.verifyMapsSearch) {
+        await page.evaluate(() => {
+          window.__openedUrls = [];
+          window.open = (url) => { window.__openedUrls.push(String(url)); return null; };
+        });
+        await page.locator('#q').fill('Trieste, Italia');
+        await page.locator('#search').click();
+        result.mapsSearch = await page.evaluate(() => ({
+          opened: window.__openedUrls[0] || null,
+          status: document.querySelector('#status')?.textContent || ''
+        }));
+        if (!result.mapsSearch.opened?.includes('google.com/maps/search') || !result.mapsSearch.opened.includes('Trieste')) {
+          throw new Error('Maps search action did not produce the expected user-initiated Google Maps URL');
+        }
+        if (!/Trieste/.test(result.mapsSearch.status)) throw new Error('Maps search status was not updated');
+      }
 
       if (target.verifyInstanceManager) {
         await page.waitForFunction(() => document.querySelector('#connection')?.textContent !== 'Verifica backend…', null, { timeout: 10000 }).catch(() => {});
@@ -87,7 +205,7 @@ try {
       if (!result.keyboardFocus?.visible) throw new Error('Keyboard Tab did not reach a visible focus target');
 
       const accessibility = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'])
         .analyze();
       result.accessibility = {
         violations: accessibility.violations.map((item) => ({
@@ -106,10 +224,14 @@ try {
         throw new Error('WCAG automated violations: ' + accessibility.violations.map((item) => item.id).join(', '));
       }
 
-      await page.setViewportSize({ width: 390, height: 844 });
-      result.mobileViewport = '390x844';
-      result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
-      if (result.horizontalOverflow) throw new Error(target.name + ' horizontal overflow at mobile viewport');
+      result.responsiveChecks = [];
+      for (const width of [320, 360, 390, 768, 1024, 1280, 1440]) {
+        await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+        result.responsiveChecks.push({ width, height: width <= 390 ? 844 : 900, horizontalOverflow: overflow });
+        if (overflow) throw new Error(target.name + ' horizontal overflow at ' + width + 'px');
+      }
+      result.mobileViewport = '320/360/390px';
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
@@ -129,12 +251,35 @@ try {
   await browser.close();
 }
 
+const boundaryFor = (name) => {
+  if (/TITANS/i.test(name)) return 'TITANS';
+  if (/SEVA/i.test(name)) return 'SEVA';
+  if (/INSIDERS|INSIGHTS|Financial/i.test(name)) return 'INSIDERS-INSIGHTS';
+  if (/Maps|Europe/i.test(name)) return 'MAPS-EUROPA';
+  if (/SYNAPSY/i.test(name)) return 'SYNAPSY';
+  if (/Discovery/i.test(name)) return 'KKUBERA';
+  if (/URBAN ONE/i.test(name)) return 'URBAN-ONE';
+  if (/SUPER.AI|Universal/i.test(name)) return 'SUPER-AI-UNIVERSAL-36';
+  return 'OTHER';
+};
+const boundaries = Object.fromEntries([...new Set(results.map(item => boundaryFor(item.name)))].map(boundary => {
+  const scoped = results.filter(item => boundaryFor(item.name) === boundary);
+  return [boundary, {
+    total: scoped.length,
+    passed: scoped.filter(item => item.status === 'PASS').length,
+    failed: scoped.filter(item => item.status !== 'PASS').length,
+    routes: scoped.map(item => ({ name: item.name, status: item.status, error: item.error || null }))
+  }];
+}));
 const report = {
   generatedAt: new Date().toISOString(),
-  sourceCommit: process.env.GITHUB_SHA || 'UNPINNED',
+  sourceCommit: process.env.SOURCE_COMMIT || process.env.GITHUB_SHA || 'UNPINNED',
   publicBaseUrl: base,
   browser: 'Playwright Chromium',
+  viewportWidths: [320, 360, 390, 768, 1024, 1280, 1440],
+  accessibilityTags: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'],
   results,
+  boundaries,
   passed: results.filter(item => item.status === 'PASS').length,
   failed: results.filter(item => item.status !== 'PASS').length
 };

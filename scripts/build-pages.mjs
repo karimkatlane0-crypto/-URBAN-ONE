@@ -13,11 +13,14 @@ export function buildPages(output){
     for(const entry of readdirSync(join(root,relative),{withFileTypes:true})){
       const path=join(relative,entry.name);
       if(entry.isDirectory())copyPublic(path);
-      else if(entry.isFile()&&(/^[a-z0-9-]+\.(html|css|svg|webmanifest)$/.test(entry.name)||path==='apps/web/seva-titans-manifest.json'||['apps/web/pole-position.js','apps/web/pole-premium.js','apps/web/eu-language-selector.js','apps/web/seva-titans-relations.js','apps/web/seva-titans-policy.js','apps/web/instance-manager.js'].includes(path)))copyFileSync(join(root,path),join(output,path));
+      else if(entry.isFile()&&(/^[a-z0-9-]+\.(html|css|svg|webmanifest)$/.test(entry.name)||path==='apps/web/seva-titans-manifest.json'||['apps/web/pole-position.js','apps/web/pole-premium.js','apps/web/eu-language-selector.js','apps/web/seva-titans-relations.js','apps/web/seva-titans-policy.js','apps/web/instance-manager.js','apps/web/universal-navigation.js'].includes(path)))copyFileSync(join(root,path),join(output,path));
       else throw Error('UNSUPPORTED_PUBLIC_ASSET: '+path);
     }
   }
   copyPublic('apps/web');
+  // Publish only the two explicitly referenced, non-secret technical contracts.
+  mkdirSync(join(output,'docs'),{recursive:true});
+  for(const name of ['RELEASE_REPORT_2026-11-22.md','UNIVERSAL-INSTANCE-MANAGER.md','TITANS-GO-ENTERPRISE-GLOBAL.md','TITANS-ENTRY-LEVEL-ACCESS.md'])copyFileSync(join(root,'docs',name),join(output,'docs',name));
   return output;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))console.log(buildPages(join(root,'dist/pages')));

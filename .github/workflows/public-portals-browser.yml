@@ -2,6 +2,13 @@ name: public-portals-browser
 on:
   push:
     paths:
+      - 'apps/mobile/www/**'
+      - 'apps/web/super-ai.html'
+      - 'apps/web/super-ai-settings.html'
+      - 'apps/web/v10-workspace.html'
+      - 'apps/web/insights-ai.html'
+      - 'apps/web/executive-system.css'
+      - 'apps/web/universal-navigation.js'
       - 'apps/web/universal-36.html'
       - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
@@ -13,6 +20,11 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'apps/mobile/www/**'
+      - 'apps/web/super-ai.html'
+      - 'apps/web/super-ai-settings.html'
+      - 'apps/web/executive-system.css'
+      - 'apps/web/universal-navigation.js'
       - 'apps/web/universal-36.html'
       - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
@@ -42,14 +54,16 @@ jobs:
           python3 -m http.server 4173 --bind 127.0.0.1 --directory . > /tmp/titans-pr-preview.log 2>&1 &
           echo $! > /tmp/titans-pr-preview.pid
           for attempt in 1 2 3 4 5 6 7 8 9 10; do
-            if curl --fail --silent http://127.0.0.1:4173/apps/web/seva-unified-studio.html > /dev/null && curl --fail --silent http://127.0.0.1:4173/apps/web/universal-36.html > /dev/null; then exit 0; fi
+            if curl --fail --silent http://127.0.0.1:4173/apps/web/seva-unified-studio.html > /dev/null && curl --fail --silent http://127.0.0.1:4173/apps/web/universal-36.html > /dev/null && curl --fail --silent http://127.0.0.1:4173/apps/mobile/www/super-ai.html > /dev/null; then exit 0; fi
             sleep 1
           done
           cat /tmp/titans-pr-preview.log
           exit 1
       - name: Verify the three PR-preview portals in a real browser
         env:
+          SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
           PUBLIC_PORTAL_BASE_URL: http://127.0.0.1:4173/apps/web
+          MOBILE_PORTAL_BASE_URL: http://127.0.0.1:4173/apps/mobile/www
         run: node scripts/public-portals-browser-smoke.mjs
       - uses: actions/upload-artifact@v4
         if: always()

@@ -44,8 +44,8 @@ test('property search is accent-insensitive but exact on civic number',()=>{
 });
 
 test('private endpoints fail closed without auth scopes',()=>{
-  assert.equal(route({method:'POST',path:'/api/contacts/import-preview',body:{records:[]}}).status,403);
-  assert.equal(route({method:'POST',path:'/api/properties/search',body:{records:[],query:{}}}).status,403);
+  assert.equal(route({method:'POST',path:'/api/contacts/import-preview',body:{records:[]}}).status,401);
+  assert.equal(route({method:'POST',path:'/api/properties/search',body:{records:[],query:{}}}).status,401);
 });
 
 test('private endpoints work with owner scopes',()=>{

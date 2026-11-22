@@ -1,0 +1,44 @@
+name: super-ai-postgres-integration
+on:
+  push:
+    paths:
+      - 'packages/super-ai/**'
+      - 'tests/super-ai-postgres*'
+      - '.github/workflows/super-ai-postgres-integration.yml'
+  pull_request:
+    paths:
+      - 'packages/super-ai/**'
+      - 'tests/super-ai-postgres*'
+      - '.github/workflows/super-ai-postgres-integration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: superai_test
+          POSTGRES_PASSWORD: superai_test_only
+          POSTGRES_DB: superai_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U superai_test -d superai_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      SUPER_AI_TEST_DATABASE_URL: postgresql://superai_test:superai_test_only@127.0.0.1:5432/superai_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install PostgreSQL client driver
+        run: npm install --no-save --no-package-lock pg
+      - name: Run real PostgreSQL migration, RLS and Instance Manager integration tests
+        run: node --test tests/super-ai-postgres.integration.test.mjs

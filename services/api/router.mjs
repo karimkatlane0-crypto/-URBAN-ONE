@@ -19,6 +19,7 @@ function hasScope(req,scope){
 }
 
 function guarded(req,scope,fn){
+  if(!req?.auth?.userId) return {status:401,body:{error:'AUTH_REQUIRED'}};
   if(!hasScope(req,scope)) return {status:403,body:{error:'FORBIDDEN',requiredScope:scope}};
   try{return {status:200,body:fn()};}
   catch(error){

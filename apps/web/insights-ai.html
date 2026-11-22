@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10161d">
+<meta name="description" content="INSIGHTS.ai — intelligence unificata per KPI, finanza, CRM, marketing, commerce, BI e controllo operativo.">
+<title>INSIGHTS.ai · Unified Intelligence</title>
+<link rel="stylesheet" href="./executive-system.css">
+<style>
+:root{color-scheme:dark;--i-bg:#10161d;--i-panel:#18232d;--i-panel2:#1d2a35;--i-line:#394955;--i-gold:#e7c77e;--i-ink:#f3f4f0;--i-muted:#aebbc4;--i-blue:#9fc4db}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#263441 0,transparent 40%),var(--i-bg);color:var(--i-ink);font:14px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--i-gold)}a:focus-visible{outline:3px solid var(--i-gold);outline-offset:3px}
+.shell{max-width:1480px;margin:auto;padding:20px clamp(16px,3vw,42px) 60px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--i-line);padding:8px 0 17px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--i-ink);font-weight:900;letter-spacing:.12em}.mark{display:grid;place-items:center;width:38px;height:38px;background:var(--i-gold);color:#111820;font-weight:950;border-radius:5px}
+.nav{display:flex;flex-wrap:wrap;gap:8px}.nav a{border:1px solid var(--i-line);border-radius:5px;padding:7px 10px;text-decoration:none;color:#dbe2e5;font-size:11px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center;padding:42px 0 26px}
+.kicker{color:var(--i-gold);font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+h1{font-size:clamp(42px,7vw,82px);line-height:.96;letter-spacing:-.065em;margin:10px 0 15px}h1 span{color:var(--i-gold)}
+.lead{font-size:16px;color:#c3cdd3;max-width:800px}
+.governance{background:linear-gradient(145deg,#202e39,#151f28);border:1px solid #6a5735;border-top:4px solid var(--i-gold);padding:19px;border-radius:8px}
+.governance h2{font-size:12px;letter-spacing:.13em;margin:0 0 9px}.gate{display:grid;grid-template-columns:75px 1fr;gap:12px;border-top:1px solid var(--i-line);padding:9px 0;font-size:11px;color:#c5cfd4}.gate b{color:var(--i-gold)}
+.banner{padding:14px 17px;background:#17232d;border:1px solid var(--i-line);border-left:4px solid var(--i-gold);border-radius:5px;color:#c7d0d5;font-size:12px;margin:10px 0 25px}
+.section{padding:23px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;border-bottom:1px solid #665638;padding-bottom:11px;margin-bottom:15px}.section-head h2{font-size:21px;margin:0}.section-head p{font-size:11px;color:var(--i-muted);margin:4px 0 0}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.metric{padding:15px;background:linear-gradient(145deg,#1c2933,#141d25);border:1px solid var(--i-line);border-radius:7px;min-width:0}.metric small{display:block;color:var(--i-muted);font-size:9px;letter-spacing:.12em;text-transform:uppercase}.metric strong{display:block;color:var(--i-gold);font-size:24px;letter-spacing:-.03em;margin:6px 0 2px}.metric span{font-size:10px;color:#b5c0c7}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{background:linear-gradient(145deg,#1b2832,#141d25);border:1px solid var(--i-line);border-radius:7px;padding:16px;min-width:0}.card h3{font-size:14px;margin:8px 0 6px}.card p{font-size:11px;color:#b6c2ca;margin:0 0 10px}.card .meta{display:flex;justify-content:space-between;gap:8px;align-items:center;color:var(--i-gold);font-size:9px;letter-spacing:.1em;font-weight:850}.status{display:inline-block;border:1px solid #665638;color:#f0dba7;padding:3px 7px;border-radius:3px;font-size:9px;white-space:nowrap}.status.block{border-color:#81514c;color:#efaaa2}.status.read{border-color:#456e59;color:#b3d8b9}
+.table-wrap{overflow:auto;border:1px solid var(--i-line);border-radius:7px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--i-line);vertical-align:top;font-size:11px}.table th{color:var(--i-gold);font-size:9px;letter-spacing:.12em}.table td{color:#d1d9de}.table td small{display:block;color:var(--i-muted);margin-top:3px}
+.footnote{font-size:10px;color:var(--i-muted);margin-top:12px}.links{display:flex;gap:9px;flex-wrap:wrap}.links a{padding:8px 11px;border:1px solid var(--i-line);border-radius:5px;text-decoration:none;font-size:11px}
+footer{border-top:1px solid var(--i-line);margin-top:25px;padding-top:18px;color:#9eabb5;font-size:10px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.shell{padding-left:14px;padding-right:14px}.top{align-items:flex-start;flex-direction:column}.nav{width:100%;overflow-x:auto;flex-wrap:nowrap}.nav a{white-space:nowrap}.hero{padding:28px 0 18px}.metrics,.grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.metric strong{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+<a class="brand" href="./super-ai.html"><span class="mark">I</span><span>INSIGHTS<span style="color:var(--i-gold)">.AI</span><small style="display:block;color:#9eabb5;font-size:8px;letter-spacing:.17em">UNIFIED INTELLIGENCE · SUPER.AI</small></span></a>
+<nav class="nav" aria-label="INSIGHTS navigation"><a href="./super-ai.html">SUPER.AI</a><a href="#overview">Executive</a><a href="#domains">Domini</a><a href="#sources">Fonti &amp; connettori</a><a href="#governance">Governance</a><a href="./super-ai-settings.html#integrations">Impostazioni</a></nav>
+</header>
+<section class="hero" id="overview">
+<div><div class="kicker">One intelligence layer · many source systems</div><h1>INSIGHTS<span>.AI</span></h1>
+<p class="lead">Un’unica cabina di intelligence per leggere e collegare finanza, KPI, CRM, vendite, marketing, commerce, marketplace, progetti e piattaforma. Un’esperienza comune, con fonti, tenant, permessi e responsabilità sempre tracciabili.</p>
+<div class="kicker">BUILD → VERIFY → RELEASE → SCALE</div></div>
+<aside class="governance"><h2>DATA TRUST &amp; EVIDENCE</h2>
+<div class="gate"><b>01 · SOURCE</b><span>Ogni dato conserva origine, proprietario, periodo, licenza e timestamp.</span></div>
+<div class="gate"><b>02 · QUALITY</b><span>Grain, duplicati, copertura, join, valuta e denominatori vengono controllati.</span></div>
+<div class="gate"><b>03 · ACCESS</b><span>Read-only per default; tenant, scopo, consenso e ruoli sono verificati prima dell’uso.</span></div>
+<div class="gate"><b>04 · DECISION</b><span>Ogni KPI distingue consuntivo verificato, dato dichiarato, stima e demo.</span></div>
+</aside></section>
+<div class="banner"><strong>Stato attuale:</strong> questa pagina unifica il modello di prodotto e la navigazione. Non mostra numeri live perché le connessioni e i refresh end-to-end non sono ancora certificati. I riquadri senza valore indicano dati in attesa, non risultati pari a zero.</div>
+<section class="section" aria-label="Executive scorecard"><div class="section-head"><div><h2>Executive scorecard</h2><p>Indicatori centrali; valorizzati solo da fonti autorizzate e verificate.</p></div><span class="status block">LIVE DATA · NON CERTIFICATI</span></div>
+<div class="metrics">
+<div class="metric"><small>Revenue · net</small><strong>—</strong><span>In attesa di ledger riconciliato</span></div>
+<div class="metric"><small>Cash &amp; liquidity</small><strong>—</strong><span>Fonte bancaria / contabile non collegata</span></div>
+<div class="metric"><small>CRM pipeline</small><strong>—</strong><span>Snapshot read-only da verificare</span></div>
+<div class="metric"><small>Growth &amp; marketing</small><strong>—</strong><span>Query campagne non eseguite</span></div>
+<div class="metric"><small>Commerce conversion</small><strong>—</strong><span>Ordini e checkout da riconciliare</span></div>
+<div class="metric"><small>Customer retention</small><strong>—</strong><span>Definizione e coorte da approvare</span></div>
+<div class="metric"><small>Platform health</small><strong>—</strong><span>Metriche SRE non aggregate</span></div>
+<div class="metric"><small>Data freshness</small><strong>—</strong><span>Timestamp refresh non certificati</span></div>
+</div></section>
+<section class="section" id="domains"><div class="section-head"><div><h2>Intelligence domains</h2><p>Un modello analitico comune per tutti i prodotti e le aree operative.</p></div></div>
+<div class="grid">
+<article class="card"><div class="meta"><span>01 · FINANCE</span><span class="status block">SOURCE PENDING</span></div><h3>INSIDERS · Financial Intelligence</h3><p>Ricavi, costi, margini, cash flow, budget, forecast, unit economics, break-even, ROI descrittivo e riconciliazione lorda/netta, imposte, commissioni, rimborsi e settlement.</p><a href="./financial-insights.html">Servizio Financial Insights ↗</a></article>
+<article class="card"><div class="meta"><span>02 · CUSTOMER</span><span class="status">READ SCOPE LIMITED</span></div><h3>SEVA CRM &amp; Customer 360</h3><p>Account, contatti, aziende, deal, ticket, pipeline, lifecycle, consensi, segmenti, retention e customer value. Scritture e sincronizzazioni restano separate.</p><a href="./seva-crm-studio.html">Apri SEVA CRM ↗</a></article>
+<article class="card"><div class="meta"><span>03 · GROWTH</span><span class="status block">QUERY PENDING</span></div><h3>Marketing &amp; Acquisition</h3><p>Meta, Google, TikTok, LinkedIn, Microsoft Ads, GA4, Search Console, campagne, spesa, conversioni, CAC, ROAS e attribuzione con finestra dichiarata.</p><a href="./seva-unified-studio.html">Apri SEVA Studio ↗</a></article>
+<article class="card"><div class="meta"><span>04 · COMMERCE</span><span class="status block">E2E PENDING</span></div><h3>Commerce &amp; Payments</h3><p>Shopify, WooCommerce, Stripe e pagamenti: ordini, checkout, rimborsi, dispute, fee, IVA, incassi, accessi e riconciliazione. Nessun accesso viene dedotto da un link di pagamento.</p><a href="./super-ai-settings.html#billing">Billing &amp; entitlements ↗</a></article>
+<article class="card"><div class="meta"><span>05 · PARTNERS</span><span class="status block">ATTRIBUTION PENDING</span></div><h3>Marketplace, Affiliate &amp; Creators</h3><p>Amazon, Awin, CJ e TheFork: click, conversioni ammissibili, commissioni, resi, soglie, payout e prova di settlement. Candidature e link non equivalgono a ricavi.</p><a href="./seva-unified-studio.html">Partner &amp; commerce ↗</a></article>
+<article class="card"><div class="meta"><span>06 · PRODUCT</span><span class="status">INTEGRATION BUILD</span></div><h3>UNIVERSAL 36 · TITANS · GITA.IA</h3><p>Uso dei moduli, qualità, errori, agenti, costi AI, token, latenza, task, approvazioni, CI, deployment, incidenti e affidabilità per versione.</p><a href="./super-ai.html">Control Plane SUPER.AI ↗</a></article>
+<article class="card"><div class="meta"><span>07 · MARKET</span><span class="status">SOURCE PENDING</span></div><h3>KKUBERA &amp; URBAN ONE</h3><p>Matching, richieste visita, disponibilità, soggiorni, immobili, costi, fonti autorizzate, conversione e tempi di servizio. Visite e pagamenti sono eventi distinti.</p><a href="./discovery.html">Apri KKUBERA ↗</a></article>
+<article class="card"><div class="meta"><span>08 · GEO DATA</span><span class="status">LICENSE CHECK</span></div><h3>Maps Europa &amp; Open Data</h3><p>Dataset geografici e UE con copertura, licenza, data di aggiornamento, granularità, attribuzione e limiti d’uso espliciti.</p><a href="./maps-europe.html">Apri Maps Europa ↗</a></article>
+<article class="card"><div class="meta"><span>09 · KNOWLEDGE</span><span class="status block">ACCESS NOT VERIFIED</span></div><h3>ChatGPT · OpenAI · Codex · Archivi</h3><p>Chat, progetti, file, archivi, attività Codex, repository, issue, PR, workflow e artefatti. Il catalogo include queste fonti nel perimetro richiesto; non presume accesso universale alle conversazioni o agli archivi privati.</p><a href="https://github.com/karimkatlane0-crypto/-URBAN-ONE" target="_blank" rel="noopener noreferrer">Repository GitHub ↗</a></article>
+</div></section>
+<section class="section" id="sources"><div class="section-head"><div><h2>Source registry · stato delle connessioni</h2><p>Stati riferiti alle verifiche disponibili; non rappresentano una nuova interrogazione live.</p></div></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>FONTE</th><th>STATO RISCONTRATO</th><th>USO CONSENTITO / LIMITE</th><th>PROSSIMA PROVA</th></tr></thead><tbody>
+<tr><td>SEVA CRM native</td><td><span class="status">READ AGGREGATE</span></td><td>Lettura aggregata disponibile nel contesto precedente; percorso UI/API/database non certificato.</td><td>Verificare record sintetici, tenant e lineage end-to-end.</td></tr>
+<tr><td>HubSpot</td><td><span class="status read">READ-ONLY</span></td><td>Contacts, companies, deals e tickets in lettura; scrittura non autorizzata. Snapshot del 20/11/2026, da riverificare.</td><td>Confermare scope e freshness senza modificare record.</td></tr>
+<tr><td>Supermetrics · Meta Ads</td><td><span class="status">ACCOUNT DISCOVERED</span></td><td>Un account rilevato nel controllo precedente; nessuna query dati o attivazione audience eseguita.</td><td>Verificare scope e interrogazione read-only autorizzata.</td></tr>
+<tr><td>Power BI</td><td><span class="status block">NOT VERIFIED</span></td><td>Import/query assets menzionati; workspace, dataset e refresh cloud non provati.</td><td>Verificare workspace, dataset, gateway e refresh con dati sintetici.</td></tr>
+<tr><td>Google Analytics / Search Console</td><td><span class="status block">NOT CONNECTED</span></td><td>Nessun report live certificato.</td><td>Autorizzazione, account discovery, query di prova e timestamp.</td></tr>
+<tr><td>Stripe / payments</td><td><span class="status block">E2E NOT VERIFIED</span></td><td>Checkout, webhook, ledger ed entitlement non dimostrati come flusso completo.</td><td>Test controllato in ambiente test; nessuna transazione live.</td></tr>
+<tr><td>ChatGPT / Codex / Files</td><td><span class="status block">PARTIAL ACCESS</span></td><td>Fonti richieste incluse nel modello; accesso dipende da file, connettori e permessi effettivi.</td><td>Registro fonti, identificativi, ACL e tracciamento delle citazioni.</td></tr>
+</tbody></table></div>
+<p class="footnote">Nota: i dati di stato HubSpot e Supermetrics sono snapshot di verifica precedenti (20/11/2026). Tutti gli stati vanno aggiornati con timestamp, account, scope e prova prima di essere esposti come live.</p>
+</section>
+<section class="section" id="governance"><div class="section-head"><div><h2>Metric governance &amp; quality gates</h2><p>Ogni metrica deve essere definita prima di comparire nella scorecard.</p></div></div>
+<div class="grid">
+<article class="card"><div class="meta"><span>METRIC CONTRACT</span><span class="status">REQUIRED</span></div><h3>Definizione KPI</h3><p>Owner, formula, grain, unità, valuta, periodo, popolazione, denominatore, esclusioni, target e fonte canonica.</p></article>
+<article class="card"><div class="meta"><span>DATA QUALITY</span><span class="status">REQUIRED</span></div><h3>Qualità e riconciliazione</h3><p>Null, duplicati, join cardinality, copertura, late events, valuta, timezone, rimborsi e riconciliazione con sistemi sorgente.</p></article>
+<article class="card"><div class="meta"><span>LINEAGE &amp; AUDIT</span><span class="status">REQUIRED</span></div><h3>Provenienza verificabile</h3><p>Source ID, query/versione, timestamp, tenant, consenso, actor, trasformazioni, hash e collegamento all’evidenza.</p></article>
+</div>
+<div class="banner"><strong>Commerciale:</strong> INSIGHTS.ai è un servizio a pagamento. Nessun piano gratuito, prova gratuita o attivazione gratuita per impostazione predefinita. Ogni modulo deve mostrare un prezzo approvato, valuta, IVA, unità di fatturazione e condizioni prima del checkout; se il prezzo non è approvato, l’attivazione resta bloccata. Il precedente prezzo proposto di 29 €/mese riguarda il servizio Financial Insights descritto nella relativa pagina e non viene esteso automaticamente a tutti i moduli.</div>
+<section class="banner" id="titans-go-enterprise-global"><strong>TITANS GO ENTERPRISE GLOBAL · OFFERTA APPROVATA:</strong> €10 per utente, pagamento unico, IVA inclusa, accesso lifetime al sito TITANS, senza abbonamento né rinnovo automatico. L’accesso si attiva soltanto dopo conferma del pagamento e registrazione dell’entitlement. Il prezzo non include automaticamente consumi API, cloud, storage o servizi terzi. SEVA mantiene i checkout una tantum da €50/€500 esclusivamente per servizi concordati con riferimento a preventivo/contratto; non acquistano Entry, crediti AI o accesso automatico. Il prezzo discusso di €29/mese resta limitato alla specifica offerta Financial Insights e non è un listino universale. Ogni altro modulo senza prezzo approvato resta bloccato.</section>
+<section class="banner" id="direct-marketing-access"><strong>FILE ACCESS &amp; DIRECT MARKETING:</strong> INSIGHTS.ai deve ricercare e usare tutti i file effettivamente accessibili tramite Library, allegati, cartelle, repository, archivi e connettori autorizzati, rispettando ACL, tenant, retention e provenienza. Può preparare segmenti, contenuti e campagne TITANS GO ENTERPRISE GLOBAL; invio, esportazione contatti e sincronizzazione audience richiedono base giuridica/consenso verificati, suppression list, opt-out e approvazione della campagna. Nessuna credenziale o dato sensibile entra negli indici marketing. <a href="../../docs/TITANS-GO-ENTERPRISE-GLOBAL.md" style="color:#ffffff;text-decoration:underline;text-underline-offset:3px;font-weight:700">Contratto commerciale, accesso file e marketing ↗</a></section>
+<div class="links"><a href="./super-ai.html">SUPER.AI Control Plane ↗</a><a href="./super-ai-settings.html#integrations">Catalogo integrazioni ↗</a><a href="./financial-insights.html">Offerta Financial Insights ↗</a><a href="./universal-36.html">UNIVERSAL 36 ↗</a></div>
+</section>
+<footer><strong>INSIGHTS.ai · SUPER.AI</strong><br>BUILD candidate · data providers and persistent analytics not certified · no production access, data sync, billing activation or release is claimed.</footer>
+</main></body></html>
