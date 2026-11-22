@@ -33,3 +33,16 @@ test('SUPER.AI links directly to the unified INSIGHTS.ai workspace', () => {
   assert.match(hub, /href="\.\/insights-ai\.html"/);
   assert.match(hub, /INSIGHTS\.ai · Unified Intelligence/);
 });
+
+test('mobile INSIGHTS uses only packaged mobile routes for primary navigation', () => {
+  assert.doesNotMatch(mobile, /\.\.\/\.\.\/apps\/web/);
+  for (const href of ['./super-ai.html','./super-ai-settings.html#integrations','./seva-crm-studio.html','./seva-unified-studio.html','./discovery.html']) {
+    assert.ok(mobile.includes(href), href);
+  }
+});
+test('settings centers expose INSIGHTS.ai as a service', () => {
+  for (const path of ['apps/web/super-ai-settings.html','apps/mobile/www/super-ai-settings.html']) {
+    assert.match(read(path), /INSIGHTS\.ai · Financial Intelligence/);
+    assert.match(read(path), /href="\.\/insights-ai\.html"/);
+  }
+});
