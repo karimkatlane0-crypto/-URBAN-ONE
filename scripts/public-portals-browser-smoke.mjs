@@ -123,6 +123,7 @@ try {
         const after = await page.locator('article[data-category]:visible').count();
         if (after === 0 || after >= before) throw new Error('Workspace category filter did not narrow visible modules');
         await page.locator('#q').fill('front-end-e2e-no-match-7f9c');
+        await page.waitForFunction(() => document.getElementById('empty') && document.getElementById('empty').hidden === false);
         const emptyCount = await page.locator('article[data-category]:visible').count();
         if (emptyCount !== 0) throw new Error('Workspace search did not show the empty state');
         await page.locator('#reset').click();
