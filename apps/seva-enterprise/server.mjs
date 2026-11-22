@@ -123,6 +123,7 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  if(path==='/api/instances/adapter'&&method==='GET'){auth(req);return json(res,200,{status:sandboxProvisioner.status()});}
  if(path==='/api/instances'&&method==='GET'){const u=auth(req);return json(res,200,{instances:instanceManager.list({tenantId:u.id})});}
  if(path==='/api/instances'&&method==='POST'){
+   if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
    rate(req,'instance-create',8);const u=auth(req);
    if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
    const body=JSON.parse(await rawBody(req,3000));
@@ -132,10 +133,10 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    store.audit(u.id,'sandbox_instance_created',instance.id);
    return json(res,201,{instance:instanceManager.get({tenantId:u.id,instanceId:instance.id}),adapter:'in-memory-sandbox'});
  }
- const instanceAction=path.match(/^\\/api\\/instances\\/([0-9a-f-]{36})\\/(stop)$/);
- if(instanceAction&&method==='POST'){rate(req,'instance-stop',8);const u=auth(req);const result=await instanceManager.stop({tenantId:u.id,instanceId:instanceAction[1]});store.audit(u.id,'sandbox_instance_stopped',instanceAction[1]);return json(res,200,{instance:result});}
- const instanceDelete=path.match(/^\\/api\\/instances\\/([0-9a-f-]{36})$/);
- if(instanceDelete&&method==='DELETE'){rate(req,'instance-delete',8);const u=auth(req);const result=await instanceManager.delete({tenantId:u.id,instanceId:instanceDelete[1]});store.audit(u.id,'sandbox_instance_deleted',instanceDelete[1]);return json(res,200,{instance:result});}
+ const instanceAction=path.match(/^\/api\/instances\\/([0-9a-f-]{36})\/(stop)$/);
+ if(instanceAction&&method==='POST'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-stop',8);const u=auth(req);const result=await instanceManager.stop({tenantId:u.id,instanceId:instanceAction[1]});store.audit(u.id,'sandbox_instance_stopped',instanceAction[1]);return json(res,200,{instance:result});}
+ const instanceDelete=path.match(/^\/api\/instances\\/([0-9a-f-]{36})$/);
+ if(instanceDelete&&method==='DELETE'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-delete',8);const u=auth(req);const result=await instanceManager.delete({tenantId:u.id,instanceId:instanceDelete[1]});store.audit(u.id,'sandbox_instance_deleted',instanceDelete[1]);return json(res,200,{instance:result});}
  if(await mobileIntegration.handle(req,res))return;
  if(path==='/api/stripe/webhook'&&method==='POST'){
     // In SEPA-only mode, no Stripe event may mutate customer access or orders.
