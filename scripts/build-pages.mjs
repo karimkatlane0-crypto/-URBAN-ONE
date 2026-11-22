@@ -18,6 +18,9 @@ export function buildPages(output){
     }
   }
   copyPublic('apps/web');
+  // Publish only the two explicitly referenced, non-secret technical contracts.
+  mkdirSync(join(output,'docs'),{recursive:true});
+  for(const name of ['RELEASE_REPORT_2026-11-22.md','UNIVERSAL-INSTANCE-MANAGER.md'])copyFileSync(join(root,'docs',name),join(output,'docs',name));
   return output;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))console.log(buildPages(join(root,'dist/pages')));
