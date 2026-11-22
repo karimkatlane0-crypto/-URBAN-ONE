@@ -57,6 +57,7 @@ export function createPostgresInstanceRepository({ pool }) {
           [data.tenantId, data.actorId]
         );
         if (!membership.rows?.length) throw new Error('INSTANCE_ACTOR_NOT_A_TENANT_MEMBER');
+        if (!['owner', 'admin', 'operator'].includes(membership.rows[0].role)) throw new Error('INSTANCE_PROVISION_FORBIDDEN');
 
         // Serialize quota and idempotency decisions per tenant across API replicas.
         await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [data.tenantId]);
