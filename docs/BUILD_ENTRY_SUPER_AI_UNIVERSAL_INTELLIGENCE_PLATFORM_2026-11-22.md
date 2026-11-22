@@ -56,12 +56,15 @@ Evidence:
 
 A successful workflow establishes that the configured checks completed successfully on the baseline commit. It does not establish production deployment, physical-device compatibility, or that every external service is configured.
 
-## 4. Access and commercial requirement — requested, not activated
+## 4. TITANS Partner Onboarding — ENTRY LEVEL (approved BUILD baseline)
 
 Requested site-access flow:
 - Account registration by e-mail and e-mail verification.
-- Indicative price: **€10 per month**.
-- Bank transfer with payment reference `REEDEEM`.
+- Approved price: **€10.00 per 30-day access period**.
+- Renewal: manual bank transfer each new period; no automatic recurring mandate.
+- Bank transfer with exact payment reference `REEDEEM`.
+- Beneficiary: Karim Katlane; bank: BNL BNP Paribas, Trieste branch. Full payment coordinates are private configuration and must never be committed to source, logs, public pages or unauthenticated responses.
+- Payment instructions are visible only to the authenticated, e-mail-verified account.
 - Beneficiary and bank instructions are confidential operational data and must not be committed to this repository, logs, public pages or unauthenticated responses.
 
 Required server-side flow:
@@ -74,7 +77,11 @@ Required server-side flow:
 7. Manage expiry, renewal, failed payment, refund, dispute and revocation.
 8. Record each state transition in the audit trail.
 
-A manual bank transfer is not an automatic recurring mandate. The renewal model must be explicitly defined: a new manual transfer each month or a separately authorized recurring-payment method.
+A manual bank transfer is not an automatic recurring mandate. ENTRY LEVEL uses a new manual transfer for each 30-day period. No automatic charge or renewal is permitted.
+
+This ENTRY LEVEL offer is separate from the distinct TITANS GO ENTERPRISE GLOBAL one-time lifetime website offer. Do not merge their SKUs, prices, payment rules or entitlements. ENTRY LEVEL access is granted only after an operator verifies actual cleared funds against amount, beneficiary, exact reference and transaction evidence. A transfer receipt or user declaration alone is insufficient. Store the reconciliation record idempotently in the persistent ledger, grant exactly 30 days, and record expiry, renewal, refund, dispute and revocation events.
+
+No checkout, payment collection, bank integration, reconciliation, or entitlement activation is claimed by this BUILD entry.
 
 The requested €10/month model conflicts with the previously recorded TITANS €10 one-time lifetime-access policy. Product ownership must resolve the scope and effective date before either policy is enforced. No checkout, payment collection or entitlement activation is claimed by this entry.
 
@@ -88,6 +95,7 @@ The requested €10/month model conflicts with the previously recorded TITANS �
 - End-to-end payment reconciliation and entitlement verification.
 - Reproducible dedicated TITANS Sovereign 200/200 evidence.
 - Commercial-policy reconciliation and approved legal/tax/privacy terms.
+- Secure manual bank-transfer reconciliation workflow and operator approval.
 
 ## 6. Release decision
 
@@ -96,4 +104,4 @@ The requested €10/month model conflicts with the previously recorded TITANS �
 - **RELEASE:** not authorized; no deployment or production release performed.
 - **SCALE:** blocked until Enterprise gates close.
 
-PR #250 remains OPEN and unmerged. This entry does not authorize merge, deployment, publication, live payment activation or external data transfer. Production Enterprise GO requires all mandatory checks to PASS on the same final commit and explicit human release authorization.
+PR #250 remains OPEN and unmerged. This entry does not authorize merge, deployment, publication, live payment activation or external data transfer. ENTRY LEVEL remains a BUILD candidate until authenticated registration, private payment-instruction delivery, verified manual reconciliation, 30-day entitlement, expiry and audit tests pass on the same final commit. Production Enterprise GO requires all mandatory checks to PASS on the same final commit and explicit human release authorization.
