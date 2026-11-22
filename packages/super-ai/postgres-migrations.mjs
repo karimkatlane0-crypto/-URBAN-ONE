@@ -29,7 +29,7 @@ async function loadMigrations(directory, direction) {
     if (!sql.trim()) throw new Error('MIGRATION_EMPTY');
     migrations.push({ ...row.meta, filename: row.filename, sql, checksum: migrationChecksum(sql) });
   }
-  return migrations.sort((a, b) => a.id.localeCompare(b.id, 'en'));
+  return migrations.sort((a, b) => direction === 'down' ? b.id.localeCompare(a.id, 'en') : a.id.localeCompare(b.id, 'en'));
 }
 
 /**
