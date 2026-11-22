@@ -109,6 +109,11 @@ footer{background:#f4f4f1;border-color:#d8d8d1;color:#666}footer a{color:#5e5300
 <div class="grid2">
 <div class="panel"><h3>Canali</h3><p>Email, SMS, WhatsApp, push e messaging: configurazioni, disponibilità e consensi si verificano singolarmente. L’esistenza di un provider non significa che il canale sia pronto all’invio.</p><div class="meta"><span class="pill">Nessun invio avviato</span> · 0 campagne restituite dalla lettura account.</div></div>
 <div class="panel"><h3>Campaign governance</h3><p>Anteprima, audience eligibility, soppressioni, deduplica, limiti di frequenza, approvazione umana, tracciamento UTM e report post-invio prima del rollout.</p><div class="meta"><span class="pill">Gate di rilascio</span> · Nessuna campagna creata.</div></div>
+<div class="panel"><h3>Engagement message library · draft-only</h3><p>Modelli organici pronti da personalizzare, senza spesa pubblicitaria. La preparazione del testo non comporta invio: email, SMS o altri canali possono avere costi del provider e richiedono consenso verificato per singolo canale.</p><div class="meta"><span class="pill">Solo bozze</span> · Nessun invio, audience o budget attivato.</div>
+<p><strong>Welcome:</strong> “Benvenuto in SEVA. Scegli gli aggiornamenti che desideri ricevere e consulta le preferenze in qualsiasi momento.”</p>
+<p><strong>Helpful follow-up:</strong> “Ecco le risorse utili per il prossimo passo. Se hai bisogno di assistenza, rispondi a questo messaggio.”</p>
+<p><strong>Feedback:</strong> “La tua esperienza ci aiuta a migliorare. Se lo desideri, condividi un breve riscontro; puoi aggiornare le preferenze di contatto in ogni momento.”</p>
+<p><strong>Re-engagement:</strong> “Se desideri continuare a ricevere aggiornamenti, puoi confermare le preferenze. In assenza di consenso valido, nessun messaggio promozionale viene inviato.”</p></div>
 </div>
 </section>
 <section class="section" id="analytics">
@@ -124,7 +129,11 @@ footer{background:#f4f4f1;border-color:#d8d8d1;color:#666}footer a{color:#5e5300
 <div class="section-head"><div><h2>06 / Integrations &amp; Data Plane</h2><p>Connessioni per account e tenant, senza confondere accesso con sincronizzazione.</p></div></div>
 <div class="table-wrap"><table><thead><tr><th>Sorgente</th><th>Stato osservato</th><th>Uso nel CRM unificato</th><th>Blocco / gate</th></tr></thead><tbody>
 <tr><td>SEVA native CRM</td><td><span class="pill ok">Lettura aggregata disponibile</span></td><td>Registro primario</td><td>Verificare UI ↔ API ↔ database su percorso utente autenticato</td></tr>
-<tr><td>Klaviyo</td><td><span class="pill ok">Connector account readable</span></td><td>Audience e lifecycle provider</td><td>Export sorgente e consenso per contatto/canale prima della sync</td></tr>
+<tr><td>HubSpot</td><td><span class="pill ok">Read: contacts, companies, deals, tickets</span> · <span class="pill off">Write: permission change required</span></td><td>CRM records, read-only</td><td>USER_INFORMATION scope needs reauthorization; no authenticated sync to SEVA site</td></tr>
+<tr><td>Supermetrics · Meta Ads</td><td><span class="pill ok">Authenticated · 1 account discovered</span></td><td>Read-only campaign reporting</td><td>No data query or audience activation executed</td></tr>
+<tr><td>Supermetrics · Google Ads</td><td><span class="pill off">Token authenticated · no account discovered</span></td><td>Not usable yet</td><td>Connect a Google Ads account to this Supermetrics team</td></tr>
+<tr><td>Klaviyo</td><td><span class="pill ok">Account readable · LIVE mode</span></td><td>Draft/lifecycle provider</td><td>No sending or profile export; consent and channel cost checks required</td></tr>
+<tr><td>Stripe</td><td><span class="pill">1 LIVE account available</span></td><td>Payment status evidence only</td><td>No account-specific read, payment action or CRM sync performed</td></tr>
 <tr><td>OpenAI / model runtime</td><td><span class="pill off">Preflight bloccato</span></td><td>Assistenza e scoring controllato</td><td>Credenziale, limiti, budget e autorizzazione esecutiva da verificare</td></tr>
 <tr><td>WhatsApp / Skebby</td><td><span class="pill off">Non configurati</span></td><td>Canali opzionali</td><td>Asset provider, token server, webhook e consenso canale-specifico</td></tr>
 <tr><td>Power BI</td><td><span class="pill">Non verificato</span></td><td>Reporting aggregato</td><td>Tenant, dataset, refresh e RLS</td></tr>
