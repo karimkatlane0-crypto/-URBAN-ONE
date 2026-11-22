@@ -15,7 +15,7 @@ test('SEVA unified CRM is mirrored across Web and mobile',()=>{
 });
 
 test('CRM snapshot and consent gate remain explicit and privacy-safe',()=>{
-  for(const phrase of ['181','Elenco e-mail','Elenco della messaggistica di testo','0 / 0','SAFE MODE','Import consent-aware','Nessun contatto importato']){
+  for(const phrase of ['181','Elenco e-mail','Elenco della messaggistica di testo','0 / 0','READ-ONLY SNAPSHOT','Import consent-aware','Nessun contatto importato']){
     assert.ok(web.includes(phrase),phrase);
   }
   assert.ok(!web.includes('karimkatlane0@gmail.com'));
@@ -25,6 +25,9 @@ test('CRM snapshot and consent gate remain explicit and privacy-safe',()=>{
   assert.ok(!web.includes('XMLHttpRequest'));
   assert.ok(!web.includes('localStorage'));
   assert.ok(!web.includes('https://api.'));
+  assert.ok(web.includes('nessuna sincronizzazione automatica attiva'));
+  assert.ok(web.includes('ULTIMO SNAPSHOT DISPONIBILE · STORICO'));
+  assert.ok(!web.includes('SNAPSHOT VERIFICATO'));
 });
 
 test('AI orchestration and MLOps status is described without claiming live training',()=>{
