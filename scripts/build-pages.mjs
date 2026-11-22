@@ -13,7 +13,7 @@ export function buildPages(output){
     for(const entry of readdirSync(join(root,relative),{withFileTypes:true})){
       const path=join(relative,entry.name);
       if(entry.isDirectory())copyPublic(path);
-      else if(entry.isFile()&&(/^[a-z0-9-]+\.(html|css|svg|webmanifest)$/.test(entry.name)||path==='apps/web/seva-titans-manifest.json'||['apps/web/pole-position.js','apps/web/pole-premium.js','apps/web/eu-language-selector.js','apps/web/seva-titans-relations.js','apps/web/seva-titans-policy.js'].includes(path)))copyFileSync(join(root,path),join(output,path));
+      else if(entry.isFile()&&(/^[a-z0-9-]+\.(html|css|svg|webmanifest)$/.test(entry.name)||path==='apps/web/seva-titans-manifest.json'||['apps/web/pole-position.js','apps/web/pole-premium.js','apps/web/eu-language-selector.js','apps/web/seva-titans-relations.js','apps/web/seva-titans-policy.js','apps/web/titans-executive-theme.js'].includes(path)))copyFileSync(join(root,path),join(output,path));
       else throw Error('UNSUPPORTED_PUBLIC_ASSET: '+path);
     }
   }
