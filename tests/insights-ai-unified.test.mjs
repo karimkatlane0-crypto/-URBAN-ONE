@@ -49,7 +49,7 @@ test('settings centers expose INSIGHTS.ai as a service', () => {
 
 test('TITANS GO ENTERPRISE GLOBAL price and SEVA contracted checkout rules are explicit',()=>{
  const contract=read('docs/TITANS-GO-ENTERPRISE-GLOBAL.md');
- for(const term of ['€10 per user','One-time payment','no subscription','€50 or €500','quote/contract reference','€29/month']) assert.ok(contract.includes(term),term);
+ for(const term of ['€10 per user for 30 days','Manual bank transfer per 30-day period','no subscription','manual renewal only','`REEDEEM`','€50 or €500','quote/contract reference','€29/month']) assert.ok(contract.includes(term),term);
  assert.match(contract,/no real charge/i);
 });
 test('file access and direct marketing require source ACL and lawful-basis controls',()=>{
