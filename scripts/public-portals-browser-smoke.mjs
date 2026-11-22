@@ -31,7 +31,15 @@ const targets = [
   { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
   { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true },
   { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true }
+  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
+  { name: 'Mobile Europe Immobili', root: 'mobile', file: 'europe-immobili.html', title: /Immobili e civici d'Europa/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile INSIGHTS.ai', root: 'mobile', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Pole Position', root: 'mobile', file: 'pole-position.html', title: /Pole Position.*URBAN ONE/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Pole Premium', root: 'mobile', file: 'pole-premium.html', title: /URBAN ONE.*Pole Position Intelligence LAB/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile AI Science', root: 'mobile', file: 'science.html', title: /URBAN ONE.*AI Science Computer/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA CRM', root: 'mobile', file: 'seva-crm-studio.html', title: /SEVA Unified CRM.*Customer Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA Unified Studio', root: 'mobile', file: 'seva-unified-studio.html', title: /SEVA Intelligence Studio.*Unified SaaS Portal/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile TITANS Enterprise Studio', root: 'mobile', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
