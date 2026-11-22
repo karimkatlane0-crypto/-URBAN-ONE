@@ -66,6 +66,25 @@ test('provisioner failure is recorded as failed without leaking provider details
   assert.equal(manager.list({ tenantId: 'tenant-a' })[0].state, 'failed');
 });
 
+test('failed provision without accepted provider resource can be deleted without provider cleanup', async () => {
+  let deleteCalls = 0;
+  const manager = createInstanceManager({
+    catalog: [manifest],
+    authorize: async () => true,
+    provisioner: {
+      provision: async () => { throw new Error('PROVIDER_UNAVAILABLE'); },
+      stop: async () => ({ stopped: true }),
+      delete: async () => { deleteCalls++; return { deleted: true }; }
+    }
+  });
+  await assert.rejects(manager.create({ tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'failed-clean-0001' }), /PROVIDER_UNAVAILABLE/);
+  const failed = manager.list({ tenantId: 'tenant-a' })[0];
+  assert.equal(failed.state, 'failed');
+  const deleted = await manager.delete({ tenantId: 'tenant-a', instanceId: failed.id });
+  assert.equal(deleted.state, 'deleted');
+  assert.equal(deleteCalls, 0);
+});
+
 test('health evidence and stop lifecycle are tenant scoped', async () => {
   const { manager } = harness();
   const created = await manager.create({ tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'create-0009' });
