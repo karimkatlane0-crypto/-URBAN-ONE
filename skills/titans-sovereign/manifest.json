@@ -1,0 +1,18 @@
+{
+  "name": "TITANS Sovereign Executive Control",
+  "version": "1.0.0",
+  "description": "Governed workspace skill for partner onboarding, finance reconciliation, independent verification, IAM, ML/LM governance, customer experience, and controlled releases.",
+  "scope": "workspace-targeted",
+  "discoverability": "private",
+  "entrypoint": "skills/titans-sovereign/SKILL.md",
+  "models": ["INSIDERS Finance Control", "INSIGHTS", "INSPIRE", "EUROPEAN EU", "ML", "LM", "SLE", "LAS", "LSE", "IAM", "TITANS COMMAND", "ICON AGENTS"],
+  "controls": {
+    "least_privilege": true,
+    "no_secrets": true,
+    "no_implicit_external_actions": true,
+    "human_approval_for_financial_actions": true,
+    "human_approval_for_merge": true,
+    "human_approval_for_production_release": true,
+    "independent_verification_required": true
+  }
+}
