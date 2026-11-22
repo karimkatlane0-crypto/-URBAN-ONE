@@ -43,7 +43,7 @@ test('responsive, reduced-motion and keyboard accessibility rules exist', () => 
 test('product search and navigation controls are wired', () => {
   assert.match(html, /id="product-search"/);
   assert.match(html, /aria-label="Filtra schede prodotto \(ricerca locale, non AI\)"/);
-  assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html#overview"/);
+  assert.match(html, /href="\.\/titans-enterprise-studio-mobile\.html#overview"/);
   assert.match(mobileHtml, /TITANS MOBILE/);
   assert.equal(mobileCss, css, 'Web and Mobile stylesheets must remain in parity');
   assert.match(html, /addEventListener\('input'/);
