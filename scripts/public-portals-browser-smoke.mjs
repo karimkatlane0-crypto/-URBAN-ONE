@@ -9,9 +9,9 @@ const targets = [
   { name: 'Discovery', file: 'discovery.html', title: /soggiorni e immobili/i },
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
-  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true, verifyInternalLinks: true },
-  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'SUPER.AI Settings', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true, verifyInternalLinks: true, verifyNavigation: 'instance-manager.html' },
+  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai-settings.html' },
+  { name: 'SUPER.AI Settings', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
   { name: 'URBAN ONE Workspace', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
@@ -24,13 +24,13 @@ const targets = [
   { name: 'URBAN ONE Universal', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false },
   { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false },
   { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
-  { name: 'Mobile SUPER.AI Hub', root: 'mobile', file: 'super-ai.html', title: /SUPER.AI.*Universal Mobile Hub/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile SUPER.AI Settings', root: 'mobile', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile URBAN ONE Home', root: 'mobile', file: 'index.html', title: /URBAN ONE UNIVERSAL/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SUPER.AI Hub', root: 'mobile', file: 'super-ai.html', title: /SUPER.AI.*Universal Mobile Hub/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'maps-europe.html' },
+  { name: 'Mobile SUPER.AI Settings', root: 'mobile', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile URBAN ONE Home', root: 'mobile', file: 'index.html', title: /URBAN ONE UNIVERSAL/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
   { name: 'Mobile Discovery', root: 'mobile', file: 'discovery.html', title: /soggiorni e immobili/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
-  { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true },
-  { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true, verifyNavigation: 'super-ai.html' },
+  { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
   { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'Mobile Europe Immobili', root: 'mobile', file: 'europe-immobili.html', title: /Immobili e civici d'Europa/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile INSIGHTS.ai', root: 'mobile', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
@@ -100,6 +100,19 @@ try {
           return { checked: checked.size, failures };
         });
         if (result.internalNavigation.failures.length) throw new Error('Broken internal navigation: ' + JSON.stringify(result.internalNavigation.failures));
+      }
+
+
+      if (target.verifyNavigation) {
+        const navLink = page.locator('a[href="./' + target.verifyNavigation + '"]').first();
+        if (await navLink.count() === 0) throw new Error('Expected navigation link missing: ' + target.verifyNavigation);
+        await Promise.all([
+          page.waitForURL(url => url.pathname.endsWith('/' + target.verifyNavigation)),
+          navLink.click()
+        ]);
+        result.navigation = { destination: target.verifyNavigation, reached: true };
+        await page.goBack();
+        await page.waitForURL(url => url.pathname.endsWith('/' + target.file));
       }
 
       if (target.verifyWorkspaceFilters) {
