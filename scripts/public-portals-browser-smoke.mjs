@@ -29,9 +29,6 @@ const targets = [
   { name: 'Mobile URBAN ONE Home', root: 'mobile', file: 'index.html', title: /URBAN ONE UNIVERSAL/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile Discovery', root: 'mobile', file: 'discovery.html', title: /soggiorni e immobili/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
-  { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true },
   { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true }
