@@ -99,3 +99,15 @@ test('concurrent duplicate creates share one provisioning operation', async () =
   assert.equal(a.id, b.id);
   assert.equal(count, 1);
 });
+
+test('concurrent distinct creates cannot oversubscribe the tenant quota', async () => {
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const { manager } = harness({ max: 1, provision: async () => { await gate; return { accepted: true }; } });
+  const first = manager.create({ tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'create-0013' });
+  const second = manager.create({ tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'create-0014' });
+  await new Promise(resolve => setImmediate(resolve));
+  release();
+  await first;
+  await assert.rejects(second, /TENANT_INSTANCE_LIMIT_REACHED/);
+});
