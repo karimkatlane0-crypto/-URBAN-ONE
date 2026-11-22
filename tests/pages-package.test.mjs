@@ -21,6 +21,8 @@ test('Pages package resolves the UNIVERSAL 36 entry and every relative page/asse
     const mobileRoute=join(output,'apps/web/titans-enterprise-studio-mobile.html');
     assert.ok(existsSync(mobileRoute),'Mobile TITANS route is included in the public Pages artifact');
     assert.equal(readFileSync(mobileRoute,'utf8'),mobileSource,'Published Mobile route must match the maintained Mobile source');
+    const mobileAliasSource=readFileSync(new URL('../apps/web/titans-enterprise-studio-mobile.html',import.meta.url),'utf8');
+    assert.equal(mobileAliasSource,mobileSource,'Vercel and Pages Mobile route source must match the maintained Mobile page');
     assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
     let checked=0;
     function walk(path){
