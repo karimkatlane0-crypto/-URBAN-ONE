@@ -27,6 +27,14 @@ test('Universal Instance Manager is linked from every supported workspace', () =
   assert.ok(existsSync('apps/web/instance-manager.html'));
   assert.ok(existsSync('apps/web/instance-manager.css'));
   assert.ok(existsSync('apps/web/instance-manager.js'));
+  const mobileManager = readFileSync('apps/mobile/www/instance-manager.html', 'utf8');
+  assert.match(mobileManager, /href=[\"']\.\/index\.html[\"']/i);
+  assert.doesNotMatch(mobileManager, /universal-36\.html/);
+});
+
+test('browser smoke workflow is triggered by manager asset changes', () => {
+  const workflow = readFileSync('.github/workflows/public-portals-browser.yml', 'utf8');
+  assert.match(workflow, /apps\/web\/instance-manager\.\*/);
 });
 
 test('Universal Instance Manager browser module passes Node syntax validation', () => {
