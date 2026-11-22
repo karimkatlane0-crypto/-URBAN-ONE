@@ -37,7 +37,7 @@ Full bank coordinates are confidential operational data. Store them only in a re
 - Fail closed if settlement is ambiguous, evidence is unavailable, or the payment does not match the expected order.
 
 ## SKU separation
-ENTRY LEVEL is distinct from TITANS GO ENTERPRISE GLOBAL (the separate one-time lifetime website offer). Their prices, checkout references, entitlements, customer-facing terms and ledgers must never be conflated. The ENTRY LEVEL choice does not silently modify the GO ENTERPRISE GLOBAL offer.
+ENTRY LEVEL and TITANS GO ENTERPRISE GLOBAL may remain distinct product identifiers/scopes, but they share one approved commercial baseline: €10 per user for 30 days, manual bank transfer, exact reference `REEDEEM`, access only after verified cleared funds, and manual renewal only. No lifetime access, automatic debit or recurring mandate. Keep product identifiers and audit records distinct without introducing conflicting commercial terms.
 
 ## Verification acceptance
 - Registration and e-mail verification required before payment instructions are shown.
