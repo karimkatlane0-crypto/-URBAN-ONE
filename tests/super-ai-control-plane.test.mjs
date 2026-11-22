@@ -30,7 +30,8 @@ test('mobile hub exposes product access and does not claim unsupported routes ar
   for (const name of ['UNIVERSAL 36','TITANS Enterprise Studio','INSIDERS','GITA.IA','SEVA Unified Studio','SEVA CRM','SYNAPSY','KKUBERA','URBAN ONE Workspace','Maps Europa','SEVA pubblico','Impostazioni e servizi']) {
     assert.ok(mobileHub.includes(name), name);
   }
-  assert.match(mobileHub, /route mobile dedicata da integrare/i);
+  assert.ok(mobileHub.includes('href="./maps-europe.html"'));
+  assert.ok(mobileHub.includes('href="./synapsy.html"'));
 });
 
 test('settings pages explicitly disclose that unconnected settings are not persisted', () => {
