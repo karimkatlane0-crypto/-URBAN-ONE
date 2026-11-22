@@ -216,3 +216,14 @@ Inspected implementation evidence:
 - Use synthetic staging tenants A and B and a disposable PostgreSQL instance with RLS and non-owner application roles. No production DB, customer data or live identity-provider writes.
 
 **Current state:** provider discovery COMPLETE (no provider found); real verifier INTEGRATION BLOCKED pending an approved identity authority and its non-production configuration. Existing CI checks do not prove IAM, PostgreSQL tenant isolation or backup/restore.
+
+
+### Backend HTTP authentication boundary — BUILD update — 2026-11-22
+
+- Refactored the HTTP server into an importable `createApiServer({ env, authenticate })` factory so the HTTP boundary can be tested without starting a production listener.
+- The authentication adapter receives request headers/method/path only; it never receives request JSON. The server passes only the adapter's returned principal to the router as `req.auth`.
+- The default server entry point intentionally has no IAM adapter configured. Protected routes therefore remain denied; request-body `userId`, `tenantId`, roles or scopes cannot authenticate a caller.
+- Adapter exceptions and malformed principal shapes fail closed. Malformed JSON is now rejected with HTTP 400 rather than silently becoming an empty body.
+- Added HTTP integration tests for health, body-based identity spoofing denial, a synthetic trusted principal, authentication failure, and malformed JSON.
+
+**Verification boundary:** these are HTTP boundary tests with an injected synthetic adapter, not cryptographic token validation or proof of a production IAM provider. No issuer/audience/JWKS/introspection authority is configured. The PostgreSQL Instance Manager remains unwired and no database, provider or cloud resource was contacted. Next: run CI on this exact commit, choose/configure an approved non-production IdP, implement its verifier and server-side membership resolver, then connect authenticated routes and run disposable PostgreSQL/RLS integration tests.
