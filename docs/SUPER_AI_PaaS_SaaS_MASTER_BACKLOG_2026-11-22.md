@@ -144,3 +144,17 @@ SUPER.AI is the shared experience and control plane. It does not collapse the pr
 - Do not write to production customer records, rotate/revoke credentials, alter provider settings, initiate payments, send campaigns, create cloud resources or transfer personal data as part of unapproved verification.
 - RELEASE (merge, production deployment, public rollout, live payment activation) requires explicit human approval.
 - No status is marked PASS without reproducible evidence tied to an exact commit, environment, timestamp and test result.
+
+
+## 5. BUILD update — PostgreSQL Instance Manager repository
+
+**Implementation added on the SUPER.AI feature branch (2026-11-22):**
+- `packages/super-ai/postgres-instance-repository.mjs` provides a pg-compatible, transaction-scoped repository for durable instance creation and tenant-scoped reads.
+- Tenant context is set with transaction-local `app.tenant_id`; the actor must have an active membership.
+- Provisioning is restricted to `owner`, `admin`, and `operator` roles; read-only roles are denied.
+- Per-tenant PostgreSQL advisory transaction lock serializes quota and idempotency decisions across API replicas.
+- Request hash mismatch on an existing idempotency key is rejected; matching requests replay the stored response.
+- Instance creation, idempotency receipt and append-only audit event are committed in one transaction.
+- `tests/super-ai-postgres-instance-repository.test.mjs` adds unit coverage for validation, membership, role authorization, quota guard, idempotency conflict/replay, transaction behavior and audit insertion.
+
+**Verification boundary:** tests have been added to the repository but have not yet been executed in this environment. No PostgreSQL service was provisioned or contacted; no migration was applied; no API route or provider was connected to this repository. This is an implementation component, not production readiness. Next gates: run the full CI suite on the exact branch SHA, add disposable-PostgreSQL integration tests, provision an approved non-production database, apply migrations, and prove two-tenant RLS plus restore/recovery before wiring the API.
