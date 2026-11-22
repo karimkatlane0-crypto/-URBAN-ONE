@@ -167,3 +167,16 @@ footer a{color:var(--exec-gold-soft)!important;font-weight:800}
  header,nav,button,.button,.btn{box-shadow:none!important}
  :where(.card,.panel,article){break-inside:avoid;box-shadow:none!important}
 }
+
+
+/* Print contrast correction — Codex P2. Keep cards readable when browsers omit background graphics. */
+@media print{
+ body,.shell,.wrap,main,article,.article,.panel,.card,.metric,.status,.result,.item,.provider,.notice,.warn,.box,.empty,.hero-meta,.start-panel{
+  color:#111!important;
+  background:#fff!important;
+  border-color:#bbb!important;
+  box-shadow:none!important;
+ }
+ :where(h1,h2,h3,h4,p,li,td,th,strong,small,a,label){color:#111!important}
+ a{text-decoration:underline!important}
+}
