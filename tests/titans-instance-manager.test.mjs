@@ -17,7 +17,7 @@ function harness({ approved = true, provision = async () => ({ accepted: true, p
 test('catalog validates and exposes immutable module metadata', () => {
   const { manager } = harness();
   assert.equal(manager.catalog()[0].id, 'ingest');
-  assert.throws(() => createInstanceManager({ catalog: [{ ...manifest, resourceProfile: {} }], provisioner: { provision(){}, stop(){} } }), /MODULE_RESOURCE_PROFILE_INVALID/);
+  assert.throws(() => createInstanceManager({ catalog: [{ ...manifest, resourceProfile: {} }], provisioner: { provision(){}, stop(){}, delete(){} } }), /MODULE_RESOURCE_PROFILE_INVALID/);
 });
 
 test('create provisions an isolated instance only after approval', async () => {
