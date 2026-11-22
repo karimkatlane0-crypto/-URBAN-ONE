@@ -17,8 +17,9 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
 
   try {
     await ownerPool.query('DROP SCHEMA IF EXISTS super_ai CASCADE');
-    await ownerPool.query('DROP OWNED BY super_ai_test_app').catch(() => {});\n    await ownerPool.query('DROP ROLE IF EXISTS super_ai_test_app');
-    await ownerPool.query("DROP OWNED BY super_ai_test_app").catch(() => {});\n    await ownerPool.query("CREATE ROLE super_ai_test_app LOGIN PASSWORD 'super-ai-ci-only-password' NOSUPERUSER NOBYPASSRLS");
+    await ownerPool.query('DROP OWNED BY super_ai_test_app').catch(() => {});
+    await ownerPool.query('DROP ROLE IF EXISTS super_ai_test_app');
+    await ownerPool.query("CREATE ROLE super_ai_test_app LOGIN PASSWORD 'super-ai-ci-only-password' NOSUPERUSER NOBYPASSRLS");
 
     const migration = await runPostgresMigrations({ pool: ownerPool, directory: migrationDirectory });
     assert.deepEqual(migration.applied, ['0001']);
