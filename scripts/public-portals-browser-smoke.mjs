@@ -8,7 +8,16 @@ const targets = [
   { name: 'Discovery', file: 'discovery.html', title: /soggiorni e immobili/i },
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
-  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false }
+  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true },
+  { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS Enterprise Studio/i, localeSelector: false },
+  { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS Enterprise Studio/i, localeSelector: false },
+  { name: 'TITANS Partner and SEVA Enterprise Onboarding', file: 'seva-titans-onboarding.html', title: /Sovereign Onboarding/i, localeSelector: false },
+  { name: 'INSIDERS Finance Control Scenario', file: 'financial-insights.html', title: /Financial Insights AI/i, localeSelector: false },
+  { name: 'INSIGHTS Free', file: 'insights-free.html', title: /INSIGHTS Free/i, localeSelector: false },
+  { name: 'Europe Maps', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false },
+  { name: 'SYNAPSY', file: 'synapsy.html', title: /SYNAPSY/i, localeSelector: false },
+  { name: 'URBAN ONE Universal', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false },
+  { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -41,13 +50,15 @@ try {
         if (result.localeChange !== 'de') throw new Error('Locale selector did not update document lang');
       } else {
         result.localeChange = 'not-applicable';
-        result.moduleCards = await page.locator('.card').count();
-        if (result.moduleCards < 8) throw new Error('Universal 36 module cards missing');
-        const hrefs = await page.locator('a[href]').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
-        for (const required of ['./titans-enterprise-studio.html','./seva-unified-studio.html','./discovery.html','./v10-workspace.html','./insights-free.html','./maps-europe.html']) {
-          if (!hrefs.includes(required)) throw new Error('Universal 36 missing module link: ' + required);
+        if (target.verifyUniversalLinks) {
+          result.moduleCards = await page.locator('.card').count();
+          if (result.moduleCards < 8) throw new Error('Universal 36 module cards missing');
+          const hrefs = await page.locator('a[href]').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+          for (const required of ['./titans-enterprise-studio.html','./seva-unified-studio.html','./discovery.html','./v10-workspace.html','./insights-free.html','./maps-europe.html']) {
+            if (!hrefs.includes(required)) throw new Error('Universal 36 missing module link: ' + required);
+          }
+          result.moduleLinksVerified = true;
         }
-        result.moduleLinksVerified = true;
       }
 
       await page.locator('body').click({ position: { x: 1, y: 1 } });
@@ -88,7 +99,7 @@ try {
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
       result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
-      if (target.file === 'universal-36.html' && result.horizontalOverflow) throw new Error('Universal 36 horizontal overflow at mobile viewport');
+      if (result.horizontalOverflow) throw new Error(target.name + ' horizontal overflow at mobile viewport');
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
