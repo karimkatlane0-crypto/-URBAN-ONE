@@ -133,9 +133,9 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
    store.audit(u.id,'sandbox_instance_created',instance.id);
    return json(res,201,{instance:instanceManager.get({tenantId:u.id,instanceId:instance.id}),adapter:'in-memory-sandbox'});
  }
- const instanceAction=path.match(/^\/api\/instances\\/([0-9a-f-]{36})\/(stop)$/);
+ const instanceAction=path.match(/^\/api\/instances\/([0-9a-f-]{36})\/(stop)$/);
  if(instanceAction&&method==='POST'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-stop',8);const u=auth(req);const result=await instanceManager.stop({tenantId:u.id,instanceId:instanceAction[1]});store.audit(u.id,'sandbox_instance_stopped',instanceAction[1]);return json(res,200,{instance:result});}
- const instanceDelete=path.match(/^\/api\/instances\\/([0-9a-f-]{36})$/);
+ const instanceDelete=path.match(/^\/api\/instances\/([0-9a-f-]{36})$/);
  if(instanceDelete&&method==='DELETE'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-delete',8);const u=auth(req);const result=await instanceManager.delete({tenantId:u.id,instanceId:instanceDelete[1]});store.audit(u.id,'sandbox_instance_deleted',instanceDelete[1]);return json(res,200,{instance:result});}
  if(await mobileIntegration.handle(req,res))return;
  if(path==='/api/stripe/webhook'&&method==='POST'){
