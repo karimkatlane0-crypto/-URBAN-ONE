@@ -8,3 +8,4 @@ run_id,workflow,result,url
 44997188511,PR248 repository verification,411/411 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997188511
 44997198193,PR248 browser smoke,14/14 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997198193
 44997198186,PR248 Android emulator,API24 and API36 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997198186
+44997198228,PR248 exact-head final verification,411/411 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997198228
