@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1016">
+<title>SEVA · @Avatar.ai — Conversational Preview</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1016;--panel:#131b25;--panel2:#192431;--line:#2d3b4b;--text:#f3f6fa;--muted:#aab6c5;--gold:#f1c75b;--green:#8bd5ad;font:15px Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#243142 0,transparent 45%),var(--bg);color:var(--text);min-height:100vh}
+button,input{font:inherit}button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.shell{max-width:1040px;margin:auto;padding:22px;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding:8px 0 18px}
+.brand{font-weight:850;letter-spacing:.08em}.brand b{color:var(--gold)}.eyebrow{font-size:10px;letter-spacing:.17em;color:var(--muted);margin-top:4px}
+.pill{border:1px solid #6a592d;color:var(--gold);padding:7px 10px;border-radius:99px;font-size:11px}
+main{flex:1;display:grid;grid-template-columns:280px 1fr;gap:18px;padding:24px 0}
+aside,.chat{background:rgba(19,27,37,.92);border:1px solid var(--line);border-radius:18px}
+aside{padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.avatar{width:112px;height:112px;border-radius:34px;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#fff0b7,#d8a83c 35%,#6d5120 100%);color:#17130a;font-size:42px;font-weight:900;box-shadow:0 14px 48px #d8a83c25;margin:18px 0}
+h1{font-size:22px;margin:5px 0}h2{font-size:14px;margin:0}.muted{color:var(--muted);font-size:12px;line-height:1.6}
+.status{margin:18px 0 8px;padding:10px;border:1px solid var(--line);border-radius:10px;width:100%;font-size:11px;color:var(--muted)}
+.status strong{color:var(--gold);display:block;margin-bottom:3px}
+.chips{display:grid;gap:8px;width:100%;margin-top:18px}
+.chips button{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:10px;border-radius:10px;text-align:left;cursor:pointer;font-size:12px}
+.chat{display:flex;flex-direction:column;min-height:600px;overflow:hidden}
+.chathead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chathead small{color:var(--muted);font-size:11px}
+.transcript{padding:20px;display:flex;flex-direction:column;gap:14px;flex:1;overflow:auto}
+.msg{max-width:84%;padding:13px 15px;border-radius:14px;font-size:13px;line-height:1.6;white-space:pre-wrap}
+.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line)}
+.user{align-self:flex-end;background:#3b3422;border:1px solid #68552b}
+.composer{padding:16px;border-top:1px solid var(--line);display:flex;gap:9px}
+.composer input{flex:1;min-width:0;background:#0d141d;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:13px}
+.composer button,.clear{border:0;background:var(--gold);color:#18140b;font-weight:750;border-radius:11px;padding:0 17px;cursor:pointer}
+.clear{background:transparent;border:1px solid var(--line);color:var(--muted);padding:7px 10px;font-size:11px}
+.notice{border-top:1px solid var(--line);padding:12px 20px;color:var(--muted);font-size:10px;line-height:1.5}
+footer{color:var(--muted);font-size:10px;text-align:center;padding:10px}
+@media(max-width:720px){.shell{padding:13px}main{grid-template-columns:1fr;padding:14px 0}.chat{min-height:560px}aside{padding:15px}.avatar{width:76px;height:76px;border-radius:25px;font-size:30px;margin:8px}.chips{grid-template-columns:1fr 1fr}.msg{max-width:94%}.chathead{padding:14px}}
+</style>
+</head>
+<body><div class="shell">
+<header><div><div class="brand">SEVA <b>INTELLIGENCE</b></div><div class="eyebrow">ONE CONNECTED EXPERIENCE</div></div><span class="pill">BUILD · PREVIEW</span></header>
+<main>
+<aside>
+<div class="avatar" aria-hidden="true">S</div>
+<h1>@Avatar.ai</h1>
+<div class="muted">Assistente conversazionale SEVA</div>
+<div class="status"><strong>ANTEPRIMA LOCALE</strong>Motore AI non collegato. Nessun messaggio viene trasmesso o salvato.</div>
+<p class="muted">Un punto di accesso per orientarsi nei servizi SEVA, nelle connessioni e nell'assistenza.</p>
+<div class="chips" aria-label="Esempi di richieste">
+<button type="button" data-prompt="Che cosa posso fare con SEVA?">Panoramica SEVA</button>
+<button type="button" data-prompt="Come funzionano le connessioni e il consenso?">Connessioni e consenso</button>
+<button type="button" data-prompt="Come posso contattare l'assistenza?">Assistenza clienti</button>
+<button type="button" data-prompt="Come funzionano CRM e Insights?">CRM e Insights</button>
+</div>
+</aside>
+<section class="chat" aria-label="Conversazione con Avatar.ai">
+<div class="chathead"><div><h2>Conversazione</h2><small>AI disclosure · risposta simulata di anteprima</small></div><button class="clear" id="clear" type="button">Nuova chat</button></div>
+<div class="transcript" id="transcript" role="log" aria-live="polite" aria-relevant="additions">
+<div class="msg bot">Sono @Avatar.ai, l'assistente virtuale SEVA. Questa è una dimostrazione locale: il collegamento al modello AI non è ancora attivo. Puoi esplorare gli argomenti di esempio; non inserire dati personali o riservati.</div>
+</div>
+<form class="composer" id="form"><input id="message" autocomplete="off" placeholder="Scrivi una domanda di prova…" aria-label="Messaggio di prova"><button type="submit">Invia</button></form>
+<div class="notice">Anteprima UI senza backend. I messaggi restano soltanto nella memoria temporanea di questa pagina e scompaiono chiudendola o selezionando “Nuova chat”. Nessun accesso a rubriche, CRM, account o servizi esterni.</div>
+</section>
+</main>
+<footer>SEVA · @Avatar.ai · BUILD / VERIFY ONLY · NON È UN SERVIZIO PUBBLICO</footer>
+</div>
+<script>
+const transcript=document.getElementById('transcript'),input=document.getElementById('message');
+function add(text,who){const node=document.createElement('div');node.className='msg '+who;node.textContent=text;transcript.append(node);transcript.scrollTop=transcript.scrollHeight}
+function submit(text){const value=(text||input.value).trim();if(!value)return;add(value,'user');input.value='';add('Il motore conversazionale non è ancora collegato. Questa anteprima non elabora la richiesta e non invia dati. Nella versione verificata potrò aiutarti sui servizi SEVA, con accesso limitato ai dati autorizzati e conferma esplicita per ogni azione.','bot')}
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();submit()});
+document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>submit(b.dataset.prompt)));
+document.getElementById('clear').addEventListener('click',()=>{transcript.replaceChildren();add('Nuova conversazione di anteprima. Il motore AI non è collegato e nessun messaggio viene trasmesso.','bot')});
+</script></body></html>
