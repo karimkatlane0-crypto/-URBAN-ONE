@@ -39,7 +39,9 @@ const targets = [
   { name: 'Mobile AI Science', root: 'mobile', file: 'science.html', title: /URBAN ONE.*AI Science Computer/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile SEVA CRM', root: 'mobile', file: 'seva-crm-studio.html', title: /SEVA Unified CRM.*Customer Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile SEVA Unified Studio', root: 'mobile', file: 'seva-unified-studio.html', title: /SEVA Intelligence Studio.*Unified SaaS Portal/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile TITANS Enterprise Studio', root: 'mobile', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true }
+  { name: 'Mobile TITANS Enterprise Studio', root: 'mobile', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA TITANS Hub', root: 'mobile', file: 'seva-titans-hub.html', title: /SEVA TITANS.*People.*Browser/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SEVA TITANS Relations', root: 'mobile', file: 'seva-titans-relations.html', title: /SEVA TITANS.*Research.*Relations/i, localeSelector: false, verifyInternalLinks: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
