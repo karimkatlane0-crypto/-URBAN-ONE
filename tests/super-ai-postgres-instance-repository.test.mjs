@@ -84,3 +84,13 @@ test('create denies read-only tenant roles from provisioning instances', async (
   await assert.rejects(repo.create(base), /INSTANCE_PROVISION_FORBIDDEN/);
   assert.ok(pool.calls.some(call => call.sql === 'ROLLBACK'));
 });
+
+test('matching idempotency request replays its stored response without creating a second instance', async () => {
+  const response = { instance: { id: instanceId, state: 'queued' }, replayed: false };
+  const pool = fakePool({ prior: [{ request_sha256: base.requestSha256, instance_id: instanceId, response }] });
+  const repo = createPostgresInstanceRepository({ pool });
+  const result = await repo.create(base);
+  assert.deepEqual(result, { ...response, replayed: true });
+  assert.equal(pool.calls.some(call => call.sql.startsWith('INSERT INTO super_ai.service_instances')), false);
+  assert.ok(pool.calls.some(call => call.sql === 'COMMIT'));
+});
