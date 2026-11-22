@@ -50,7 +50,7 @@ export function createApiServer({env=process.env, authenticate=async()=>null}={}
         res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
       }
       if(req.method==='POST'&&path==='/api/stripe/webhook'){
-        const r=handleStripeWebhook({rawBody,headers:req.headers,env});
+        const r=await handleStripeWebhook({rawBody,headers:req.headers,env});
         res.writeHead(r.status,headers);res.end(JSON.stringify(r.body));return;
       }
 
