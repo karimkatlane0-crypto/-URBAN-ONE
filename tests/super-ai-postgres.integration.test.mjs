@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { createPostgresInstanceRepository } from '../packages/super-ai/postgres-instance-repository.mjs';
 import { runPostgresMigrations } from '../packages/super-ai/postgres-migrations.mjs';
+import { createPostgresStripeEventStore } from '../packages/super-ai/postgres-stripe-event-store.mjs';
 
 const connectionString = process.env.SUPER_AI_TEST_DATABASE_URL;
 
@@ -22,7 +23,7 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
     await ownerPool.query("CREATE ROLE super_ai_test_app LOGIN PASSWORD 'super-ai-ci-only-password' NOSUPERUSER NOBYPASSRLS");
 
     const migration = await runPostgresMigrations({ pool: ownerPool, directory: migrationDirectory });
-    assert.deepEqual(migration.applied, ['0001']);
+    assert.deepEqual(migration.applied, ['0001', '0002']);
     const replay = await runPostgresMigrations({ pool: ownerPool, directory: migrationDirectory });
     assert.deepEqual(replay.applied, []);
 
@@ -47,6 +48,28 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
     appUrl.username = 'super_ai_test_app';
     appUrl.password = appPassword;
     appPool = new Pool({ connectionString: appUrl.toString(), max: 4 });
+
+    const eventStore = createPostgresStripeEventStore({ pool: ownerPool });
+    const event = {
+      id: 'evt_super_ai_ci_0001',
+      type: 'payment_intent.succeeded',
+      livemode: false,
+      created: 1800000000,
+      data: { object: { id: 'pi_super_ai_ci_0001' } }
+    };
+    const firstReceipt = await eventStore.record(event);
+    assert.deepEqual(firstReceipt, { stored: true, duplicate: false });
+    const duplicateReceipt = await eventStore.record(event);
+    assert.deepEqual(duplicateReceipt, { stored: true, duplicate: true });
+    await assert.rejects(
+      eventStore.record({ ...event, type: 'charge.refunded' }),
+      /STRIPE_EVENT_ID_CONFLICT/
+    );
+
+    await assert.rejects(
+      appPool.query('SELECT event_id FROM super_ai.stripe_webhook_events'),
+      /permission denied/
+    );
 
     const repository = createPostgresInstanceRepository({ pool: appPool, defaultQuota: 1 });
     const instanceId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -123,9 +146,16 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
       direction: 'down',
       allowDestructiveRollback: true
     });
-    assert.deepEqual(rollback.applied, ['0001']);
+    assert.deepEqual(rollback.applied, ['0002']);
+    const rollbackCore = await runPostgresMigrations({
+      pool: ownerPool,
+      directory: migrationDirectory,
+      direction: 'down',
+      allowDestructiveRollback: true
+    });
+    assert.deepEqual(rollbackCore.applied, ['0001']);
     const reapply = await runPostgresMigrations({ pool: ownerPool, directory: migrationDirectory });
-    assert.deepEqual(reapply.applied, ['0001']);
+    assert.deepEqual(reapply.applied, ['0001', '0002']);
   } finally {
     if (appPool) await appPool.end();
     await ownerPool.query('DROP SCHEMA IF EXISTS super_ai CASCADE').catch(() => {});
