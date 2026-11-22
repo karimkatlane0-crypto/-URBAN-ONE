@@ -183,7 +183,11 @@ export function createInstanceManager({
       const record = owned(instanceId, tenantId);
       if (!['stopped', 'failed'].includes(record.state)) fail('INSTANCE_MUST_BE_STOPPED');
       await approval('instance.delete', { tenantId, instanceId, moduleId: record.moduleId, environment: record.environment });
-      await provisioner.delete(Object.freeze({ instanceId, tenantId, providerInstanceId: record.providerInstanceId ?? null }));
+      // A failed provision call has not yielded an accepted provider resource.
+      // Do not ask the provider to delete a resource that was never accepted.
+      if (typeof record.providerInstanceId === 'string' && record.providerInstanceId.length > 0) {
+        await provisioner.delete(Object.freeze({ instanceId, tenantId, providerInstanceId: record.providerInstanceId }));
+      }
       record.state = 'deleted';
       record.updatedAt = clock();
       return publicRecord(record);
