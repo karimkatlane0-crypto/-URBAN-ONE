@@ -55,6 +55,7 @@ export function createInstanceManager({
     modules.set(manifest.id, manifest);
   }
   const idempotency = new Map();
+  let creationQueue = Promise.resolve();
 
   async function approval(action, context) {
     const accepted = await authorize(Object.freeze({ action, ...context }));
@@ -88,7 +89,7 @@ export function createInstanceManager({
         const existingId = await existing;
         return publicRecord(owned(existingId, tenantId));
       }
-      const operation = (async () => {
+      const operation = creationQueue.then(async () => {
         if (countActive(tenantId) >= maxInstancesPerTenant) fail('TENANT_INSTANCE_LIMIT_REACHED');
         await approval('instance.create', { tenantId, moduleId, version: manifest.version, environment });
         const id = randomUUID();
@@ -119,7 +120,8 @@ export function createInstanceManager({
           record.updatedAt = clock();
           throw error;
         }
-      })();
+      });
+      creationQueue = operation.catch(() => {});
       idempotency.set(idem, operation);
       try {
         const id = await operation;
