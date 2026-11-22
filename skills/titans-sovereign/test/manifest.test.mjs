@@ -13,7 +13,8 @@ test('manifest has stable identity and workspace-targeted scope', () => {
 });
 
 test('skill begins with valid YAML frontmatter and a named skill', () => {
-  assert.match(skill, /^---\nname: titans-sovereign\n[\s\S]*?\n---\n/);
+  assert.ok(skill.startsWith('---\nname: titans-sovereign\n'));
+  assert.ok(skill.includes('\n---\n'));
   assert.match(skill, /# TITANS Sovereign Executive Control/);
 });
 
