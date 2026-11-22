@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { generateKeyPairSync, sign } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { createPostgresInstanceRepository } from '../packages/super-ai/postgres-instance-repository.mjs';
 import { runPostgresMigrations } from '../packages/super-ai/postgres-migrations.mjs';
 import { createPostgresStripeEventStore } from '../packages/super-ai/postgres-stripe-event-store.mjs';
 import { createPostgresMembershipResolver } from '../services/api/postgres-membership-resolver.mjs';
+import { createPlatformApiServer } from '../services/api/platform-server.mjs';
 
 const connectionString = process.env.SUPER_AI_TEST_DATABASE_URL;
 
@@ -89,6 +91,62 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
     });
     assert.equal(await resolveMembership({ actorId: 'actor-a', tenantId: tenantB }), null);
     assert.equal(await resolveMembership({ actorId: 'unknown-actor', tenantId: tenantA }), null);
+
+    const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'super-ai-postgres-ci-key', use: 'sig', alg: 'RS256' };
+    const iamEnv = {
+      IAM_ISSUER: 'https://issuer.integration.test',
+      IAM_AUDIENCE: 'super-ai-api',
+      IAM_JWKS_URL: 'https://issuer.integration.test/.well-known/jwks.json',
+      IAM_ALLOWED_ALGORITHMS: 'RS256',
+      IAM_CLOCK_TOLERANCE_SECONDS: '0'
+    };
+    const issuedAt = 1800000000;
+    const tokenHeader = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT', kid: jwk.kid })).toString('base64url');
+    const tokenClaims = Buffer.from(JSON.stringify({
+      iss: iamEnv.IAM_ISSUER,
+      aud: iamEnv.IAM_AUDIENCE,
+      sub: 'actor-a',
+      exp: issuedAt + 300,
+      iat: issuedAt - 10,
+      scopes: ['*'],
+      tenant_id: tenantB
+    })).toString('base64url');
+    const signingInput = tokenHeader + '.' + tokenClaims;
+    const token = signingInput + '.' + sign('RSA-SHA256', Buffer.from(signingInput), privateKey).toString('base64url');
+    const platformServer = createPlatformApiServer({
+      env: iamEnv,
+      pool: appPool,
+      roleScopes: { owner: ['contacts:read'] },
+      fetchImpl: async () => ({ ok: true, json: async () => ({ keys: [jwk] }) }),
+      nowSeconds: () => issuedAt
+    });
+    await new Promise(resolve => platformServer.listen(0, '127.0.0.1', resolve));
+    const platformAddress = platformServer.address();
+    try {
+      const authorized = await fetch(`http://127.0.0.1:${platformAddress.port}/api/contacts/import-preview`, {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer ' + token,
+          'x-tenant-id': tenantA,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ records: [] })
+      });
+      assert.equal(authorized.status, 200);
+      const denied = await fetch(`http://127.0.0.1:${platformAddress.port}/api/contacts/import-preview`, {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer ' + token,
+          'x-tenant-id': tenantB,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ records: [] })
+      });
+      assert.equal(denied.status, 401);
+    } finally {
+      await new Promise((resolve, reject) => platformServer.close(error => error ? reject(error) : resolve()));
+    }
 
     const repository = createPostgresInstanceRepository({ pool: appPool, defaultQuota: 1 });
     const instanceId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
