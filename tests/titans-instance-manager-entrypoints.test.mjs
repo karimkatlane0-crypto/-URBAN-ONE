@@ -37,7 +37,7 @@ test('Universal Instance Manager browser module passes Node syntax validation', 
 test('static manager page clearly describes backend gating and does not claim cloud provisioning', () => {
   const html = readFileSync('apps/web/instance-manager.html', 'utf8');
   const js = readFileSync('apps/web/instance-manager.js', 'utf8');
-  assert.match(html, /Le comandi restano disabilitati/i);
+  assert.match(html, /i comandi restano disabilitati/i);
   assert.match(js, /API non installata su questo dominio Vercel/i);
   assert.match(js, /cloudResources!==false/);
 });
