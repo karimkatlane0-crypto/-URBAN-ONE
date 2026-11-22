@@ -31,7 +31,10 @@ const targets = [
   { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
   { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
-  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true }
+  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
+  { name: 'Mobile Maps Europe', root: 'mobile', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false, verifyInternalLinks: true, verifyMapsSearch: true },
+  { name: 'Mobile SYNAPSY', root: 'mobile', file: 'synapsy.html', title: /SYNAPSY.*Evidence.*Governance/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile URBAN ONE Workspace', root: 'mobile', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -105,6 +108,23 @@ try {
         const restored = await page.locator('article[data-category]:visible').count();
         if (restored !== before) throw new Error('Workspace reset did not restore all modules');
         result.workspaceFilters = { before, after, restored };
+      }
+
+      if (target.verifyMapsSearch) {
+        await page.evaluate(() => {
+          window.__openedUrls = [];
+          window.open = (url) => { window.__openedUrls.push(String(url)); return null; };
+        });
+        await page.locator('#q').fill('Trieste, Italia');
+        await page.locator('#search').click();
+        result.mapsSearch = await page.evaluate(() => ({
+          opened: window.__openedUrls[0] || null,
+          status: document.querySelector('#status')?.textContent || ''
+        }));
+        if (!result.mapsSearch.opened?.includes('google.com/maps/search') || !result.mapsSearch.opened.includes('Trieste')) {
+          throw new Error('Maps search action did not produce the expected user-initiated Google Maps URL');
+        }
+        if (!/Trieste/.test(result.mapsSearch.status)) throw new Error('Maps search status was not updated');
       }
 
       if (target.verifyInstanceManager) {
