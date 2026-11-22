@@ -183,3 +183,36 @@ Required before API integration:
 5. Run PostgreSQL integration tests using separate non-owner application roles with RLS enabled.
 
 Current API integration: **BLOCKED BY AUTHENTICATION PRINCIPAL GAP**. The repository unit tests passing in CI do not close this gate.
+
+
+### IAM provider discovery — 2026-11-22
+
+**Result: no platform identity provider is selected or configured in the inspected repository. Do not invent one or treat an unrelated integration as the platform IdP.**
+
+Inspected implementation evidence:
+- `services/api/server.mjs` parses the request and calls `route({method,path,body}, process.env)`; it does not attach a verified principal.
+- `services/api/router.mjs` checks `req.auth.userId` and `req.auth.scopes` in guarded routes, but this request property is not populated by the generic server path.
+- `apps/seva-enterprise/core.mjs` contains an application-local SQLite `sessions` table and `fromSession(token)` lookup. This is SEVA-local authentication, with no demonstrated shared tenant-membership or scope authority for the SUPER.AI API. It must not be silently reused across service/database trust boundaries.
+- `apps/seva-enterprise/mobile-sync-session.mjs` adapts the SEVA cookie session store; it does not establish a platform-wide OIDC issuer or tenant authority.
+- `services/api/pole-store.mjs` has a separate staging-only static token-hash allowlist (`POLE_STAGING_ACTORS_JSON`) with timing-safe hash comparison. It has no tenant-membership/scopes model and is not a suitable general IAM provider.
+- Prior SEVA authentication PR #131 and the SUPER.AI settings UI do not supply a provider, issuer, audience, JWKS endpoint, tenant-membership source or verified production session authority.
+
+**Decision:** no verifier has been wired into the general API and no token format/provider has been guessed. This is a fail-closed implementation hold, not a successful IAM integration.
+
+**Required provider contract before integration:**
+1. Approved IdP / session authority and exact issuer (or trusted introspection endpoint).
+2. API audience/resource identifier and accepted token type.
+3. Trusted JWKS URI or introspection authentication mechanism, with rotation/revocation behavior.
+4. Immutable subject mapping to an internal user ID.
+5. Server-side tenant membership and role/scope lookup, including membership revocation semantics.
+6. Staging-only client/test issuer and synthetic users for two separate tenants.
+7. Secret/configuration delivery through the approved runtime secret manager; no credentials in Git.
+
+**Implementation and test gate once the authority is identified:**
+- Verify signature or introspection result, issuer, audience, expiry/not-before, token type and required subject; fail closed on missing configuration, key lookup failure, invalid token and revoked session.
+- Construct `req.auth` only from verified claims plus server-side membership lookup; ignore identity, tenant, role and scope fields from request JSON and untrusted headers.
+- Enforce route scopes and tenant ownership on every Instance Manager operation.
+- Test missing credentials, malformed/invalid/expired/revoked token, wrong issuer/audience, insufficient scope, inactive membership, cross-tenant list/read/update/delete, and successful same-tenant operations.
+- Use synthetic staging tenants A and B and a disposable PostgreSQL instance with RLS and non-owner application roles. No production DB, customer data or live identity-provider writes.
+
+**Current state:** provider discovery COMPLETE (no provider found); real verifier INTEGRATION BLOCKED pending an approved identity authority and its non-production configuration. Existing CI checks do not prove IAM, PostgreSQL tenant isolation or backup/restore.
