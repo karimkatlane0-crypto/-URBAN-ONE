@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111820">
+<meta name="description" content="INSIDERS Finance Control — controllo Stripe Live, pagamenti e riconciliazione con evidenze verificate.">
+<title>INSIDERS Finance Control · TITANS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./titans-enterprise-studio.css">
+<link rel="stylesheet" href="./titans-executive-theme.css">
+<style>
+.finance-shell{max-width:1240px;margin:auto;padding:28px clamp(16px,3vw,42px) 60px}
+.finance-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:12px 0 28px}
+.finance-head h1{font:800 clamp(2rem,5vw,3.6rem)/1.05 Manrope,sans-serif;letter-spacing:-.05em;margin:10px 0}
+.finance-head p{max-width:780px;line-height:1.65;color:var(--text-muted,#9ca7b5)}
+.finance-actions{display:flex;gap:10px;flex-wrap:wrap}
+.finance-link{display:inline-flex;align-items:center;justify-content:center;padding:11px 16px;border:1px solid var(--border,#46515d);border-radius:10px;text-decoration:none;color:inherit;font-weight:700}
+.finance-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
+.finance-card,.finance-panel{border:1px solid var(--border,#46515d);border-radius:14px;background:var(--surface,#171f29);padding:18px;min-width:0}
+.finance-card small,.finance-panel small{display:block;color:var(--text-muted,#9ca7b5);font-size:11px;letter-spacing:.09em;text-transform:uppercase}
+.finance-card strong{display:block;font:800 clamp(1.55rem,3vw,2.2rem)/1.2 Manrope,sans-serif;margin:10px 0 4px}
+.finance-card span{color:var(--text-muted,#9ca7b5);font-size:12px}
+.finance-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}
+.finance-panel h2{font:750 1.15rem Manrope,sans-serif;margin:0 0 14px}
+.finance-panel p{line-height:1.6;color:var(--text-muted,#9ca7b5);font-size:13px}
+.finance-table{width:100%;border-collapse:collapse}
+.finance-table th,.finance-table td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border,#46515d);font-size:12px;vertical-align:top}
+.finance-table th{color:var(--text-muted,#9ca7b5);font-size:10px;letter-spacing:.08em}
+.state-on{color:#38b987;font-weight:700}.state-off{color:#d59c49;font-weight:700}
+.finance-note{border-left:3px solid #d5aa54;padding:13px 16px;background:var(--surface,#171f29);border-radius:0 10px 10px 0;margin:16px 0;font-size:12px;line-height:1.6}
+.finance-checkout{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border:1px solid #b8944b;border-radius:12px;padding:16px;margin-top:14px}
+.finance-checkout strong{font:800 1.25rem Manrope,sans-serif}.finance-checkout a{background:#d8b15e;color:#141820;border-radius:9px;padding:12px 16px;font-weight:800;text-decoration:none}
+.finance-foot{font-size:11px;color:var(--text-muted,#9ca7b5);margin-top:24px;line-height:1.6}
+@media(max-width:850px){.finance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.finance-layout{grid-template-columns:1fr}}
+@media(max-width:480px){.finance-grid{grid-template-columns:1fr 1fr}.finance-card{padding:13px}.finance-table th,.finance-table td{padding:8px 5px;font-size:11px}}
+</style>
+</head>
+<body>
+<main class="finance-shell">
+<div class="finance-head">
+<div>
+<p class="eyebrow">TITANS · INSIDERS / FINANCE CONTROL</p>
+<h1>Finance Control</h1>
+<p>Controllo read-only dell'account Stripe Live, dei checkout pubblicati e dei metodi di pagamento. Fotografia verificata il 22 novembre 2026; non è un ledger bancario né una prova di ricavi incassati.</p>
+</div>
+<div class="finance-actions">
+<a class="finance-link" href="./titans-enterprise-studio.html">← TITANS Studio</a>
+<a class="finance-link" href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer">Stripe Dashboard ↗</a>
+</div>
+</div>
+<div class="finance-note"><strong>STATO LIVE VERIFICATO.</strong> Account Stripe associato all'identità richiesta: <strong>charges_enabled = true</strong>, <strong>payouts_enabled = true</strong>, dettagli account inviati. Nessuna operazione di addebito, rimborso, payout o modifica di configurazione è stata eseguita durante il controllo.</div>
+<section class="finance-grid" aria-label="Stripe Live snapshot">
+<article class="finance-card"><small>Stripe Live</small><strong class="state-on">ENABLED</strong><span>Incassi e payout abilitati</span></article>
+<article class="finance-card"><small>Prodotti attivi</small><strong>13</strong><span>Catalogo Live</span></article>
+<article class="finance-card"><small>Payment link attivi</small><strong>9</strong><span>Checkout pubblicati</span></article>
+<article class="finance-card"><small>Pagamenti / abbonamenti</small><strong>0 / 0</strong><span>Nel risultato delle letture effettuate</span></article>
+</section>
+<div class="finance-layout">
+<section class="finance-panel">
+<h2>Metodi di pagamento — configurazione predefinita</h2>
+<p>Disponibilità e preferenza lette dalla configurazione Stripe predefinita attiva. “Disponibile e ON” non equivale a una transazione completata; la disponibilità può dipendere da paese, valuta e checkout.</p>
+<table class="finance-table"><thead><tr><th>Metodo</th><th>Stato</th></tr></thead><tbody>
+<tr><td>Carte</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Apple Pay</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Link</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Amazon Pay</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Bancontact</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>BLIK</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>EPS</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Klarna</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>MB WAY</td><td class="state-on">DISPONIBILE · ON</td></tr>
+<tr><td>Google Pay</td><td class="state-off">NON DISPONIBILE · OFF</td></tr>
+<tr><td>PayPal</td><td class="state-off">NON DISPONIBILE · OFF</td></tr>
+<tr><td>SEPA Direct Debit</td><td class="state-off">NON DISPONIBILE · OFF</td></tr>
+<tr><td>Pay by Bank</td><td class="state-off">NON DISPONIBILE · OFF</td></tr>
+<tr><td>iDEAL / US bank account</td><td class="state-off">NON DISPONIBILE · OFF</td></tr>
+</tbody></table>
+</section>
+<section class="finance-panel">
+<h2>Checkout TITANS / PSD2</h2>
+<p>Esiste un payment link Stripe Live attivo per “SEVA Intelligence Studio · TITANS / PSD2 — singola richiesta”. Prezzo verificato: <strong>€5,00 una tantum</strong>, IVA inclusa secondo la descrizione del pagamento. La prestazione resta a conferma manuale dopo verifica dell'incasso.</p>
+<div class="finance-checkout"><div><small>Checkout Live esistente</small><strong>€5,00 · una tantum</strong><p>REEDEEM escluso da questa area e da questo checkout.</p></div><a href="https://buy.stripe.com/fZuaEZ0KZ8OOgqf32qb7y0d" target="_blank" rel="noopener noreferrer">Apri checkout Stripe ↗</a></div>
+<div class="finance-note">Questo link non dimostra che un cliente abbia pagato. Le letture effettuate hanno restituito zero charge e zero subscription. Nessuna abilitazione automatica di accessi o servizi è attestata.</div>
+<h2 style="margin-top:22px">Controlli ancora aperti</h2>
+<ul>
+<li>Webhook firmato e idempotente per ogni pagamento.</li>
+<li>Riconciliazione charge → fee → balance transaction → payout.</li>
+<li>Attivazione/revoca entitlement dopo evento verificato.</li>
+<li>Rimborsi, dispute, fallimenti e retry end-to-end.</li>
+<li>Attivazione Google Pay, PayPal, SEPA e Pay by Bank solo dopo disponibilità/abilitazione Stripe.</li>
+</ul>
+</section>
+</div>
+<p class="finance-foot">Fonte: letture Stripe API in modalità Live, account e configurazione payment methods; snapshot 22/11/2026. Importi in EUR. Dati non aggiornati automaticamente. Nessuna informazione REEDEEM è inclusa. Build: TITANS Finance Control · READ ONLY · Evidence-first.</p>
+</main>
+<script src="./titans-executive-theme.js" defer></script>
+</body></html>
