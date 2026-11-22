@@ -63,6 +63,12 @@ export function createJwtAuthenticator({
     const audience = env.IAM_AUDIENCE;
     const jwksUrl = env.IAM_JWKS_URL;
     if (!issuer || !audience || !jwksUrl || typeof resolveMembership !== 'function') return null;
+    if (typeof audience !== 'string' || typeof issuer !== 'string') throw new Error('IAM_CONFIGURATION_INVALID');
+    let issuerUrl;
+    try { issuerUrl = new URL(issuer); } catch { throw new Error('IAM_ISSUER_INVALID'); }
+    if (issuerUrl.protocol !== 'https:' && issuerUrl.hostname !== 'localhost' && issuerUrl.hostname !== '127.0.0.1') {
+      throw new Error('IAM_ISSUER_HTTPS_REQUIRED');
+    }
 
     const authorization = headers.authorization || headers.Authorization || '';
     const bearer = /^Bearer ([^\s]+)$/i.exec(authorization);
@@ -133,8 +139,7 @@ export function createJwtAuthenticator({
     if (typeof requestedTenantId !== 'string' || !requestedTenantId) throw new Error('IAM_TENANT_CONTEXT_REQUIRED');
     const membership = await resolveMembership({
       actorId: claims.sub,
-      tenantId: requestedTenantId,
-      claims
+      tenantId: requestedTenantId
     });
     if (!membership || membership.status && membership.status !== 'active' ||
         membership.tenantId !== requestedTenantId ||
