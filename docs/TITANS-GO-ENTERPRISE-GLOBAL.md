@@ -9,6 +9,7 @@ All customer-facing services and modules are paid by default. There is no free p
 
 | Offer | Agreed price | Billing | Access entitlement | Guardrail |
 |---|---:|---|---|---|
+| TITANS Partner Onboarding — ENTRY LEVEL | **€10.00 per user** | Manual bank transfer per 30-day period; manual renewal only; no automatic charge | 30-day website access for the paid user | Activate only after verified cleared funds and operator reconciliation; exact reference `REEDEEM`; payment coordinates remain private configuration. |
 | TITANS Enterprise Studio — GO ENTERPRISE GLOBAL | **€10 per user, VAT included** | One-time payment; no subscription; no automatic renewal | Lifetime access to the TITANS website for the paid user | Grant only after provider-confirmed payment and entitlement record. Scope is website access; it does not imply unlimited third-party API, cloud compute, storage, support or partner costs. |
 | SEVA contracted services | **€50 or €500** | One-time payment, quantity 1; no renewal | Service delivery only for a customer with an agreed service and quote/contract reference | These are not Entry purchases, AI credits, general membership, or automatic access. Never convert them into a generic subscription. |
 | INSIGHTS.ai / Financial Insights | **€29/month is a previously discussed offer, not a confirmed universal price list** | Monthly only if the existing commercial offer is approved and published | Financial Insights scope only | Do not extend this price to CRM, marketing, commerce, BI, agents, files, APIs, or other modules. |
@@ -25,7 +26,9 @@ Required flow: published SKU → authenticated buyer and tenant → server-calcu
 - Persist payment and entitlement state transactionally in PostgreSQL; enforce unique provider event and payment IDs.
 - Handle payment success, failure, refund, partial refund, dispute/chargeback, cancellation and expiry.
 - Revoke or adjust access only from verified provider events and the entitlement policy; retain immutable audit history.
-- TITANS €10 lifetime website entitlement is not recurring and must never create a renewal.
+- TITANS ENTRY LEVEL €10/30-day access is manually renewed by a new bank transfer; never create an automatic recurring mandate. Verify cleared funds, beneficiary, amount, exact reference `REEDEEM` and transaction identity before granting a 30-day entitlement.
+- TITANS GO ENTERPRISE GLOBAL €10 lifetime website entitlement is a separate SKU, is not recurring and must never create a renewal.
+- Never combine ENTRY LEVEL and GO ENTERPRISE GLOBAL checkout identifiers, ledger rows, terms or entitlement rules.
 - SEVA €50/€500 contracted service must retain its quote/contract reference and never auto-provision general access.
 - No real charge, product/price creation, payment-method activation or live Stripe mutation is included in this BUILD change.
 
@@ -58,7 +61,8 @@ The user instruction authorizes the enterprise BUILD and preparation of direct-m
 ## 5. Global launch gates
 
 - [ ] Published and legally reviewed global seller/terms/tax setup.
-- [ ] TITANS €10 one-time SKU matches the agreed VAT-included price and lifetime website entitlement; no renewal.
+- [ ] TITANS ENTRY LEVEL €10.00 / 30-day manual bank-transfer SKU, exact reference `REEDEEM`, cleared-funds reconciliation and 30-day expiry are verified.
+- [ ] TITANS GO ENTERPRISE GLOBAL €10 one-time SKU remains a separate VAT-included lifetime website entitlement; no renewal.
 - [ ] SEVA €50/€500 one-off service checkout requires quote/contract reference; no automatic access.
 - [ ] Every other SKU has approved price, billing unit, tax, terms and entitlement; unpriced SKUs blocked.
 - [ ] PostgreSQL billing ledger, versioned migrations, backup/restore and tenant isolation tested.
