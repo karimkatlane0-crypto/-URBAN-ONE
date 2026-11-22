@@ -19,7 +19,7 @@ test('prototype does not misrepresent architecture as live integrations', () => 
   assert.match(html, /DESIGN PREVIEW · LIVE DATA NOT CONNECTED/);
   assert.match(html, /non dichiara agenti live attivi/i);
   assert.match(html, /REFERENCE PIPELINE · NOT LIVE/);
-  assert.match(html, /non sono una sincronizzazione live/i);
+  assert.match(html, /non sincronizzata live/i);
   assert.match(html, /Human approval required/);
 });
 
