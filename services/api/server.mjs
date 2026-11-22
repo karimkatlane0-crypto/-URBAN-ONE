@@ -1,6 +1,7 @@
 import {handleScienceApi} from './science.mjs';
 import http from 'node:http';
 import {route} from './router.mjs';
+import {createOidcAuthenticator} from '../../packages/super-ai/oidc-authenticator.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
 import {serveWeb} from './web.mjs';
 import {handlePoleApi} from './pole-http.mjs';
@@ -16,7 +17,7 @@ const headers={'content-type':'application/json','cache-control':'no-store','x-c
  * The default intentionally denies protected routes until a platform IAM adapter
  * is explicitly supplied by the runtime composition layer.
  */
-export function createApiServer({env=process.env, authenticate=async()=>null}={}) {
+export function createApiServer({env=process.env, authenticate=createOidcAuthenticator()}={}) {
   const server=http.createServer(async(req,res)=>{
     try{
       const path=new URL(req.url,'http://localhost').pathname;
@@ -83,7 +84,7 @@ export function createApiServer({env=process.env, authenticate=async()=>null}={}
 
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const port=Number(process.env.PORT||8787);
-  // No platform IAM adapter is configured in this entry point yet. Protected
-  // routes therefore remain denied; do not infer authentication from request JSON.
+  // Provider-neutral OIDC validation is wired but remains inert until the
+  // issuer, audience and HTTPS JWKS URL are explicitly configured.
   createApiServer().listen(port,()=>console.log('URBAN ONE UNIVERSAL API '+port));
 }
