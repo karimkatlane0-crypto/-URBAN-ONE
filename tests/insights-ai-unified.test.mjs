@@ -46,3 +46,16 @@ test('settings centers expose INSIGHTS.ai as a service', () => {
     assert.match(read(path), /href="\.\/insights-ai\.html"/);
   }
 });
+
+test('TITANS GO ENTERPRISE GLOBAL price and SEVA contracted checkout rules are explicit',()=>{
+ const contract=read('docs/TITANS-GO-ENTERPRISE-GLOBAL.md');
+ for(const term of ['€10 per user','One-time payment','no subscription','€50 or €500','quote/contract reference','€29/month']) assert.ok(contract.includes(term),term);
+ assert.match(contract,/no real charge/i);
+});
+test('file access and direct marketing require source ACL and lawful-basis controls',()=>{
+ const contract=read('docs/TITANS-GO-ENTERPRISE-GLOBAL.md');
+ for(const term of ['Library files','ACL','tenant','lawful basis','consent','suppression','opt-out','campaign approval']) assert.ok(contract.toLowerCase().includes(term.toLowerCase()),term);
+ assert.match(contract,/Do not send campaigns/i);
+ assert.match(web,/FILE ACCESS &amp; DIRECT MARKETING/);
+ assert.match(mobile,/FILE ACCESS &amp; DIRECT MARKETING/);
+});
