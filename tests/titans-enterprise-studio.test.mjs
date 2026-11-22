@@ -31,6 +31,13 @@ test('governance and safety requirements are visible', () => {
   assert.match(html, /repository, autorizzazioni e release/i);
 });
 
+test('TITANS brand and status controls use valid accessible names', () => {
+  assert.match(html, /aria-label="TITANS INTELLIGENCE STUDIO"/);
+  assert.match(html, /class="online-dot" aria-hidden="true"/);
+  assert.doesNotMatch(html, /class="online-dot" aria-label=/);
+  assert.match(css, /\.nav-label\{[^}]*color:#8799a5/);
+});
+
 test('responsive, reduced-motion and keyboard accessibility rules exist', () => {
   assert.match(html, /class="skip-link"/);
   assert.match(html, /aria-label="Navigazione TITANS"/);
