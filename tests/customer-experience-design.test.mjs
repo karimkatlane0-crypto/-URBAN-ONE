@@ -38,6 +38,18 @@ test('SEVA CRM entry points resolve to real, named customer lifecycle sections',
   assert.doesNotMatch(crmWeb, /SNAPSHOT VERIFICATO/);
 });
 
+test('SEVA Unified Studio discloses CRM connector permissions and snapshot freshness', async () => {
+  const [web, mobile] = await Promise.all([
+    read('../apps/web/seva-unified-studio.html'),
+    read('../apps/mobile/www/seva-unified-studio.html'),
+  ]);
+  assert.equal(web, mobile, 'SEVA Unified Studio Web and Mobile source must remain identical');
+  assert.match(web, /href="\.\/seva-crm-studio\.html"/);
+  assert.match(web, /Snapshot storico 17\/11\/2026 · sola lettura, non live/);
+  assert.match(web, /READ ACCESS · WRITE BLOCKED/);
+  assert.match(web, /writeAccess: REQUIRES_PERMISSION_MODIFICATION/);
+});
+
 test('SEVA CRM visual skin is identical across Web and Mobile', async () => {
   const [webCss, mobileCss] = await Promise.all([
     read('../apps/web/customer-experience.css'),
