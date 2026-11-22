@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generateKeyPairSync, sign } from 'node:crypto';
+import { constants, generateKeyPairSync, sign } from 'node:crypto';
 import { createOidcAuthenticator } from '../packages/super-ai/oidc-authenticator.mjs';
 import { createApiServer } from '../services/api/server.mjs';
 
@@ -10,6 +10,8 @@ const jwksUrl = 'https://issuer.example.test/.well-known/jwks.json';
 const now = 1_800_000_000_000;
 const primary = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const alternate = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const ecPair = generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
+const edPair = generateKeyPairSync('ed25519');
 const jwk = { ...primary.publicKey.export({ format: 'jwk' }), kid: 'key-1', use: 'sig', alg: 'RS256', key_ops: ['verify'] };
 const env = {
   SUPER_AI_IAM_ISSUER: issuer,
@@ -34,7 +36,14 @@ function token(claimOverrides = {}, { key = primary.privateKey, kid = 'key-1', a
     ...claimOverrides
   });
   const signingInput = header + '.' + payload;
-  const signature = sign('RSA-SHA256', Buffer.from(signingInput), key).toString('base64url');
+  const input = Buffer.from(signingInput);
+  let signature;
+  if (alg === 'RS256') signature = sign('RSA-SHA256', input, key);
+  else if (alg === 'PS256') signature = sign('sha256', input, { key, padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: 32 });
+  else if (alg === 'ES256') signature = sign('sha256', input, { key, dsaEncoding: 'ieee-p1363' });
+  else if (alg === 'EdDSA') signature = sign(null, input, key);
+  else throw new Error('Unsupported test algorithm: ' + alg);
+  signature = signature.toString('base64url');
   return signingInput + '.' + signature;
 }
 
@@ -99,6 +108,24 @@ test('invalid signature and unknown signing key fail closed', async () => {
     /JWT_SIGNING_KEY_NOT_FOUND/
   );
   assert.equal(fake.calls.length, 2);
+});
+
+
+test('OIDC authenticator verifies every enabled asymmetric signing algorithm', async () => {
+  const variants = [
+    { alg: 'PS256', pair: primary, key: { ...jwk, alg: 'PS256' }, kid: 'rsa-ps256' },
+    { alg: 'ES256', pair: ecPair, key: { ...ecPair.publicKey.export({ format: 'jwk' }), kid: 'ec-1', use: 'sig', alg: 'ES256', key_ops: ['verify'] }, kid: 'ec-1' },
+    { alg: 'EdDSA', pair: edPair, key: { ...edPair.publicKey.export({ format: 'jwk' }), kid: 'ed-1', use: 'sig', alg: 'EdDSA', key_ops: ['verify'] }, kid: 'ed-1' }
+  ];
+  for (const variant of variants) {
+    const fake = fakeFetch([variant.key]);
+    const authenticate = createOidcAuthenticator({ fetchImpl: fake.fetchImpl, now: () => now });
+    const result = await authenticate({
+      headers: { authorization: 'Bearer ' + token({}, { key: variant.pair.privateKey, kid: variant.kid, alg: variant.alg }) },
+      env
+    });
+    assert.equal(result.userId, 'user-123', variant.alg);
+  }
 });
 
 test('issuer, audience, expiry and not-before claims are enforced', async () => {
