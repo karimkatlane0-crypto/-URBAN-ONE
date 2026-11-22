@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'apps/web/universal-36.html'
+      - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
       - 'apps/web/seva-crm-studio.html'
       - 'apps/web/seva-unified-studio.html'
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'apps/web/universal-36.html'
+      - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
       - 'apps/web/seva-crm-studio.html'
       - 'apps/web/seva-unified-studio.html'
