@@ -60,6 +60,7 @@ jobs:
           exit 1
       - name: Verify the three PR-preview portals in a real browser
         env:
+          SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
           PUBLIC_PORTAL_BASE_URL: http://127.0.0.1:4173/apps/web
           MOBILE_PORTAL_BASE_URL: http://127.0.0.1:4173/apps/mobile/www
         run: node scripts/public-portals-browser-smoke.mjs
