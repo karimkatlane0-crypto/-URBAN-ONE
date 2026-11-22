@@ -16,6 +16,8 @@ const targets = [
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Partner and SEVA Enterprise Onboarding', file: 'seva-titans-onboarding.html', title: /Sovereign Onboarding/i, localeSelector: false },
+  { name: 'SEVA TITANS Hub', file: 'seva-titans-hub.html', title: /SEVA TITANS.*People.*Browser/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'SEVA TITANS Relations', file: 'seva-titans-relations.html', title: /SEVA TITANS.*Research.*Relations/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'INSIDERS Finance Control Scenario', file: 'financial-insights.html', title: /Financial Insights AI/i, localeSelector: false },
   { name: 'INSIGHTS.ai Unified', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'INSIGHTS legacy route', file: 'insights-free.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false },
