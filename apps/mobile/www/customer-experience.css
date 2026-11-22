@@ -1,0 +1,24 @@
+/* SEVA CRM customer experience skin — aligned with TITANS Enterprise graphite and champagne system. */
+:root{color-scheme:dark;--crm-bg:#10161d;--crm-panel:#171f28;--crm-panel-2:#1b2631;--crm-line:#2a3743;--crm-gold:#e7c77e;--crm-gold-soft:#f1dca8;--crm-ink:#f2f3f1;--crm-muted:#aebbc4;--crm-positive:#7eb89a;--crm-warning:#d6a75e;--crm-danger:#d47e78}
+body{background:radial-gradient(ellipse at 85% 0%,rgba(231,199,126,.08),transparent 32%),var(--crm-bg)!important;color:var(--crm-ink)!important}
+.top{background:rgba(12,18,24,.96)!important;border-color:var(--crm-line)!important;box-shadow:0 8px 24px rgba(0,0,0,.16)!important}
+.brand{color:var(--crm-ink)!important}.mark{background:var(--crm-gold)!important;color:#171b20!important;box-shadow:none!important}.brand small{color:var(--crm-gold-soft)!important}
+.topnav a{color:var(--crm-muted)!important}.topnav a:hover{background:#1b2731!important;color:#fff!important}
+.version{background:#1b2731!important;color:var(--crm-gold-soft)!important;border:1px solid #665638!important}
+.side{background:var(--crm-panel)!important;border-color:var(--crm-line)!important;box-shadow:0 10px 30px rgba(0,0,0,.16)!important}
+.side-title{color:var(--crm-gold-soft)!important}.side a{color:var(--crm-muted)!important}.side a:hover,.side a:first-of-type{background:#263542!important;color:#fff!important}
+.side-foot{border-color:var(--crm-line)!important;color:var(--crm-muted)!important}
+.eyebrow{color:var(--crm-gold)!important}.hero{border-color:var(--crm-line)!important}h1,h2,h3{color:var(--crm-ink)!important}.lead{color:#c1ccd3!important}.asof{color:var(--crm-muted)!important}.asof strong{color:var(--crm-gold-soft)!important}
+.statusbar{background:var(--crm-panel)!important;border:1px solid var(--crm-line)!important;border-left:4px solid var(--crm-gold)!important;color:#d7dfe3!important;box-shadow:0 8px 24px rgba(0,0,0,.14)!important}.statusbar b{color:var(--crm-gold-soft)!important}.statusbar .dot{background:var(--crm-warning)!important}
+.kpi,.panel{background:linear-gradient(150deg,var(--crm-panel),#131b23)!important;border:1px solid var(--crm-line)!important;color:var(--crm-ink)!important;box-shadow:0 10px 28px rgba(0,0,0,.16)!important}
+.kpi span,.kpi small,.section-head p,.panel .meta,.list-item small{color:var(--crm-muted)!important}.kpi strong{color:#fff!important}
+.section-head{border-color:#665638!important}.section-head h2{color:var(--crm-gold-soft)!important}.section-head a{color:var(--crm-gold-soft)!important}
+.panel h3{color:#fff!important}.panel p{color:#c1ccd3!important}.panel .meta{border-color:var(--crm-line)!important}
+.table-wrap{background:var(--crm-panel)!important;border-color:var(--crm-line)!important}table{background:transparent!important;color:var(--crm-ink)!important}th{background:#1b2731!important;color:var(--crm-gold-soft)!important}td{color:#c1ccd3!important;border-color:var(--crm-line)!important}
+.list-item{background:var(--crm-panel)!important;border-color:var(--crm-line)!important;color:var(--crm-ink)!important}
+.safe{background:var(--crm-panel)!important;border:1px solid var(--crm-line)!important;border-left:4px solid var(--crm-gold)!important;color:#d7dfe3!important;box-shadow:0 8px 22px rgba(0,0,0,.14)!important}.safe strong{color:var(--crm-gold-soft)!important}
+.btn{background:#1b2731!important;border:1px solid #665638!important;color:var(--crm-gold-soft)!important}.btn.primary{background:var(--crm-gold)!important;color:#171b20!important;border-color:var(--crm-gold)!important}
+.pill{background:#1b2731!important;border-color:#665638!important;color:var(--crm-gold-soft)!important}.pill.ok{background:#17251e!important;border-color:#36543c!important;color:var(--crm-positive)!important}.pill.off{background:#2a1c1b!important;border-color:#5a3935!important;color:#e5aaa1!important}
+footer{background:transparent!important;border-color:var(--crm-line)!important;color:var(--crm-muted)!important}footer a{color:var(--crm-gold-soft)!important}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--crm-gold)!important;outline-offset:3px!important}
+@media(max-width:700px){.top{background:rgba(12,18,24,.96)!important}.side{background:var(--crm-panel)!important}}
