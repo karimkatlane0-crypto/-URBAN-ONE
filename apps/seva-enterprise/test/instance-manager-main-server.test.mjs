@@ -31,7 +31,7 @@ test('authenticated click-to-instance API provisions, isolates, stops and delete
  const app=await launch(join(dir,'seva.sqlite'));t.after(()=>app.stop());
  const {origin}=app;
  const page=await call(origin,'/instances.html');assert.equal(page.status,200);assert.match(page.body,/Click-to-instance/);assert.match(page.body,/instances.js/);
- const script=await call(origin,'/instances.js');assert.equal(script.status,200);assert.match(script.body,/api\\/instances/);
+ const script=await call(origin,'/instances.js');assert.equal(script.status,200);assert.ok(script.body.includes('/api/instances'));
  const styles=await call(origin,'/instances.css');assert.equal(styles.status,200);assert.match(styles.body,/grid-template-columns/);
  assert.equal((await call(origin,'/api/instances/catalog')).status,401);
  const a=await register(origin,'instance-a@synthetic.invalid');
