@@ -51,7 +51,7 @@ function readConfig(env = {}) {
   if (!configured.length || configured.some(value => !ALLOWED_ALGORITHMS.has(value))) {
     throw new Error('IAM_ALGORITHM_POLICY_INVALID');
   }
-  return Object.freeze({ issuer: issuerUrl.href.replace(/\/$/, ''), audience, jwksUrl: keysUrl.href, algorithms: new Set(configured) });
+  return Object.freeze({ issuer, audience, jwksUrl: keysUrl.href, algorithms: new Set(configured) });
 }
 
 function verifyJwtSignature(algorithm, signingInput, signature, publicKey) {
@@ -94,7 +94,8 @@ export function createOidcAuthenticator({
       method: 'GET',
       redirect: 'error',
       cache: 'no-store',
-      headers: { accept: 'application/json' }
+      headers: { accept: 'application/json' },
+      signal: AbortSignal.timeout(5000)
     });
     if (!response?.ok) throw new Error('IAM_JWKS_UNAVAILABLE');
     const contentLength = Number(response.headers?.get?.('content-length') || 0);
@@ -129,7 +130,7 @@ export function createOidcAuthenticator({
     const claims = decodeJsonSegment(parts[1]);
     if (!header || typeof header !== 'object' || Array.isArray(header) ||
         !config.algorithms.has(header.alg) || !ALLOWED_ALGORITHMS.has(header.alg) ||
-        (header.typ && header.typ !== 'JWT') || typeof header.kid !== 'string' || !header.kid) {
+        (header.typ && header.typ !== 'JWT') || header.crit !== undefined || typeof header.kid !== 'string' || !header.kid) {
       throw new Error('JWT_HEADER_INVALID');
     }
 
@@ -150,6 +151,7 @@ export function createOidcAuthenticator({
       throw new Error('JWT_SIGNATURE_INVALID');
     }
 
+    if (!claims || typeof claims !== 'object' || Array.isArray(claims)) throw new Error('JWT_CLAIMS_INVALID');
     const currentSeconds = Math.floor(now() / 1000);
     const tolerance = Math.max(0, Number(clockToleranceSeconds) || 0);
     if (claims.iss !== config.issuer) throw new Error('JWT_ISSUER_INVALID');
