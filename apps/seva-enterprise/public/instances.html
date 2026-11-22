@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1422"><title>SEVA · Instance Manager</title>
+<link rel="stylesheet" href="/instances.css">
+<script type="module" src="/instances.js"></script>
+</head>
+<body>
+<header><a href="/" class="brand">SEVA <span>INSTANCE MANAGER</span></a><a href="/">Torna al workspace</a></header>
+<main>
+<section class="hero"><p class="eyebrow">BUILD · SANDBOX</p><h1>Click-to-instance</h1><p>Crea e gestisci istanze dimostrative isolate. Questo ambiente simula il ciclo di vita in memoria: non crea container né risorse cloud.</p><div id="connection" class="status">Verifica sessione…</div></section>
+<section class="panel"><div class="section-head"><div><h2>Catalogo moduli</h2><p>Seleziona un modulo e crea un'istanza di test.</p></div><button id="refresh" class="secondary">Aggiorna</button></div><div id="catalog" class="grid"></div></section>
+<section class="panel"><div class="section-head"><div><h2>Le tue istanze</h2><p>Visibilità limitata all'account autenticato.</p></div><span id="count" class="muted">0 istanze</span></div><div id="instances" class="instances"><p class="muted">Nessuna istanza.</p></div></section>
+<section class="notice"><strong>Limiti sandbox</strong><p id="adapter">Stato adapter in caricamento…</p><p>Registro volatile: le istanze scompaiono al riavvio del processo. Nessun accesso a produzione, segreti, database applicativi o rete esterna.</p></section>
+<p id="message" role="status" aria-live="polite"></p>
+</main>
+</body></html>

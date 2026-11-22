@@ -28,6 +28,8 @@ import {validateCommercialDraft,produceDraft} from './communications.mjs';
 import {validateRuntime,sameOrigin,databaseReady} from './runtime.mjs';
 import {bankConfig,BANK_PLAN_AMOUNTS} from './bank-transfer.mjs';
 import {createMobileIntegration} from './mobile-sync-integration.mjs';
+import {createInstanceManager} from '../../packages/titans/instance-manager.mjs';
+import {createSandboxProvisioner} from './instance-sandbox.mjs';
 
 validateRuntime();
 const root=resolve(fileURLToPath(new URL('./public/',import.meta.url)));
@@ -36,6 +38,18 @@ const mobileIntegration=createMobileIntegration({store});
 const commerce=createCommerce(store);
 const affiliateLedger=createAffiliateLedger(store);
 const notifications=createNotificationCenter(store);
+const sandboxProvisioner=createSandboxProvisioner({maxInstances:50});
+const instanceManager=createInstanceManager({
+  catalog:[
+    {id:'ingest',version:'1.0.0',description:'Sandbox ingestion worker template; synthetic data only.',capabilities:['events.ingest'],resourceProfile:{cpu:1,memoryMb:256,storageMb:512},environments:['test','staging']},
+    {id:'dbrelay',version:'1.0.0',description:'Sandbox relay lifecycle template; no application database connection.',capabilities:['relay.simulate'],resourceProfile:{cpu:1,memoryMb:256,storageMb:256},environments:['test','staging']},
+    {id:'insights',version:'1.0.0',description:'Sandbox analytics worker; synthetic events only.',capabilities:['analytics.simulate'],resourceProfile:{cpu:1,memoryMb:512,storageMb:512},environments:['test','staging']},
+    {id:'crm',version:'1.0.0',description:'Sandbox CRM worker; no customer records or external integrations.',capabilities:['crm.simulate'],resourceProfile:{cpu:1,memoryMb:256,storageMb:256},environments:['test','staging']}
+  ],
+  provisioner:sandboxProvisioner,
+  authorize:async ({action})=>['instance.create','instance.stop','instance.delete'].includes(action),
+  maxInstancesPerTenant:5
+});
 const port=Number(process.env.PORT||3000);
 const processInstanceId=randomUUID();
 const json=(res,code,value)=>{res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(value));};
@@ -105,6 +119,24 @@ const developerApi=createDeveloperApi(store, developerAI);
 async function route(req,res){const method=req.method||'GET';const url=new URL(req.url||'/', 'http://localhost');const path=url.pathname;
  if(path==='/health'){const ready=databaseReady(store.db);return json(res,ready?200:503,{ok:ready,service:'seva',instanceId:processInstanceId,timestamp:new Date().toISOString()});}
  if(path==='/api/public/status')return json(res,200,status());
+ if(path==='/api/instances/catalog'&&method==='GET'){const u=auth(req);return json(res,200,{modules:instanceManager.catalog().map(m=>({...m,name:m.id}))});}
+ if(path==='/api/instances/adapter'&&method==='GET'){auth(req);return json(res,200,{status:sandboxProvisioner.status()});}
+ if(path==='/api/instances'&&method==='GET'){const u=auth(req);return json(res,200,{instances:instanceManager.list({tenantId:u.id})});}
+ if(path==='/api/instances'&&method==='POST'){
+   if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});
+   rate(req,'instance-create',8);const u=auth(req);
+   if(!(req.headers['content-type']||'').startsWith('application/json'))return json(res,415,{error:'JSON required'});
+   const body=JSON.parse(await rawBody(req,3000));
+   const instance=await instanceManager.create({tenantId:u.id,moduleId:body.moduleId,version:body.version,environment:body.environment||'test',idempotencyKey:body.idempotencyKey});
+   const health=await sandboxProvisioner.health({instanceId:instance.id,tenantId:u.id});
+   if(health.status==='healthy')instanceManager.updateHealth({tenantId:u.id,instanceId:instance.id,status:health.status,checkedAt:health.checkedAt});
+   store.audit(u.id,'sandbox_instance_created',instance.id);
+   return json(res,201,{instance:instanceManager.get({tenantId:u.id,instanceId:instance.id}),adapter:'in-memory-sandbox'});
+ }
+ const instanceAction=path.match(/^\/api\/instances\/([0-9a-f-]{36})\/(stop)$/);
+ if(instanceAction&&method==='POST'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-stop',8);const u=auth(req);const result=await instanceManager.stop({tenantId:u.id,instanceId:instanceAction[1]});store.audit(u.id,'sandbox_instance_stopped',instanceAction[1]);return json(res,200,{instance:result});}
+ const instanceDelete=path.match(/^\/api\/instances\/([0-9a-f-]{36})$/);
+ if(instanceDelete&&method==='DELETE'){if(!sameOrigin(req))return json(res,403,{error:'Cross-origin request rejected'});rate(req,'instance-delete',8);const u=auth(req);const result=await instanceManager.delete({tenantId:u.id,instanceId:instanceDelete[1]});store.audit(u.id,'sandbox_instance_deleted',instanceDelete[1]);return json(res,200,{instance:result});}
  if(await mobileIntegration.handle(req,res))return;
  if(path==='/api/stripe/webhook'&&method==='POST'){
     // In SEPA-only mode, no Stripe event may mutate customer access or orders.
@@ -313,6 +345,6 @@ async function route(req,res){const method=req.method||'GET';const url=new URL(r
  const file=path==='/'?'/index.html':path;const full=resolve(root,'.'+file);if(!full.startsWith(root+'/')&&full!==root)return json(res,403,{error:'Denied'});
  try{const data=await readFile(full);const type=({'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.png':'image/png'}[extname(full)]||'application/octet-stream');res.writeHead(200,{'Content-Type':type,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"});res.end(method==='HEAD'?undefined:data);}catch{return json(res,404,{error:'Not found'});}
 }
-const server=createServer((req,res)=>Promise.resolve(route(req,res)).catch(e=>{console.error(new Date().toISOString(),String(e.message));const code=e.status||(e instanceof RangeError||/Invalid|not found|unavailable|cycle|Maximum|Mismatch|already|constraint|UNIQUE/i.test(e.message)?400:500);json(res,code,{error:code===500?'Internal server error':e.message});}));
+const server=createServer((req,res)=>Promise.resolve(route(req,res)).catch(e=>{console.error(new Date().toISOString(),String(e.message));const code=e.status||(e instanceof RangeError||/Invalid|not found|unavailable|cycle|Maximum|Mismatch|already|constraint|UNIQUE|ENVIRONMENT|MODULE|TENANT|IDEMPOTENCY|INSTANCE|SANDBOX|HUMAN_APPROVAL|PROVISIONING|RESOURCE|PROVISIONER/i.test(e.message)?400:500);json(res,code,{error:code===500?'Internal server error':e.message});}));
 if(process.env.SEVA_NO_LISTEN!=='1')server.listen(port,()=>console.log(`SEVA listening on http://localhost:${port}`));
 export {server,store};
