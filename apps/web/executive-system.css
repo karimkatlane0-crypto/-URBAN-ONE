@@ -104,3 +104,211 @@ footer a{color:var(--exec-gold-soft)!important;font-weight:800}
 @media(min-width:641px) and (max-width:900px){
  :where(.grid,.sectors,.product-grid){grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* SEVA Intelligence Studio — TITANS Enterprise visual refresh.
+   Scope is limited to the unified SEVA Studio entrypoint; shared TITANS tokens remain canonical. */
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]){
+  background:
+    radial-gradient(ellipse at 78% 2%,rgba(231,199,126,.12),transparent 34%),
+    radial-gradient(ellipse at 4% 42%,rgba(93,130,151,.08),transparent 32%),
+    var(--exec-bg)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .shell{
+  max-width:1600px;
+  padding-left:clamp(16px,3vw,42px);
+  padding-right:clamp(16px,3vw,42px);
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header{
+  min-height:78px;
+  gap:18px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .brand{
+  min-width:0;
+  font-family:Manrope,'DM Sans',sans-serif;
+  font-size:13px;
+  letter-spacing:.09em;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .mark{
+  width:42px;height:42px;border-radius:8px!important;
+  background:linear-gradient(145deg,#f1dfad,#c5a35d)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header nav{
+  gap:5px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header nav a{
+  border:1px solid transparent;
+  border-radius:6px!important;
+  font-size:11px;
+  white-space:nowrap;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header nav a:hover,
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header nav a:focus-visible{
+  border-color:#665638;
+  background:linear-gradient(135deg,#202d37,#17212b)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero{
+  min-height:330px;
+  margin:24px 0 18px;
+  padding:clamp(28px,4vw,54px);
+  border:1px solid #3b4851;
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 88% 26%,rgba(231,199,126,.16),transparent 34%),
+    linear-gradient(120deg,#18232d,#1b2832 58%,#202d35);
+  box-shadow:var(--exec-shadow);
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero:before{
+  right:clamp(20px,4vw,52px);
+  top:30px;
+  width:clamp(90px,14vw,190px);
+  height:4px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero h1{
+  max-width:780px;
+  font-size:clamp(2.5rem,5vw,4.8rem);
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero-meta{
+  border-radius:9px!important;
+  background:rgba(12,19,26,.48)!important;
+  border:1px solid #40505a!important;
+  border-left:4px solid var(--exec-gold)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .toolbar{
+  position:relative;
+  grid-template-columns:minmax(220px,1fr) minmax(160px,220px) auto;
+  gap:14px;
+  margin:18px 0 6px;
+  border:1px solid var(--exec-line)!important;
+  border-top:3px solid var(--exec-gold)!important;
+  border-radius:10px!important;
+  background:linear-gradient(145deg,#18232d,#131c25)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .count{
+  border:1px solid #3a4854;
+  border-radius:6px;
+  background:#101820;
+  color:#e8d9b4;
+  font-variant-numeric:tabular-nums;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .group{
+  padding-top:34px;
+  scroll-margin-top:92px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .group-head{
+  align-items:center;
+  padding:0 0 13px;
+  border-bottom:1px solid #665638!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .group-head h2{
+  font-size:clamp(16px,1.5vw,20px);
+  letter-spacing:-.01em;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .grid{
+  gap:15px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) article{
+  min-height:242px;
+  padding:21px!important;
+  border-radius:10px!important;
+  background:linear-gradient(155deg,#1c2934,#141e27)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) article:before{
+  height:3px;
+  border-radius:10px 10px 0 0;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) article:hover{
+  transform:translateY(-3px);
+  border-color:#796744!important;
+  box-shadow:0 20px 42px rgba(0,0,0,.3)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .icon{
+  width:38px;height:38px;
+  border-radius:8px;
+  background:#29343b;
+  border-color:#5b503b;
+  color:var(--exec-gold-soft);
+  font-weight:800;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .status{
+  padding:5px 8px;
+  border:1px solid #5a4b31;
+  border-radius:999px;
+  background:#28261f;
+  line-height:1.4;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .status.good{
+  border-color:#365a49;
+  background:#182a24;
+  color:#9bd0ad!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .status.neutral{
+  border-color:#3a4854;
+  background:#1b252d;
+  color:#bdc8ce!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .open{
+  padding-top:13px;
+  margin-top:14px;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .notice{
+  border-radius:9px!important;
+  background:linear-gradient(110deg,#1b2831,#151e27)!important;
+}
+body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) footer{
+  margin-top:34px;
+  padding-bottom:36px;
+}
+@media(max-width:900px){
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .shell{
+    padding-left:22px;padding-right:22px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero{
+    min-height:0;
+  }
+}
+@media(max-width:640px){
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .shell{
+    padding-left:14px;padding-right:14px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header{
+    align-items:flex-start;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) header nav{
+    display:flex!important;
+    width:100%;
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    padding:4px 0 9px;
+    scrollbar-width:thin;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .version{
+    margin-left:auto;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero{
+    margin-top:14px;
+    padding:25px 20px;
+    border-radius:11px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .hero:before{
+    top:16px;right:18px;width:78px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .toolbar{
+    grid-template-columns:minmax(0,1fr);
+    padding:14px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .count{
+    text-align:left;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) .group{
+    padding-top:26px;
+  }
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) article{
+    min-height:0;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body:has(.shell > header > .brand[href^="https://seva.karimkatlane0.chatgpt.site"]) article{
+    transition:none!important;
+  }
+}
