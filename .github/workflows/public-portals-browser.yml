@@ -6,7 +6,7 @@ on:
       - 'apps/web/super-ai.html'
       - 'apps/web/super-ai-settings.html'
       - 'apps/web/v10-workspace.html'
-      - 'apps/web/insights-ai.html'
+      - 'apps/web/insights-ai.html'\n      - 'apps/web/executive-system.css'\n      - 'apps/web/universal-navigation.js'
       - 'apps/web/universal-36.html'
       - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
