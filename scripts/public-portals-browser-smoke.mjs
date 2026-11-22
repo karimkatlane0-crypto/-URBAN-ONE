@@ -251,12 +251,35 @@ try {
   await browser.close();
 }
 
+const boundaryFor = (name) => {
+  if (/TITANS/i.test(name)) return 'TITANS';
+  if (/SEVA/i.test(name)) return 'SEVA';
+  if (/INSIDERS|INSIGHTS|Financial/i.test(name)) return 'INSIDERS-INSIGHTS';
+  if (/Maps|Europe/i.test(name)) return 'MAPS-EUROPA';
+  if (/SYNAPSY/i.test(name)) return 'SYNAPSY';
+  if (/Discovery/i.test(name)) return 'KKUBERA';
+  if (/URBAN ONE/i.test(name)) return 'URBAN-ONE';
+  if (/SUPER.AI|Universal/i.test(name)) return 'SUPER-AI-UNIVERSAL-36';
+  return 'OTHER';
+};
+const boundaries = Object.fromEntries([...new Set(results.map(item => boundaryFor(item.name)))].map(boundary => {
+  const scoped = results.filter(item => boundaryFor(item.name) === boundary);
+  return [boundary, {
+    total: scoped.length,
+    passed: scoped.filter(item => item.status === 'PASS').length,
+    failed: scoped.filter(item => item.status !== 'PASS').length,
+    routes: scoped.map(item => ({ name: item.name, status: item.status, error: item.error || null }))
+  }];
+}));
 const report = {
   generatedAt: new Date().toISOString(),
   sourceCommit: process.env.GITHUB_SHA || 'UNPINNED',
   publicBaseUrl: base,
   browser: 'Playwright Chromium',
+  viewportWidths: [320, 360, 390, 768, 1024, 1280, 1440],
+  accessibilityTags: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'],
   results,
+  boundaries,
   passed: results.filter(item => item.status === 'PASS').length,
   failed: results.filter(item => item.status !== 'PASS').length
 };
