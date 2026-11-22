@@ -43,3 +43,17 @@ test('product search and navigation controls are wired', () => {
   assert.match(html, /addEventListener\('input'/);
   assert.match(html, /aria-current/);
 });
+
+test('desktop and mobile workspace links point to distinct reciprocal destinations', () => {
+  assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html"[\s\S]*?TITANS MOBILE/);
+  const mobile = html.replace(/apps\/web\/titans-enterprise-studio\.html/, 'apps/mobile/www/titans-enterprise-studio.html');
+  assert.ok(mobile.includes('TITANS WEB'));
+});
+
+test('product search is explicitly described as a local filter, not AI search', () => {
+  assert.match(html, /Filtra prodotti localmente; non è una ricerca AI/);
+});
+
+test('evidence snapshot is explicitly marked stale and non-live', () => {
+  assert.match(html, /Fotografia di governance al 19\/11\/2026: non sincronizzata live/);
+});
