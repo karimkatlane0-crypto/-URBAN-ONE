@@ -14,6 +14,9 @@ test('TITANS exposes customer experience and SEVA CRM entry points on Web and Mo
     assert.match(html, /href="#customer-experience"/);
     assert.match(html, /href="\.\/seva-crm-studio\.html#overview"/);
     assert.match(html, /One customer journey\. Governed at every step\./);
+    assert.match(html, /TITANS PARTNER \/ SEVA ENTERPRISE ONBOARDING/);
+    assert.match(html, /INSIDERS FINANCE CONTROL/);
+    assert.match(html, /TITANS SOVEREIGN EXECUTIVE CONTROL/);
   }
   const extract = (html) => html.match(/<section id="customer-experience"[\s\S]*?<\/section>/)?.[0] ?? null;
   assert.ok(extract(web), 'Web customer experience section exists');
@@ -30,6 +33,9 @@ test('SEVA CRM entry points resolve to real, named customer lifecycle sections',
     assert.match(crmWeb, new RegExp('id="' + id + '"'));
   }
   assert.match(crmWeb, /href="\.\/customer-experience\.css"/);
+  assert.match(crmWeb, /ULTIMO SNAPSHOT DISPONIBILE · STORICO/);
+  assert.match(crmWeb, /nessuna sincronizzazione automatica attiva/i);
+  assert.doesNotMatch(crmWeb, /SNAPSHOT VERIFICATO/);
 });
 
 test('SEVA CRM visual skin is identical across Web and Mobile', async () => {
