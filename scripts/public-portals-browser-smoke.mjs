@@ -4,22 +4,31 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 
 const base = process.env.PUBLIC_PORTAL_BASE_URL || 'https://karimkatlane0-crypto.github.io/-URBAN-ONE/apps/web';
+const mobileBase = process.env.MOBILE_PORTAL_BASE_URL || base;
 const targets = [
   { name: 'Discovery', file: 'discovery.html', title: /soggiorni e immobili/i },
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
-  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true },
+  { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true, verifyInternalLinks: true },
+  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'SUPER.AI Settings', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'URBAN ONE Workspace', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Partner and SEVA Enterprise Onboarding', file: 'seva-titans-onboarding.html', title: /Sovereign Onboarding/i, localeSelector: false },
   { name: 'INSIDERS Finance Control Scenario', file: 'financial-insights.html', title: /Financial Insights AI/i, localeSelector: false },
-  { name: 'INSIGHTS.ai Unified', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false },
+  { name: 'INSIGHTS.ai Unified', file: 'insights-ai.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false, verifyInternalLinks: true },
   { name: 'INSIGHTS legacy route', file: 'insights-free.html', title: /INSIGHTS.ai.*Unified Intelligence/i, localeSelector: false },
   { name: 'Europe Maps', file: 'maps-europe.html', title: /GMAPS Europa/i, localeSelector: false },
   { name: 'SYNAPSY', file: 'synapsy.html', title: /SYNAPSY/i, localeSelector: false },
   { name: 'URBAN ONE Universal', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false },
   { name: 'Financial Scenario Calculator', file: 'financial-dashboard.html', title: /Financial Scenario Calculator/i, localeSelector: false },
-  { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true }
+  { name: 'Universal Instance Manager', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true },
+  { name: 'Mobile SUPER.AI Hub', root: 'mobile', file: 'super-ai.html', title: /SUPER.AI.*Universal Mobile Hub/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile SUPER.AI Settings', root: 'mobile', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile URBAN ONE Home', root: 'mobile', file: 'index.html', title: /URBAN ONE UNIVERSAL/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Discovery', root: 'mobile', file: 'discovery.html', title: /soggiorni e immobili/i, localeSelector: false, verifyInternalLinks: true },
+  { name: 'Mobile Instance Manager', root: 'mobile', file: 'instance-manager.html', title: /Universal Instance Manager/i, localeSelector: false, verifyInstanceManager: true }
 ];
 const outDir = 'release/browser-proof';
 fs.mkdirSync(outDir, { recursive: true });
@@ -28,7 +37,8 @@ const results = [];
 
 try {
   for (const target of targets) {
-    const url = new URL(target.file, base.endsWith('/') ? base : base + '/').href;
+    const rootBase = target.root === 'mobile' ? mobileBase : base;
+    const url = new URL(target.file, rootBase.endsWith('/') ? rootBase : rootBase + '/').href;
     const result = { name: target.name, url, status: 'FAIL' };
     const context = await browser.newContext({ viewport: { width: 1365, height: 900 } });
     const page = await context.newPage();
@@ -42,6 +52,57 @@ try {
 
       result.title = await page.title();
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
+
+
+      if (target.verifyInternalLinks) {
+        result.internalNavigation = await page.evaluate(async () => {
+          const links = [...document.querySelectorAll('a[href]')];
+          const failures = [];
+          const checked = new Set();
+          for (const link of links) {
+            const raw = link.getAttribute('href') || '';
+            if (!raw || /^(mailto:|tel:|javascript:|data:)/i.test(raw)) continue;
+            const url = new URL(raw, location.href);
+            if (url.origin !== location.origin || !/\.html$/i.test(url.pathname) || checked.has(url.pathname + url.hash)) continue;
+            checked.add(url.pathname + url.hash);
+            if (url.pathname === location.pathname && url.hash) {
+              const id = decodeURIComponent(url.hash.slice(1));
+              if (!document.getElementById(id) && !document.getElementsByName(id).length) failures.push({ href: raw, reason: 'missing in-page anchor' });
+              continue;
+            }
+            try {
+              const response = await fetch(url.href, { method: 'GET', credentials: 'same-origin' });
+              if (!response.ok) {
+                failures.push({ href: raw, status: response.status });
+                continue;
+              }
+              if (url.hash) {
+                const html = await response.text();
+                const targetDoc = new DOMParser().parseFromString(html, 'text/html');
+                const id = decodeURIComponent(url.hash.slice(1));
+                if (!targetDoc.getElementById(id) && !targetDoc.getElementsByName(id).length) failures.push({ href: raw, reason: 'missing destination anchor' });
+              }
+            } catch (error) {
+              failures.push({ href: raw, reason: String(error) });
+            }
+          }
+          return { checked: checked.size, failures };
+        });
+        if (result.internalNavigation.failures.length) throw new Error('Broken internal navigation: ' + JSON.stringify(result.internalNavigation.failures));
+      }
+
+      if (target.verifyWorkspaceFilters) {
+        const before = await page.locator('article[data-category]:visible').count();
+        const filter = page.locator('[data-filter]:not([data-filter="all"])').first();
+        if (await filter.count() === 0) throw new Error('Workspace category filters missing');
+        await filter.click();
+        const after = await page.locator('article[data-category]:visible').count();
+        if (after === 0 || after >= before) throw new Error('Workspace category filter did not narrow visible modules');
+        await page.locator('#reset').click();
+        const restored = await page.locator('article[data-category]:visible').count();
+        if (restored !== before) throw new Error('Workspace reset did not restore all modules');
+        result.workspaceFilters = { before, after, restored };
+      }
 
       if (target.verifyInstanceManager) {
         await page.waitForFunction(() => document.querySelector('#connection')?.textContent !== 'Verifica backend…', null, { timeout: 10000 }).catch(() => {});
