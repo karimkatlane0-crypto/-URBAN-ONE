@@ -2,8 +2,6 @@ import { createHash } from 'node:crypto';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256 = /^[a-f0-9]{64}$/;
-const STATES = new Set(['queued', 'provisioning', 'running', 'stopping', 'stopped', 'failed', 'deleted']);
-
 function requiredString(value, code, max = 200) {
   if (typeof value !== 'string' || !value.trim() || value.length > max) throw new Error(code);
   return value.trim();
