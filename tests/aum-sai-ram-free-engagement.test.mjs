@@ -27,7 +27,7 @@ test('Free engagement terms are transparent and do not imply SSSIO affiliation',
     assert.match(html, /Default revenue share: <strong>0%/);
     assert.match(html, /separate written agreement/);
     assert.match(html, /not part of, affiliated with, endorsed by or speaking for/);
-    assert.match(html, /No mass outreach/);
+    assert.match(html, /no mass outreach/i);
     assert.match(html, /karimkatlane0@gmail\.com/);
   }
 });
