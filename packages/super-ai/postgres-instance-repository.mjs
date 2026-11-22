@@ -1,25 +1,36 @@
 import { createHash } from 'node:crypto';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const SHA256 = /^[a-f0-9]{64}$/;
+
 function requiredString(value, code, max = 200) {
   if (typeof value !== 'string' || !value.trim() || value.length > max) throw new Error(code);
   return value.trim();
 }
 
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
+  }
+  return value;
+}
+
 function validateCreate(input) {
   if (!input || !UUID.test(input.tenantId || '') || !UUID.test(input.instanceId || '')) throw new Error('INSTANCE_ID_INVALID');
-  requiredString(input.actorId, 'INSTANCE_ACTOR_REQUIRED');
-  requiredString(input.moduleId, 'INSTANCE_MODULE_INVALID', 63);
-  requiredString(input.moduleVersion, 'INSTANCE_VERSION_REQUIRED', 80);
-  requiredString(input.provider, 'INSTANCE_PROVIDER_REQUIRED', 80);
+  const actorId = requiredString(input.actorId, 'INSTANCE_ACTOR_REQUIRED');
+  const moduleId = requiredString(input.moduleId, 'INSTANCE_MODULE_INVALID', 63);
+  if (!/^[a-z][a-z0-9-]{1,62}$/.test(moduleId)) throw new Error('INSTANCE_MODULE_INVALID');
+  const moduleVersion = requiredString(input.moduleVersion, 'INSTANCE_VERSION_REQUIRED', 80);
+  const provider = requiredString(input.provider, 'INSTANCE_PROVIDER_REQUIRED', 80);
   if (!['development', 'test', 'staging', 'production'].includes(input.environment)) throw new Error('INSTANCE_ENVIRONMENT_INVALID');
-  if (!input.idempotencyKey || input.idempotencyKey.length < 8 || input.idempotencyKey.length > 128) throw new Error('INSTANCE_IDEMPOTENCY_KEY_INVALID');
-  if (!SHA256.test(input.requestSha256 || '')) throw new Error('INSTANCE_REQUEST_HASH_INVALID');
+  if (typeof input.idempotencyKey !== 'string' || input.idempotencyKey.length < 8 || input.idempotencyKey.length > 128) throw new Error('INSTANCE_IDEMPOTENCY_KEY_INVALID');
   if (input.resourceProfile !== undefined && (!input.resourceProfile || typeof input.resourceProfile !== 'object' || Array.isArray(input.resourceProfile))) throw new Error('INSTANCE_RESOURCE_PROFILE_INVALID');
-  const quota = input.quota ?? 50;
-  if (!Number.isSafeInteger(quota) || quota < 1 || quota > 100000) throw new Error('INSTANCE_QUOTA_INVALID');
-  return { ...input, quota };
+  return {
+    tenantId: input.tenantId, instanceId: input.instanceId, actorId, moduleId,
+    moduleVersion, provider, environment: input.environment,
+    idempotencyKey: input.idempotencyKey,
+    resourceProfile: canonicalize(input.resourceProfile ?? {})
+  };
 }
 
 async function inTenantTransaction(pool, tenantId, work) {
@@ -40,15 +51,25 @@ async function inTenantTransaction(pool, tenantId, work) {
 
 /**
  * PostgreSQL-backed Instance Manager repository.
- * Requires a pg-compatible Pool and migrations 0001_control_plane.
- * Actor membership must be provisioned by the authenticated IAM service.
+ * Quotas are trusted server configuration or resolved from the tenant plan,
+ * never accepted from the request body. actorId must come from authenticated IAM.
  */
-export function createPostgresInstanceRepository({ pool }) {
+export function createPostgresInstanceRepository({ pool, resolveQuota, defaultQuota = 50 }) {
   if (!pool || typeof pool.connect !== 'function') throw new Error('POSTGRES_POOL_REQUIRED');
+  if (typeof defaultQuota !== 'number' || !Number.isSafeInteger(defaultQuota) || defaultQuota < 1 || defaultQuota > 100000) {
+    throw new Error('INSTANCE_DEFAULT_QUOTA_INVALID');
+  }
+  if (resolveQuota !== undefined && typeof resolveQuota !== 'function') throw new Error('INSTANCE_QUOTA_RESOLVER_INVALID');
 
   return Object.freeze({
     async create(input) {
       const data = validateCreate(input);
+      const requestSha256 = sha256Request({
+        tenantId: data.tenantId, actorId: data.actorId, instanceId: data.instanceId,
+        moduleId: data.moduleId, moduleVersion: data.moduleVersion,
+        environment: data.environment, provider: data.provider,
+        resourceProfile: data.resourceProfile
+      });
       return inTenantTransaction(pool, data.tenantId, async client => {
         const membership = await client.query(
           "SELECT role FROM super_ai.tenant_memberships WHERE tenant_id=$1 AND actor_id=$2 AND status='active'",
@@ -65,7 +86,7 @@ export function createPostgresInstanceRepository({ pool }) {
         );
         if (prior.rows?.length) {
           const row = prior.rows[0];
-          if (row.request_sha256 !== data.requestSha256) throw new Error('INSTANCE_IDEMPOTENCY_CONFLICT');
+          if (row.request_sha256 !== requestSha256) throw new Error('INSTANCE_IDEMPOTENCY_CONFLICT');
           if (row.response) return { ...row.response, replayed: true };
           const existing = await client.query(
             'SELECT id, tenant_id, module_id, module_version, environment, state, provider, provider_instance_id, resource_profile, health, error_code, created_at, updated_at FROM super_ai.service_instances WHERE tenant_id=$1 AND id=$2',
@@ -75,23 +96,27 @@ export function createPostgresInstanceRepository({ pool }) {
           return { instance: existing.rows[0], replayed: true };
         }
 
+        const quota = resolveQuota
+          ? await resolveQuota({ client, tenantId: data.tenantId })
+          : defaultQuota;
+        if (!Number.isSafeInteger(quota) || quota < 1 || quota > 100000) throw new Error('INSTANCE_TENANT_QUOTA_INVALID');
         const count = await client.query(
           "SELECT count(*)::int AS total FROM super_ai.service_instances WHERE tenant_id=$1 AND state NOT IN ('deleted','failed')",
           [data.tenantId]
         );
-        if ((count.rows?.[0]?.total ?? 0) >= data.quota) throw new Error('INSTANCE_TENANT_QUOTA_REACHED');
+        if ((count.rows?.[0]?.total ?? 0) >= quota) throw new Error('INSTANCE_TENANT_QUOTA_REACHED');
 
         const inserted = await client.query(
           `INSERT INTO super_ai.service_instances
             (id, tenant_id, module_id, module_version, environment, state, provider, resource_profile)
            VALUES ($1,$2,$3,$4,$5,'queued',$6,$7::jsonb)
            RETURNING id, tenant_id, module_id, module_version, environment, state, provider, provider_instance_id, resource_profile, health, error_code, created_at, updated_at`,
-          [data.instanceId, data.tenantId, data.moduleId, data.moduleVersion, data.environment, data.provider, JSON.stringify(data.resourceProfile ?? {})]
+          [data.instanceId, data.tenantId, data.moduleId, data.moduleVersion, data.environment, data.provider, JSON.stringify(data.resourceProfile)]
         );
         const response = { instance: inserted.rows[0], replayed: false };
         await client.query(
           'INSERT INTO super_ai.instance_idempotency (tenant_id,idempotency_key,request_sha256,instance_id,response) VALUES ($1,$2,$3,$4,$5::jsonb)',
-          [data.tenantId, data.idempotencyKey, data.requestSha256, data.instanceId, JSON.stringify(response)]
+          [data.tenantId, data.idempotencyKey, requestSha256, data.instanceId, JSON.stringify(response)]
         );
         await client.query(
           'INSERT INTO super_ai.audit_events (tenant_id,actor_id,action,resource_type,resource_id,detail) VALUES ($1,$2,$3,$4,$5,$6::jsonb)',
@@ -121,5 +146,5 @@ export function createPostgresInstanceRepository({ pool }) {
 }
 
 export function sha256Request(value) {
-  return createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(value)).digest('hex');
+  return createHash('sha256').update(JSON.stringify(canonicalize(value))).digest('hex');
 }
