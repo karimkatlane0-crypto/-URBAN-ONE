@@ -10,7 +10,7 @@ const targets = [
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
   { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true, verifyInternalLinks: true, verifyNavigation: 'instance-manager.html' },
-  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai-settings.html' },
+  { name: 'SUPER.AI Control Plane', file: 'super-ai.html', title: /SUPER.AI.*Unified Platform Control Plane/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai-settings.html', verifyNavigationGraph: true },
   { name: 'SUPER.AI Settings', file: 'super-ai-settings.html', title: /SUPER.AI.*Impostazioni piattaforma/i, localeSelector: false, verifyInternalLinks: true, verifyNavigation: 'super-ai.html' },
   { name: 'URBAN ONE Workspace', file: 'v10-workspace.html', title: /URBAN ONE Universal/i, localeSelector: false, verifyInternalLinks: true, verifyWorkspaceFilters: true },
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
@@ -69,7 +69,7 @@ try {
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
 
 
-      if (target.verifyInternalLinks) {
+      if (target.verifyInternalLinks !== false) {
         result.internalNavigation = await page.evaluate(async () => {
           const links = [...document.querySelectorAll('a[href]')];
           const failures = [];
@@ -106,6 +106,13 @@ try {
         if (result.internalNavigation.failures.length) throw new Error('Broken internal navigation: ' + JSON.stringify(result.internalNavigation.failures));
       }
 
+
+      if (target.verifyNavigationGraph) {
+        result.navigationGraph = await page.evaluate(() => window.SUPER_AI_NAVIGATION?.verify?.() || null);
+        if (!result.navigationGraph || result.navigationGraph.total !== 11 || result.navigationGraph.failed !== 0) {
+          throw new Error('Universal navigation graph failed: ' + JSON.stringify(result.navigationGraph));
+        }
+      }
 
       if (target.verifyNavigation) {
         const navLink = page.locator('a[href="./' + target.verifyNavigation + '"]').first();
@@ -198,7 +205,7 @@ try {
       if (!result.keyboardFocus?.visible) throw new Error('Keyboard Tab did not reach a visible focus target');
 
       const accessibility = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'])
         .analyze();
       result.accessibility = {
         violations: accessibility.violations.map((item) => ({
@@ -217,10 +224,14 @@ try {
         throw new Error('WCAG automated violations: ' + accessibility.violations.map((item) => item.id).join(', '));
       }
 
-      await page.setViewportSize({ width: 390, height: 844 });
-      result.mobileViewport = '390x844';
-      result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
-      if (result.horizontalOverflow) throw new Error(target.name + ' horizontal overflow at mobile viewport');
+      result.responsiveChecks = [];
+      for (const width of [320, 360, 390, 768, 1024, 1280, 1440]) {
+        await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+        result.responsiveChecks.push({ width, height: width <= 390 ? 844 : 900, horizontalOverflow: overflow });
+        if (overflow) throw new Error(target.name + ' horizontal overflow at ' + width + 'px');
+      }
+      result.mobileViewport = '320/360/390px';
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
