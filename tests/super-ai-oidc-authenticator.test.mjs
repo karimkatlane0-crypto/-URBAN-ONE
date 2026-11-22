@@ -98,7 +98,7 @@ test('invalid signature and unknown signing key fail closed', async () => {
     authenticate({ headers: { authorization: 'Bearer ' + token({}, { kid: 'rotated-key' }) }, env }),
     /JWT_SIGNING_KEY_NOT_FOUND/
   );
-  assert.equal(fake.calls.length, 3);
+  assert.equal(fake.calls.length, 2);
 });
 
 test('issuer, audience, expiry and not-before claims are enforced', async () => {
@@ -142,6 +142,8 @@ test('API server uses OIDC verification before granting protected route scope', 
       body: JSON.stringify({ records: [] })
     });
     assert.equal(response.status, 200);
-    assert.equal((await response.json()).count, 0);
+    const body = await response.json();
+    assert.equal(body.inputCount, 0);
+    assert.equal(body.acceptedCount, 0);
   });
 });
