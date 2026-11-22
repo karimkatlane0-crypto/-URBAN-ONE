@@ -69,13 +69,40 @@ export function classifyStripeEvent(type=''){
   }
 }
 
-export function handleStripeWebhook({rawBody,headers={},env={},now}){
+export async function handleStripeWebhook({rawBody,headers={},env={},now}) {
   const secret=env.STRIPE_WEBHOOK_SECRET;
   const signatureHeader=headers['stripe-signature']||headers['Stripe-Signature'];
   verifyStripeSignature({payload:rawBody,signatureHeader,secret,now});
   let event;
   try{event=JSON.parse(Buffer.isBuffer(rawBody)?rawBody.toString('utf8'):String(rawBody??''));}
   catch{throw new Error('STRIPE_EVENT_JSON_INVALID');}
-  if(!event?.id||!event?.type)throw new Error('STRIPE_EVENT_INVALID');
-  return {status:200,body:{received:true,eventId:event.id,type:event.type,action:classifyStripeEvent(event.type),paymentVerified:false,fulfillmentAuthorized:false}};
+  if(!event?.id||!event?.type||typeof event.livemode!=='boolean')throw new Error('STRIPE_EVENT_INVALID');
+
+  const store=env.stripeEventStore;
+  if(!store||typeof store.record!=='function') {
+    return {status:503,body:{error:'STRIPE_EVENT_STORE_UNAVAILABLE',received:false}};
+  }
+  let receipt;
+  try {
+    receipt=await store.record(event);
+    if(receipt?.stored!==true)throw new Error('STRIPE_EVENT_STORE_UNAVAILABLE');
+  } catch(error) {
+    const conflict=error?.message==='STRIPE_EVENT_ID_CONFLICT';
+    return {status:503,body:{error:conflict?'STRIPE_EVENT_ID_CONFLICT':'STRIPE_EVENT_STORE_UNAVAILABLE',received:false}};
+  }
+
+  return {
+    status:200,
+    body:{
+      received:true,
+      stored:true,
+      duplicate:receipt.duplicate===true,
+      eventId:event.id,
+      type:event.type,
+      action:classifyStripeEvent(event.type),
+      processingStatus:'received',
+      paymentVerified:false,
+      fulfillmentAuthorized:false
+    }
+  };
 }
