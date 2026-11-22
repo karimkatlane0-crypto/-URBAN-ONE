@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createPostgresInstanceRepository } from '../packages/super-ai/postgres-instance-repository.mjs';
 import { runPostgresMigrations } from '../packages/super-ai/postgres-migrations.mjs';
 import { createPostgresStripeEventStore } from '../packages/super-ai/postgres-stripe-event-store.mjs';
+import { createPostgresMembershipResolver } from '../services/api/postgres-membership-resolver.mjs';
 
 const connectionString = process.env.SUPER_AI_TEST_DATABASE_URL;
 
@@ -70,6 +71,24 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
       appPool.query('SELECT event_id FROM super_ai.stripe_webhook_events'),
       /permission denied/
     );
+
+    const resolveMembership = createPostgresMembershipResolver({
+      pool: appPool,
+      roleScopes: {
+        owner: ['instances:read', 'instances:write'],
+        operator: ['instances:read', 'instances:write'],
+        viewer: ['instances:read']
+      }
+    });
+    const membershipA = await resolveMembership({ actorId: 'actor-a', tenantId: tenantA });
+    assert.deepEqual(membershipA, {
+      tenantId: tenantA,
+      role: 'owner',
+      status: 'active',
+      scopes: ['instances:read', 'instances:write']
+    });
+    assert.equal(await resolveMembership({ actorId: 'actor-a', tenantId: tenantB }), null);
+    assert.equal(await resolveMembership({ actorId: 'unknown-actor', tenantId: tenantA }), null);
 
     const repository = createPostgresInstanceRepository({ pool: appPool, defaultQuota: 1 });
     const instanceId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
