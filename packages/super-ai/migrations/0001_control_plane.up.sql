@@ -9,6 +9,12 @@ CREATE TABLE super_ai.tenants (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+ALTER TABLE super_ai.tenants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE super_ai.tenants FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_root_isolation ON super_ai.tenants
+  USING (id = NULLIF(current_setting('app.tenant_id', true), '')::uuid)
+  WITH CHECK (id = NULLIF(current_setting('app.tenant_id', true), '')::uuid);
+
 CREATE TABLE super_ai.tenant_memberships (
   tenant_id uuid NOT NULL REFERENCES super_ai.tenants(id) ON DELETE RESTRICT,
   actor_id text NOT NULL CHECK (length(actor_id) BETWEEN 1 AND 200),
