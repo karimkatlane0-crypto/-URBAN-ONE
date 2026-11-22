@@ -18,9 +18,6 @@ export function buildPages(output){
     }
   }
   copyPublic('apps/web');
-  // Publish the Mobile workspace at a route inside the public Pages artifact.
-  // Its relative assets resolve against apps/web and remain subject to the same package allowlist.
-  copyFileSync(join(root,'apps/mobile/www/titans-enterprise-studio.html'),join(output,'apps/web/titans-enterprise-studio-mobile.html'));
   return output;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))console.log(buildPages(join(root,'dist/pages')));
