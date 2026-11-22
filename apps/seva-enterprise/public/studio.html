@@ -119,9 +119,54 @@
   -d '{"prompt":"Piano di lancio",
        "consent":true}'</pre><div class="code-footer">HTTPS · TOKEN SERVER-TO-SERVER · 6 RPM</div></div>
         </section>
-        <section class="panel price-panel" id="plans">
-          <div><div class="eyebrow muted">04 / COMMERCIAL GATE</div><h2>SEVA Enterprise</h2><p>Il prezzo è tratto dal catalogo SEVA verificato. Nessun abbonamento viene avviato senza checkout autentico e servizio validato.</p></div>
-          <div class="price-box"><div class="money">€50<span>/mese</span></div><small>Canone ricorrente · IVA da verificare</small><button id="checkout" class="primary price-button" type="button" disabled>Acquisto non ancora disponibile</button><div id="purchase-state" class="purchase-state">Il go-live rimane subordinato a backend, webhook, AI e verifica fiscale. Bonifico SEPA richiede beneficiario, termini e conto verificati su backend separato.</div></div>
+        <section class="panel price-panel" id="plans" aria-labelledby="plans-title">
+          <div>
+            <div class="eyebrow muted">04 / COMMERCIAL GATE</div>
+            <h2 id="plans-title">Piani SEVA: FREE, PREMIUM e PRO</h2>
+            <p>Il modello approvato prevede accesso FREE e abbonamenti PREMIUM/PRO a canone fisso mensile. Gli importi e le quote non sono ancora approvati: nessun prezzo viene inventato o presentato come acquistabile.</p>
+          </div>
+          <div class="tier-grid" role="list" aria-label="Confronto piani SEVA">
+            <article class="tier-card" role="listitem">
+              <div class="tier-kicker">ACCESSO BASE</div>
+              <h3>FREE</h3>
+              <div class="tier-price">€0 <span>/ sempre</span></div>
+              <p class="tier-summary">Accesso gratuito ai servizi base e al self-service.</p>
+              <ul>
+                <li>Nessuna carta richiesta</li>
+                <li>Nessun rinnovo o addebito automatico</li>
+                <li>Funzioni premium non incluse</li>
+              </ul>
+              <span class="tier-status">Modello gratuito definito</span>
+            </article>
+            <article class="tier-card tier-featured" role="listitem">
+              <div class="tier-kicker">ABBONAMENTO INDIVIDUALE</div>
+              <h3>PREMIUM</h3>
+              <div class="tier-price">Da approvare <span>/ mese</span></div>
+              <p class="tier-summary">Piano individuale a canone fisso mensile.</p>
+              <ul>
+                <li>Funzioni e limiti: da definire</li>
+                <li>Quota inclusa: da definire</li>
+                <li>Prezzo, IVA e condizioni: da approvare</li>
+              </ul>
+              <span class="tier-status">Non acquistabile · catalogo non configurato</span>
+            </article>
+            <article class="tier-card" role="listitem">
+              <div class="tier-kicker">WORKSPACE AVANZATO</div>
+              <h3>PRO</h3>
+              <div class="tier-price">Da approvare <span>/ mese</span></div>
+              <p class="tier-summary">Workspace avanzato e flussi TITANS ammessi, solo con governance autorizzata.</p>
+              <ul>
+                <li>Agenti, strumenti e quote: da definire</li>
+                <li>Supporto e SLA: da definire</li>
+                <li>Prezzo, IVA e condizioni: da approvare</li>
+              </ul>
+              <span class="tier-status">Non acquistabile · catalogo non configurato</span>
+            </article>
+          </div>
+          <div class="tier-checkout">
+            <button id="checkout" class="primary price-button" type="button" disabled aria-disabled="true">Checkout non disponibile</button>
+            <div id="purchase-state" class="purchase-state" role="status">Attivazione bloccata fino ad approvazione di prezzi, quote, condizioni fiscali e di cancellazione, catalogo Stripe, backend autenticato, webhook firmato ed entitlement verificato. Nessun addebito o upgrade automatico.</div>
+          </div>
         </section>
         <section class="offer-hub" id="business-offers" aria-labelledby="offers-title">
           <div class="offer-heading">
