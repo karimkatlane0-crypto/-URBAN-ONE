@@ -227,3 +227,38 @@ Inspected implementation evidence:
 - Added HTTP integration tests for health, body-based identity spoofing denial, a synthetic trusted principal, authentication failure, and malformed JSON.
 
 **Verification boundary:** these are HTTP boundary tests with an injected synthetic adapter, not cryptographic token validation or proof of a production IAM provider. No issuer/audience/JWKS/introspection authority is configured. The PostgreSQL Instance Manager remains unwired and no database, provider or cloud resource was contacted. Next: run CI on this exact commit, choose/configure an approved non-production IdP, implement its verifier and server-side membership resolver, then connect authenticated routes and run disposable PostgreSQL/RLS integration tests.
+
+
+## 7. Cycle 2 BUILD update — 2026-11-22
+
+### E1 — PostgreSQL foundation
+- Migration runner is implemented with up/down pairing, migration ID/name consistency, SHA-256 checks for both directions, applied-source drift detection and one-step latest-only rollback.
+- Fake-pool tests cover ordered apply, idempotent replay, migration drift, missing/mismatched rollback files and transaction rollback.
+- Dedicated ephemeral PostgreSQL 17 CI integration workflow is added. It tests migrations, non-owner/non-BYPASSRLS application role, two-tenant RLS, membership, quota, idempotency, cross-tenant denial and append-only audit.
+- This is not a persistent shared database deployment. The only Render PostgreSQL resource discovered was `seva-dbrelay` (Free, Frankfurt, expires 2026-11-29, no HA, no connection pool, empty IP allowlist); read-only external query was blocked by that allowlist. It is not approved or verified as SUPER.AI's data plane.
+- **Status:** BUILD candidate; live integration workflow pending; durable non-production DB, restore/PITR and recovery remain NOT VERIFIED.
+
+### E2 — IAM and policy
+- HTTP server's trusted auth adapter boundary remains fail-closed, and client-body identity spoofing is denied.
+- No approved platform identity provider, issuer/audience/JWKS or introspection authority is configured.
+- **Status:** BLOCKED pending an approved IAM authority and cryptographic verification implementation.
+
+### E3 — Durable Instance Manager
+- PostgreSQL repository and schema foundation exist; repository remains disconnected from HTTP routes.
+- Instance Manager UI remains fail-closed when authenticated API is absent; no create action is enabled.
+- Provider runtime inspected to date is simulation-only.
+- **Status:** PARTIAL BUILD; API/IAM/DB/provider end-to-end NOT VERIFIED.
+
+### E5 — Billing and entitlement
+- Read-only Stripe LIVE inventory observed 19 products, 23 prices, 14 payment links and 4 enabled webhook registrations.
+- TITANS GO ENTERPRISE GLOBAL €10/user one-time lifetime SKU was not found in this inventory; a distinct €5 TITANS/PSD2 manual-service item exists.
+- SEVA €50/€500 one-time links are active with manual fulfillment and agreement fields; their explicit methods are card, Stripe Link and Satispay. Automatic tax is disabled on those links.
+- An active recurring SEVA Entry €50/month product/price remains in LIVE catalog metadata with checkout disabled/verification pending. This conflicts with the current SEVA one-time service policy and needs commercial reconciliation.
+- Webhook registration does not prove event delivery, signature verification, ledger, entitlement, refund or dispute E2E.
+- **Status:** LIVE catalog discrepancies identified; no Stripe writes; payment-to-entitlement NOT VERIFIED.
+
+### E8 — Experience and production / FRONT-END-TO-END.IA
+- Browser suite expanded to 26 web/mobile routes with same-origin link/anchor checks, keyboard focus, axe-core WCAG checks, mobile viewport overflow, page-error capture, workspace filter/empty-state reset, Maps search interaction and fail-closed Instance Manager checks.
+- Added dedicated mobile Maps Europa and SYNAPSY routes and corrected SUPER.AI mobile hub links.
+- CI runs the expanded suite against a local PR preview and uploads JSON evidence/screenshots.
+- **Status:** BUILD complete for test harness and mobile routes; browser workflow result pending on final exact SHA; production UX/backend parity not yet verified.
