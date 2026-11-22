@@ -45,7 +45,7 @@ export function createInstanceManager({
   clock = () => new Date().toISOString(),
   maxInstancesPerTenant = 10
 } = {}) {
-  if (!provisioner || typeof provisioner.provision !== 'function' || typeof provisioner.stop !== 'function') fail('PROVISIONER_ADAPTER_REQUIRED');
+  if (!provisioner || typeof provisioner.provision !== 'function' || typeof provisioner.stop !== 'function' || typeof provisioner.delete !== 'function') fail('PROVISIONER_ADAPTER_REQUIRED');
   if (!(store instanceof Map) && (!store || typeof store.get !== 'function' || typeof store.set !== 'function' || typeof store.values !== 'function')) fail('INSTANCE_STORE_INVALID');
   if (!Number.isSafeInteger(maxInstancesPerTenant) || maxInstancesPerTenant < 1) fail('INSTANCE_LIMIT_INVALID');
   const modules = new Map();
@@ -81,37 +81,56 @@ export function createInstanceManager({
       if (!ENVIRONMENTS.has(environment) || !manifest.environments.includes(environment)) fail('ENVIRONMENT_NOT_ALLOWED');
       if (typeof idempotencyKey !== 'string' || !IDEMPOTENCY_KEY.test(idempotencyKey)) fail('IDEMPOTENCY_KEY_INVALID');
       const idem = tenantId + ':' + idempotencyKey;
-      if (idempotency.has(idem)) return publicRecord(owned(idempotency.get(idem), tenantId));
-      if (countActive(tenantId) >= maxInstancesPerTenant) fail('TENANT_INSTANCE_LIMIT_REACHED');
-      await approval('instance.create', { tenantId, moduleId, version: manifest.version, environment });
-      const id = randomUUID();
-      const now = clock();
-      const record = {
-        id, tenantId, moduleId, version: manifest.version, environment,
-        state: 'provisioning', createdAt: now, updatedAt: now,
-        health: { status: 'unknown', checkedAt: null },
-        resourceProfile: clone(manifest.resourceProfile)
-      };
-      store.set(id, record);
-      idempotency.set(idem, id);
+      const persisted = [...store.values()].find(x => x.tenantId === tenantId && x.idempotencyKey === idempotencyKey);
+      if (persisted) return publicRecord(persisted);
+      const existing = idempotency.get(idem);
+      if (existing) {
+        const existingId = await existing;
+        return publicRecord(owned(existingId, tenantId));
+      }
+      const operation = (async () => {
+        if (countActive(tenantId) >= maxInstancesPerTenant) fail('TENANT_INSTANCE_LIMIT_REACHED');
+        await approval('instance.create', { tenantId, moduleId, version: manifest.version, environment });
+        const id = randomUUID();
+        const now = clock();
+        const record = {
+          id, tenantId, moduleId, version: manifest.version, environment, idempotencyKey,
+          state: 'provisioning', createdAt: now, updatedAt: now,
+          health: { status: 'unknown', checkedAt: null },
+          resourceProfile: clone(manifest.resourceProfile)
+        };
+        store.set(id, record);
+        try {
+          const result = await provisioner.provision(Object.freeze({
+            instanceId: id, tenantId, moduleId, version: manifest.version, environment,
+            resourceProfile: clone(manifest.resourceProfile),
+            isolation: Object.freeze({ tenantScoped: true, dedicatedIdentity: true, networkPolicy: 'deny-by-default', secretScope: 'instance-only' }),
+            capabilities: [...manifest.capabilities]
+          }));
+          if (!result || result.accepted !== true) fail('PROVISIONING_REJECTED');
+          record.state = 'running';
+          record.updatedAt = clock();
+          record.health = { status: 'unknown', checkedAt: null };
+          record.providerInstanceId = typeof result.providerInstanceId === 'string' ? result.providerInstanceId : null;
+          return id;
+        } catch (error) {
+          record.state = 'failed';
+          record.errorCode = /^[A-Z0-9_]{1,64}$/.test(error?.message ?? '') ? error.message : 'PROVISIONING_FAILED';
+          record.updatedAt = clock();
+          throw error;
+        }
+      })();
+      idempotency.set(idem, operation);
       try {
-        const result = await provisioner.provision(Object.freeze({
-          instanceId: id, tenantId, moduleId, version: manifest.version, environment,
-          resourceProfile: clone(manifest.resourceProfile),
-          isolation: Object.freeze({ tenantScoped: true, dedicatedIdentity: true, networkPolicy: 'deny-by-default', secretScope: 'instance-only' }),
-          capabilities: [...manifest.capabilities]
-        }));
-        if (!result || result.accepted !== true) fail('PROVISIONING_REJECTED');
-        record.state = 'running';
-        record.updatedAt = clock();
-        record.health = { status: 'unknown', checkedAt: null };
-        record.providerInstanceId = typeof result.providerInstanceId === 'string' ? result.providerInstanceId : null;
-        return publicRecord(record);
+        const id = await operation;
+        return publicRecord(owned(id, tenantId));
       } catch (error) {
-        record.state = 'failed';
-        record.errorCode = /^[A-Z0-9_]{1,64}$/.test(error?.message ?? '') ? error.message : 'PROVISIONING_FAILED';
-        record.updatedAt = clock();
+        idempotency.delete(idem);
         throw error;
+      } finally {
+        if (idempotency.get(idem) === operation && store.has?.(await Promise.resolve(''))) {
+          // The completed operation remains cached in the local idempotency map.
+        }
       }
     },
 
@@ -166,6 +185,7 @@ export function createInstanceManager({
       const record = owned(instanceId, tenantId);
       if (!['stopped', 'failed'].includes(record.state)) fail('INSTANCE_MUST_BE_STOPPED');
       await approval('instance.delete', { tenantId, instanceId, moduleId: record.moduleId, environment: record.environment });
+      await provisioner.delete(Object.freeze({ instanceId, tenantId, providerInstanceId: record.providerInstanceId ?? null }));
       record.state = 'deleted';
       record.updatedAt = clock();
       return publicRecord(record);
