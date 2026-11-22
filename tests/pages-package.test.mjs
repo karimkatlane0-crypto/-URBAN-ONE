@@ -13,6 +13,9 @@ test('Pages package resolves the UNIVERSAL 36 entry and every relative page/asse
     const redirect=entry.match(/http-equiv="refresh" content="0; url=([^"]+)"/)[1];
     assert.equal(redirect,'apps/web/universal-36.html');
     assert.ok(existsSync(join(output,redirect)));
+    assert.ok(existsSync(join(output,'apps/mobile/www/titans-enterprise-studio.html')));
+    assert.ok(existsSync(join(output,'apps/mobile/www/titans-enterprise-studio.css')));
+    assert.ok(existsSync(join(output,'apps/mobile/www/executive-system.css')));
     const landing=readFileSync(join(output,redirect),'utf8');
     assert.match(landing,/UNIVERSAL 36/);
     assert.match(landing,/id="services"/);
