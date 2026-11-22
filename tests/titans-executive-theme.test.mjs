@@ -15,5 +15,5 @@ test('light and dark themes have explicit accessible color systems',()=>{
  assert.match(webCss,/html\[data-theme="light"\]/);assert.match(webCss,/color-scheme:light/);assert.match(webCss,/--bg:#f4f2ec/);assert.match(webCss,/--gold:#b88922/);assert.match(webJs,/aria-pressed/);assert.match(webJs,/localStorage\.setItem/);
 });
 test('theme switch is a real button and mobile layout has dedicated refinements',()=>{
- assert.match(webJs,/createElement\('button'\)/);assert.match(webJs,/addEventListener\('click'/);assert.match(webJs,/Attiva modalità/);assert.match(webCss,/@media\(max-width:560px\)/);
+ assert.match(webJs,/createElement\('button'\)/);assert.match(webJs,/addEventListener\('click'/);assert.match(webJs,/Attiva modalità/);assert.match(webJs,/PASSA A CHIARO/);assert.match(webJs,/PASSA A SCURO/);assert.match(webCss,/@media\(max-width:560px\)/);
 });
