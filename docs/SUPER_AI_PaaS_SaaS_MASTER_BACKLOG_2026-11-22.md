@@ -158,3 +158,14 @@ SUPER.AI is the shared experience and control plane. It does not collapse the pr
 - `tests/super-ai-postgres-instance-repository.test.mjs` adds unit coverage for validation, membership, role authorization, quota guard, idempotency conflict/replay, transaction behavior and audit insertion.
 
 **Verification boundary:** tests have been added to the repository but have not yet been executed in this environment. No PostgreSQL service was provisioned or contacted; no migration was applied; no API route or provider was connected to this repository. This is an implementation component, not production readiness. Next gates: run the full CI suite on the exact branch SHA, add disposable-PostgreSQL integration tests, provision an approved non-production database, apply migrations, and prove two-tenant RLS plus restore/recovery before wiring the API.
+
+
+### Security hardening follow-up — 2026-11-22
+
+A code review identified that quota and request digest inputs must not be trusted from the request payload. The repository was hardened:
+- Tenant quota now comes only from a server-configured `defaultQuota` or injected trusted `resolveQuota({ client, tenantId })`; invalid resolver values fail closed.
+- Request digest is computed inside the repository from canonicalized server-validated fields; caller-supplied hashes are ignored.
+- Canonical JSON hashing is stable across object key order.
+- Added tests for caller quota override attempts, invalid trusted quota results, and canonical hashing.
+
+The new exact-head CI run is pending/in progress. These controls are code-level safeguards, not a substitute for authenticating `actorId` at the API boundary, validating the IAM role mapping, or integration-testing PostgreSQL RLS with separate non-owner database roles.
