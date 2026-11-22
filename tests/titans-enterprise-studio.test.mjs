@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
+const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
+const mobileCss = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.css', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
   for (const id of ['overview', 'intelligence', 'products', 'mlops', 'evidence', 'lifecycle', 'principles']) {
@@ -40,6 +42,10 @@ test('responsive, reduced-motion and keyboard accessibility rules exist', () => 
 
 test('product search and navigation controls are wired', () => {
   assert.match(html, /id="product-search"/);
+  assert.match(html, /aria-label="Filtra schede prodotto \(ricerca locale, non AI\)"/);
+  assert.match(html, /href="\.\.\/mobile\/www\/titans-enterprise-studio\.html#overview"/);
+  assert.match(mobileHtml, /TITANS MOBILE/);
+  assert.equal(mobileCss, css, 'Web and Mobile stylesheets must remain in parity');
   assert.match(html, /addEventListener\('input'/);
   assert.match(html, /aria-current/);
 });
