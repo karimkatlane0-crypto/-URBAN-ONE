@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 
 const html = await readFile(new URL('../apps/web/titans-enterprise-studio.html', import.meta.url), 'utf8');
 const css = await readFile(new URL('../apps/web/titans-enterprise-studio.css', import.meta.url), 'utf8');
+const mobileHtml = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.html', import.meta.url), 'utf8');
+const mobileCss = await readFile(new URL('../apps/mobile/www/titans-enterprise-studio.css', import.meta.url), 'utf8');
 
 test('TITANS studio exposes the core navigation and product areas', () => {
   for (const id of ['overview', 'intelligence', 'products', 'mlops', 'evidence', 'lifecycle', 'principles']) {
@@ -29,6 +31,15 @@ test('governance and safety requirements are visible', () => {
   assert.match(html, /repository, autorizzazioni e release/i);
 });
 
+test('TITANS brand and status controls use valid accessible names', () => {
+  assert.match(html, /<a class="brand" href="#overview">/);
+  assert.match(html, /class="brand-mark" aria-hidden="true"/);
+  assert.doesNotMatch(html, /class="brand"[^>]*aria-label=/);
+  assert.match(html, /class="online-dot" aria-hidden="true"/);
+  assert.doesNotMatch(html, /class="online-dot" aria-label=/);
+  assert.match(css, /\.nav-label\{[^}]*color:#8799a5/);
+});
+
 test('responsive, reduced-motion and keyboard accessibility rules exist', () => {
   assert.match(html, /class="skip-link"/);
   assert.match(html, /aria-label="Navigazione TITANS"/);
@@ -40,6 +51,10 @@ test('responsive, reduced-motion and keyboard accessibility rules exist', () => 
 
 test('product search and navigation controls are wired', () => {
   assert.match(html, /id="product-search"/);
+  assert.match(html, /aria-label="Filtra schede prodotto \(ricerca locale, non AI\)"/);
+  assert.match(html, /href="\.\/titans-enterprise-studio-mobile\.html#overview"/);
+  assert.match(mobileHtml, /TITANS MOBILE/);
+  assert.equal(mobileCss, css, 'Web and Mobile stylesheets must remain in parity');
   assert.match(html, /addEventListener\('input'/);
   assert.match(html, /aria-current/);
 });
