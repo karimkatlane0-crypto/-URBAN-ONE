@@ -143,3 +143,67 @@ An intermediate CI run failed because two existing tests expected HTTP 403 for u
 - [SUPER.AI PaaS/SaaS master backlog](https://github.com/karimkatlane0-crypto/-URBAN-ONE/blob/feat/super-ai-unified-platform-20261122/docs/SUPER_AI_PaaS_SaaS_MASTER_BACKLOG_2026-11-22.md)
 
 **Attestation boundary:** this document records observable repository changes and workflow evidence. It does not represent an independent third-party certification.
+
+
+## 8. Cycle 2 addendum — PostgreSQL, billing and front-end-to-end
+
+**Inspection date:** 2026-11-22. This addendum is a read-only evidence snapshot plus BUILD changes on the isolated branch.
+
+### 8.1 PostgreSQL foundation and real integration gate
+
+BUILD changes:
+- Migration runner now requires paired up/down files with matching IDs/names, validates both up/down SHA-256 checksums against the ledger, detects missing or drifted migration sources, and applies exactly one latest migration per rollback invocation.
+- Added fake-pool tests for ordered apply, idempotent replay, source drift, paired migration validation, transaction rollback and one-step destructive rollback.
+- Added a dedicated GitHub Actions workflow using an ephemeral PostgreSQL 17 service. The integration test creates a non-owner, non-BYPASSRLS application role and exercises migration apply/replay/rollback/reapply, two-tenant RLS, membership checks, quota, idempotency, cross-tenant read/write denial and append-only audit behavior.
+- The integration workflow is an isolated CI database. It does not provision or mutate any Render/production database.
+
+Render read-only discovery:
+- One existing PostgreSQL instance was found: `seva-dbrelay`, PostgreSQL 17, Frankfurt, Free plan, no HA, no connection pool, no IP allowlist, currently available and not suspended.
+- Its reported expiry is **2026-11-29**. Render listed no services in that workspace.
+- A read-only query was attempted but the Render query service could not connect because the database IP allowlist is empty. No allowlist or database setting was changed.
+- This existing SEVA DBRelay resource is not assumed to be the shared SUPER.AI data plane. Its free plan/expiry and unavailable external connection mean it is **not verified as a durable enterprise foundation**.
+
+### 8.2 Stripe LIVE billing inventory — read-only
+
+Observed inventory in the connected LIVE Stripe account:
+- 19 products, 23 prices, 14 payment links and 4 enabled webhook endpoint registrations.
+- The approved TITANS GO ENTERPRISE GLOBAL commercial contract is €10 per user, one-time, VAT included, lifetime site access, no renewal. No matching €10 lifetime TITANS GO product/price/payment-link mapping was found in this inventory. A separate €5 TITANS/PSD2 single-request service exists and is not the same offer.
+- SEVA €50 and €500 one-time agreed-service payment links are active. They require service/contract reference fields and are configured for manual fulfillment. Their explicit payment method types are card, Stripe Link and Satispay; this does not establish Google Pay, PayPal, SEPA debit or bank transfer availability.
+- The €50/€500 links show automatic tax disabled, while the associated prices are marked tax-inclusive. This is a tax-configuration review item, not a tax-compliance conclusion.
+- A SEVA Entry product and €50/month recurring price are both active in LIVE catalog metadata, despite metadata indicating checkout disabled / verification pending. This conflicts with the current one-time SEVA service policy and must not be offered or activated without explicit commercial reconciliation.
+- The €29/month PSD2 X A.I. price is marked prelaunch and no verified Financial Insights checkout-to-entitlement flow was found.
+- Four webhook endpoints are registered as enabled. Endpoint registration is not proof of successful delivery, signature verification at the receiving backend, idempotent ledger processing, entitlement grant/revoke or refund/dispute reconciliation. The SEVA Entry endpoint description itself records server-key and signed delivery/access validation as pending.
+- No Stripe writes, price changes, payment-method changes, checkout sessions, charges, refunds or live entitlement changes were made.
+
+### 8.3 FRONT-END-TO-END.IA — BUILD scope
+
+The browser smoke suite now covers 26 web/mobile routes, including SUPER.AI hub/settings, UNIVERSAL 36, TITANS, INSIGHTS.ai, INSIDERS, SEVA, SYNAPSY, KKUBERA/Discovery, Maps Europa, URBAN ONE Workspace and Instance Manager.
+
+For designated hub and product routes, the browser suite checks:
+- Internal HTML destinations and in-page anchors resolve.
+- Keyboard Tab reaches a visible focus target.
+- Automated WCAG 2.1 A/AA and 2.2 A/AA checks via axe-core.
+- Mobile viewport 390×844 has no horizontal overflow.
+- No uncaught browser page errors.
+- Workspace category filters narrow the catalog; a no-result state appears; reset restores all cards.
+- Maps Europa search produces the expected Google Maps URL only after the user clicks the search control.
+- Instance Manager remains fail-closed when no authenticated API is installed; no create buttons are exposed.
+- Web and mobile SUPER.AI navigation and settings pages are tested independently.
+
+Mobile route gaps found during inspection were addressed in BUILD:
+- Added dedicated `apps/mobile/www/maps-europe.html`.
+- Added dedicated `apps/mobile/www/synapsy.html`.
+- Updated the mobile SUPER.AI hub to link to those routes instead of showing Maps Europa as a non-clickable placeholder or routing SYNAPSY to a TITANS anchor.
+
+The expanded browser workflow must complete successfully on the final exact head before this suite can be marked PASS. A passing local/PR-preview browser run does not establish production site deployment, authenticated persistence or provider execution.
+
+### 8.4 Remaining hard gates
+
+- IAM provider/issuer/audience/JWKS or introspection authority remains unselected; the server's injected auth adapter is still a test seam, not cryptographic verification.
+- The Render database is not externally reachable through the current read-only connector, is not confirmed as SUPER.AI's database, and expires on 2026-11-29. Do not migrate production data into it.
+- PostgreSQL ephemeral CI integration must pass; a separate approved durable non-production DB is still required for restore/PITR/restart recovery evidence.
+- The HTTP router still has no authenticated Instance Manager routes connected to the PostgreSQL repository.
+- Stripe LIVE catalog discrepancies above remain unresolved; no live mutations are authorized or performed.
+- The expanded 26-route browser suite and Android API 24/36 workflows must complete on the final exact SHA. Physical device acceptance remains separate.
+
+**Cycle 2 governance:** BUILD/VERIFY only. No production infrastructure, payment configuration, account credentials, audience data, live checkout, deployment or merge was changed.
