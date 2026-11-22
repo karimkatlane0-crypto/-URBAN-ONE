@@ -24,8 +24,8 @@ test('request JSON cannot impersonate an authenticated principal',async()=>{
       method:'POST',headers:{'content-type':'application/json'},
       body:JSON.stringify({userId:'attacker',tenantId:'tenant-victim',scopes:['contacts:read'],records:[]})
     });
-    assert.equal(response.status,403);
-    assert.equal((await response.json()).error,'FORBIDDEN');
+    assert.equal(response.status,401);
+    assert.equal((await response.json()).error,'AUTH_REQUIRED');
   });
 });
 
@@ -59,5 +59,13 @@ test('malformed JSON is rejected before route execution',async()=>{
     const response=await fetch(base+'/api/universal/prepare',{method:'POST',headers:{'content-type':'application/json'},body:'{'});
     assert.equal(response.status,400);
     assert.equal((await response.json()).error,'INVALID_JSON');
+  });
+});
+
+test('authenticated principal without required scope is forbidden',async()=>{
+  await withServer({authenticate:async()=>({userId:'synthetic-user-a',scopes:['profile:read']})},async base=>{
+    const response=await fetch(base+'/api/contacts/import-preview',{method:'POST',headers:{'content-type':'application/json'},body:'{"records":[]}'});
+    assert.equal(response.status,403);
+    assert.equal((await response.json()).error,'FORBIDDEN');
   });
 });
