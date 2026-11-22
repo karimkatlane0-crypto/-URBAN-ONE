@@ -32,7 +32,9 @@ test('governance and safety requirements are visible', () => {
 });
 
 test('TITANS brand and status controls use valid accessible names', () => {
-  assert.match(html, /aria-label="TITANS INTELLIGENCE STUDIO"/);
+  assert.match(html, /<a class="brand" href="#overview">/);
+  assert.match(html, /class="brand-mark" aria-hidden="true"/);
+  assert.doesNotMatch(html, /class="brand"[^>]*aria-label=/);
   assert.match(html, /class="online-dot" aria-hidden="true"/);
   assert.doesNotMatch(html, /class="online-dot" aria-label=/);
   assert.match(css, /\.nav-label\{[^}]*color:#8799a5/);
