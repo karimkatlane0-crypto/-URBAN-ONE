@@ -1,8 +1,54 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080b10"><meta name="description" content="URBAN ONE Financial Insights AI — report economico mensile e dashboard di scenario."><title>URBAN ONE · Financial Insights AI</title><link rel="stylesheet" href="./europe.css"><style>main{max-width:1080px}.hero{padding:42px 0 26px}h1{font-size:clamp(2.5rem,6vw,4rem)}h1 span{color:#f5c542}.lead{max-width:780px}.hero-note{border-left:3px solid #f5c542;background:#17150f;padding:14px 18px;color:#b8b4a9;font-size:12px}.dashboard{width:100%;height:1500px;border:1px solid #403824;border-radius:5px;background:#080b10}@media(max-width:600px){.dashboard{height:1900px}}</style><link rel="stylesheet" href="./executive-system.css">
+<style id="insiders-finance-system">
+:root{--fin-bg:#0a101a;--fin-panel:#141f2e;--fin-panel2:#1a293b;--fin-line:#34445a;--fin-gold:#d6b36a;--fin-ivory:#f4f1e9;--fin-muted:#b4bfcd}
+body{background:radial-gradient(ellipse at 85% -5%,rgba(214,179,106,.14),transparent 34%),linear-gradient(145deg,#0a101a,#101a28 62%,#0b121c)!important;color:var(--fin-ivory)!important}
+header{max-width:1440px;min-height:82px;padding:18px 34px;border-bottom:1px solid var(--fin-line);background:rgba(10,16,26,.88);backdrop-filter:blur(16px)}
+header .brand{display:flex;align-items:center;gap:12px;color:var(--fin-ivory);text-decoration:none;letter-spacing:.13em;font-weight:800}
+header .brand small{display:block;color:var(--fin-gold);font-size:9px;letter-spacing:.18em;margin-top:4px}
+.finance-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:linear-gradient(145deg,#f0dba8,#b78b43);color:#101827;font-weight:900;font-size:20px}
+header nav{display:flex;gap:18px;flex-wrap:wrap}
+header nav a{color:var(--fin-muted);text-decoration:none;font-size:12px}
+header nav a:hover{color:#f0dba8}
+main{max-width:1440px!important;padding:0 34px 50px}
+.hero{padding:54px 0 34px}
+.hero .eyebrow{color:var(--fin-gold);font-size:10px;letter-spacing:.2em;font-weight:800}
+h1{font-size:clamp(2.8rem,6vw,5rem)!important;line-height:1.02;letter-spacing:-.055em;color:var(--fin-ivory)}
+h1 span{color:var(--fin-gold)!important}
+.lead{max-width:820px;color:var(--fin-muted);line-height:1.8}
+.hero h2{color:#f0dba8;font-size:19px;margin:25px 0 6px}
+.hero-note,.finance-note{background:#1b2939;border:1px solid #69583a;border-left:4px solid var(--fin-gold);border-radius:10px;color:#dce3eb;padding:15px 18px;line-height:1.7}
+.hero-note strong,.finance-note strong{color:#f0dba8}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #806b45;border-radius:8px;background:#1a293b;color:#f0dba8;padding:11px 16px;text-decoration:none}
+.btn.secondary{margin-left:8px}
+.finance-scorecard{margin:20px 0 38px;padding:22px;border:1px solid var(--fin-line);border-top:3px solid var(--fin-gold);border-radius:13px;background:linear-gradient(145deg,#172437,#111b29);box-shadow:0 20px 50px rgba(0,0,0,.22)}
+.scorecard-heading{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--fin-gold);font-size:10px;font-weight:800;letter-spacing:.16em;margin-bottom:16px}
+.finance-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.finance-card{padding:20px;border:1px solid #34445a;border-radius:10px;background:linear-gradient(145deg,#1c2b40,#141f2e)}
+.finance-card>span{font-size:10px;letter-spacing:.14em;color:var(--fin-gold);font-weight:800}
+.finance-card h3{font-size:17px;color:var(--fin-ivory);margin:12px 0 8px}
+.finance-card p{color:#c1cbd7;line-height:1.7;font-size:13px}
+.finance-card small{display:block;border-top:1px solid #34445a;padding-top:11px;color:#aab7c7;line-height:1.6}
+.section{margin-top:36px;padding:22px;border:1px solid var(--fin-line);border-radius:13px;background:linear-gradient(145deg,#141f2e,#101925)}
+.section h2{color:var(--fin-ivory);font-size:22px}
+.section p{color:var(--fin-muted);line-height:1.7}
+.dashboard{height:1500px;border:1px solid #3d4c5f;border-radius:11px;background:#0a101a}
+.notice{padding:14px 18px;border:1px solid #69583a;border-radius:10px;background:#1a2939;color:#dce3eb}
+footer{max-width:1440px;padding:22px 34px;border-top:1px solid var(--fin-line);color:#aab7c7}
+@media(max-width:760px){header,main,footer{padding-left:18px;padding-right:18px}.finance-grid{grid-template-columns:1fr}.hero{padding-top:36px}.section{padding:16px}.dashboard{height:1900px}}
+</style>
 </head>
-<body><header><a class="brand" href="./index.html">URBAN ONE UNIVERSAL</a><nav><a href="./v10-workspace.html">Workspace</a> · <a href="./seva-unified-studio.html">SEVA Studio</a></nav></header><main>
-<section class="hero"><div class="eyebrow">Executive finance · decision intelligence</div><h1>Financial Insights <span>AI</span></h1><p class="lead">Report mensile di entrate, uscite e indicatori aziendali, su dati aggregati forniti volontariamente e autorizzati dal cliente. Analisi descrittiva con revisione umana.</p><h2>29 euro per cliente, per ogni mese concordato</h2><p>Prezzo proposto soggetto ad accettazione scritta, imposte applicabili e verifica della disponibilità del servizio. Non è un abbonamento con rinnovo automatico.</p><p><a class="btn" href="mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20Financial%20Insights%20-%20Preventivo">Richiedi preventivo</a>　<a class="btn secondary" href="./psd2-x-ai.html">Scopri PSD2 X A.I.</a></p><div class="hero-note"><strong>Trasparenza:</strong> la dashboard sottostante usa valori dimostrativi modificabili. Non è collegata a conti bancari, software contabili o provider di pagamento; nessun dato viene inviato dal browser.</div></section>
+<body><header><a class="brand" href="./universal-36.html"><span class="finance-mark">I</span><span>INSIDERS<small>UNIVERSAL 36 · UNICORN INTELLIGENCE</small></span></a><nav><a href="./universal-36.html">Universal 36</a><a href="./seva-crm-studio.html">SEVA CRM</a><a href="./v10-workspace.html">Workspace</a></nav></header><main>
+<section class="hero"><div class="eyebrow">INSIDERS · EXECUTIVE FINANCE · EY-INSPIRED REPORTING DISCIPLINE</div><h1>Financial Insights <span>AI</span></h1><p class="lead">Report mensile di entrate, uscite e indicatori aziendali, su dati aggregati forniti volontariamente e autorizzati dal cliente. Analisi descrittiva con revisione umana.</p><h2>29 euro per cliente, per ogni mese concordato</h2><p>Prezzo proposto soggetto ad accettazione scritta, imposte applicabili e verifica della disponibilità del servizio. Non è un abbonamento con rinnovo automatico.</p><p><a class="btn" href="mailto:karimkatlane0@gmail.com?subject=URBAN%20ONE%20Financial%20Insights%20-%20Preventivo">Richiedi preventivo</a>　<a class="btn secondary" href="./psd2-x-ai.html">Scopri PSD2 X A.I.</a></p><div class="hero-note"><strong>Trasparenza:</strong> la dashboard sottostante usa valori dimostrativi modificabili. Non è collegata a conti bancari, software contabili o provider di pagamento; nessun dato viene inviato dal browser.</div></section>
+<section class="finance-scorecard" aria-label="Executive financial framework">
+<div class="scorecard-heading"><span>UNIVERSAL 36 / FINANCE CONTROL</span><span>FRAMEWORK · NO LIVE VALUES</span></div>
+<div class="finance-grid">
+<article class="finance-card"><span>01 / PROFITABILITY</span><h3>Revenue quality &amp; margin</h3><p>Net revenue, gross margin, contribution margin, EBITDA bridge and cost-to-serve.</p><small>Net sales less VAT, refunds and discounts; costs classified by source.</small></article>
+<article class="finance-card"><span>02 / GROWTH EFFICIENCY</span><h3>CAC · LTV · ROAS</h3><p>Customer acquisition cost, lifetime value, average order value, repeat purchase and channel contribution.</p><small>Compare cohorts and attributed spend on consistent windows.</small></article>
+<article class="finance-card"><span>03 / CASH &amp; CONTROL</span><h3>Liquidity &amp; reconciliation</h3><p>Settlements, refunds, fees, bank credits, working capital and cash conversion cycle.</p><small>Match provider balance, payout and cleared bank statement.</small></article>
+</div>
+<div class="finance-note"><strong>Evidence rule:</strong> every KPI must identify source, period, currency, VAT basis, gross/net treatment, owner and reconciliation status. No financial value is represented as actual unless the underlying records have been checked.</div>
+</section>
 <section class="section"><h2>Executive dashboard · simulazione e unit economics</h2><p>Modifica ricavi, costi, commissioni, prezzi e acquisizione cliente. I risultati sono scenari, non dati certificati.</p><iframe class="dashboard" src="./financial-dashboard.html" title="Dashboard economica interattiva" loading="lazy" referrerpolicy="no-referrer"></iframe></section>
 <section class="section"><h2>Pagamento dopo il preventivo</h2><p>Se hai accettato il preventivo, inserisci nel checkout il riferimento del contratto e il prezzo concordato. Il pagamento è volontario e una tantum.</p><p><a class="btn" href="https://buy.stripe.com/7sYbJ351fghgei7auSb7y05" target="_blank" rel="noopener noreferrer">Paga il servizio concordato</a></p><div class="notice"><p>Nessuna connessione bancaria PSD2 AIS/PIS attiva o disposizione di pagamenti inclusa. Non inviare password, codici di accesso o documenti riservati in richieste pubbliche. La conferma del checkout non abilita accessi software automatici.</p></div></section>
-</main><footer><p>URBAN ONE · Proposta commerciale indipendente, non un servizio bancario o consulenza d'investimento. © 2026.</p></footer></body></html>
+</main><footer><p>INSIDERS · UNIVERSAL 36 / UNICORN · URBAN ONE. Independent executive reporting concept; not affiliated with EY. Simulation only; not an audit, accounting certification, banking service or investment advice. © 2026.</p></footer></body></html>
