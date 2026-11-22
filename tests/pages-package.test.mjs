@@ -18,11 +18,11 @@ test('Pages package resolves the UNIVERSAL 36 entry and every relative page/asse
     assert.match(landing,/id="services"/);
     assert.match(landing,/id="connections"/);
     const mobileSource=readFileSync(new URL('../apps/mobile/www/titans-enterprise-studio.html',import.meta.url),'utf8');
+    const expectedMobileAlias=mobileSource.replaceAll('../../../apps/web/','./').replaceAll('href="./titans-enterprise-studio.html"','href="./titans-enterprise-studio-mobile.html"');
     const mobileRoute=join(output,'apps/web/titans-enterprise-studio-mobile.html');
     assert.ok(existsSync(mobileRoute),'Mobile TITANS route is included in the public Pages artifact');
-    assert.equal(readFileSync(mobileRoute,'utf8'),mobileSource,'Published Mobile route must match the maintained Mobile source');
+    assert.equal(readFileSync(mobileRoute,'utf8'),expectedMobileAlias,'Published Mobile route must match the adapted maintained Mobile source');
     const mobileAliasSource=readFileSync(new URL('../apps/web/titans-enterprise-studio-mobile.html',import.meta.url),'utf8');
-    const expectedMobileAlias=mobileSource.replaceAll('../../../apps/web/','./').replaceAll('href="./titans-enterprise-studio.html"','href="./titans-enterprise-studio-mobile.html"');
     assert.equal(mobileAliasSource,expectedMobileAlias,'Published alias must adapt Mobile-relative links for the apps/web route');
     assert.match(readFileSync(join(output,'apps/web/index.html'),'utf8'),/checkIntegrations/);
     let checked=0;
