@@ -169,3 +169,17 @@ A code review identified that quota and request digest inputs must not be truste
 - Added tests for caller quota override attempts, invalid trusted quota results, and canonical hashing.
 
 The new exact-head CI run is pending/in progress. These controls are code-level safeguards, not a substitute for authenticating `actorId` at the API boundary, validating the IAM role mapping, or integration-testing PostgreSQL RLS with separate non-owner database roles.
+
+
+### API integration gate discovered during VERIFY — 2026-11-22
+
+The current `services/api/server.mjs` invokes `route({method,path,body}, process.env)` without attaching an authenticated principal. `services/api/router.mjs` authorization helpers depend on `req.auth`, which is not populated by this server path. Therefore the PostgreSQL Instance Manager repository is intentionally **not wired into this HTTP router**: accepting `tenantId` or `actorId` from an unauthenticated request would create a tenant-spoofing / privilege-escalation boundary.
+
+Required before API integration:
+1. Implement and verify authentication middleware that derives immutable actor and tenant identity from a validated session/token.
+2. Resolve tenant membership and scope server-side; never trust actor/tenant identifiers from request JSON.
+3. Use a server-controlled module/provider/environment allowlist and trusted quota resolver.
+4. Add route-level tests for missing/invalid token, cross-tenant IDOR, insufficient scope, and authenticated create/read.
+5. Run PostgreSQL integration tests using separate non-owner application roles with RLS enabled.
+
+Current API integration: **BLOCKED BY AUTHENTICATION PRINCIPAL GAP**. The repository unit tests passing in CI do not close this gate.
