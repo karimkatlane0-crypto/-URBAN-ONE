@@ -8,8 +8,7 @@
 - Account: registration by e-mail followed by e-mail verification.
 - Payment: manual bank transfer for each access period.
 - Exact payment reference: `REEDEEM`.
-- Beneficiary: Karim Katlane.
-- Bank: BNL BNP Paribas, Trieste branch, Friuli Venezia Giulia, Italy.
+- Beneficiary and bank coordinates: restricted configuration only; never publish these details in repository documentation or public pages.
 - Renewal: manual transfer for each subsequent 30-day period. No automatic debit, recurring mandate or automatic renewal.
 - Access: one 30-day entitlement, beginning only after actual cleared funds are independently verified.
 
