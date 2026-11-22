@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const MIGRATION_NAME = /^(\\d{4,})_([a-z0-9][a-z0-9_-]*)\\.(up|down)\\.sql$/;
+const MIGRATION_NAME = /^(\d{4,})_([a-z0-9][a-z0-9_-]*)\.(up|down)\.sql$/;
 const LOCK_NAMESPACE = 0x53555045;
 const LOCK_RESOURCE = 0x52414931;
 
