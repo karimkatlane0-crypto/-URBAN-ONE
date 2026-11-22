@@ -50,6 +50,107 @@ footer{background:#f4f4f1;border-color:#d8d8d1;color:#666}footer a{color:#5e5300
 @media(max-width:900px){.shell{padding:0 18px}.layout{grid-template-columns:1fr}.side{position:static;display:flex;gap:4px;overflow:auto;white-space:nowrap}.side-title,.side-foot{display:none}.side a{flex:0 0 auto}}
 @media(max-width:640px){.shell{padding:0 14px}.top{height:auto;min-height:0;padding:12px 0;position:relative;flex-wrap:wrap}.topnav{width:100%;overflow:auto;flex-wrap:nowrap}.topnav a{white-space:nowrap}.layout{padding-top:18px}.hero{align-items:flex-start;flex-direction:column}.asof{text-align:left}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.side{padding:8px}.side a{font-size:11px;padding:8px}}
 
+
+/* INSIDERS visual system — premium CRM refresh, 2026-11-22 */
+:root{
+ color-scheme:dark;
+ --bg:#090d16;--panel:#111827;--panel2:#172235;--line:#29364a;
+ --gold:#d6b36a;--gold2:#f0dba8;--text:#f4f1e9;--muted:#aab4c3;
+ --green:#7fc69a;--amber:#e5bd70;--red:#e39a91;
+ font-family:Manrope,Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif
+}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+body{
+ background:
+ radial-gradient(ellipse at 78% -12%,rgba(214,179,106,.16),transparent 34%),
+ radial-gradient(ellipse at 4% 36%,rgba(54,91,139,.13),transparent 32%),
+ #090d16;color:var(--text);letter-spacing:.005em
+}
+.shell{max-width:1560px;padding:0 34px}
+.top{
+ background:rgba(9,13,22,.88);border-bottom:1px solid #29364a;
+ min-height:78px;position:sticky;top:0;z-index:30;backdrop-filter:blur(18px)
+}
+.brand{color:#f4f1e9;letter-spacing:.09em}
+.mark{
+ background:linear-gradient(145deg,#f0dba8,#b78b43);color:#111827;
+ border-radius:11px;width:42px;height:42px;font-size:20px;
+ box-shadow:0 5px 24px rgba(214,179,106,.2)
+}
+.brand small{color:#d6b36a;letter-spacing:.22em}
+.topnav a{color:#aab4c3;padding:9px 10px;border-radius:7px;transition:.18s ease}
+.topnav a:hover{color:#f0dba8;background:#1a2638}
+.version{background:#182235;color:#f0dba8;border:1px solid #665537;border-radius:99px;padding:7px 12px}
+.layout{grid-template-columns:232px minmax(0,1fr);gap:26px;padding-top:30px}
+.side{
+ top:98px;background:linear-gradient(160deg,#121d2d,#0f1725);
+ border:1px solid #29364a;border-radius:14px;padding:17px 12px;
+ box-shadow:0 18px 55px rgba(0,0,0,.22)
+}
+.side-title{color:#d6b36a;letter-spacing:.2em}
+.side a{color:#b7c1cf;border-radius:8px;padding:11px 12px;transition:.18s ease}
+.side a:hover,.side a:first-of-type{background:linear-gradient(90deg,#293348,#1b2638);color:#f0dba8}
+.side-foot{border-color:#29364a;color:#8e9bad}
+.hero{padding:15px 0 27px;border-color:#29364a}
+.eyebrow{color:#d6b36a;letter-spacing:.24em}
+h1{font-size:clamp(2.5rem,4.7vw,4.3rem);font-weight:700;letter-spacing:-.065em}
+h1 span{background:linear-gradient(100deg,#f0dba8,#c69b55);background-clip:text;-webkit-background-clip:text;color:transparent}
+.lead{color:#b6c0ce;max-width:800px;line-height:1.75}
+.asof{color:#91a0b3}.asof strong{color:#f0dba8;letter-spacing:.12em}
+.statusbar{
+ background:linear-gradient(100deg,#172235,#111827);border:1px solid #665537;
+ border-left:4px solid #d6b36a;border-radius:10px;color:#d5dce5;
+ box-shadow:0 12px 30px rgba(0,0,0,.17);padding:15px 18px
+}
+.statusbar b{color:#f0dba8}.statusbar .dot{background:#d6b36a;box-shadow:0 0 0 4px #d6b36a22}
+.kpis{gap:14px}
+.kpi,.panel{
+ background:linear-gradient(145deg,rgba(24,36,55,.96),rgba(15,23,37,.98));
+ border:1px solid #2b3a50;border-radius:13px;
+ box-shadow:0 14px 36px rgba(0,0,0,.19);transition:transform .2s ease,border-color .2s ease
+}
+.kpi:hover,.panel:hover{transform:translateY(-2px);border-color:#786744}
+.kpi{min-height:122px;padding:20px}
+.kpi span{color:#aab4c3;letter-spacing:.14em}
+.kpi strong{color:#f4f1e9;font-size:34px;letter-spacing:-.045em}
+.kpi small{color:#93a0b2}
+.section{margin-top:34px}
+.section-head{border-color:#34445a;padding-bottom:13px}
+.section-head h2{color:#f4f1e9;font-size:18px;letter-spacing:.01em}
+.section-head p{color:#9eabba}
+.section-head a{color:#e3c98e}
+.panel{padding:20px}
+.panel h3{color:#f0dba8;font-size:15px}
+.panel p{color:#bac4d1;line-height:1.75}
+.panel .meta{border-color:#2b3a50;color:#9ba8b9;padding-top:13px}
+.table-wrap{background:#101827;border:1px solid #2b3a50;border-radius:11px}
+table{background:#101827}
+th{background:#1b2940;color:#f0dba8;padding:14px}
+td{color:#c4ceda;border-color:#27354a;padding:14px}
+.list-item{background:#121d2d;border-color:#2b3a50;border-radius:9px;color:#f4f1e9}
+.list-item small{color:#9eabba}
+.safe{background:#182235;border:1px solid #665537;border-left:4px solid #d6b36a;border-radius:9px;color:#d5dce5}
+.safe strong{color:#f0dba8}
+.btn{border:1px solid #806b45;border-radius:8px;background:#172235;color:#f0dba8;padding:10px 15px;transition:.18s ease}
+.btn.primary{background:linear-gradient(110deg,#f0dba8,#c69b55);color:#101827;border-color:#d6b36a}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.pill{border-color:#806b45;color:#e5bd70;background:#1a2638;border-radius:99px;padding:5px 9px}
+.pill.ok{border-color:#38674b;color:#91d4a7;background:#142b22}
+.pill.off{border-color:#74453f;color:#e8aaa1;background:#2a1b20}
+footer{border-color:#29364a;color:#8e9bad;background:transparent}
+footer a{color:#e3c98e}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f0dba8;outline-offset:3px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{top:auto}}
+@media(max-width:640px){
+ .shell{padding:0 15px}.top{position:relative;gap:10px;padding:12px 0}
+ .topnav{gap:5px}.topnav a{font-size:10px;padding:8px}
+ .version{font-size:9px}.layout{padding-top:18px}
+ .hero{padding-bottom:20px}.kpis{gap:9px}.kpi{padding:14px;min-height:108px}
+ .kpi strong{font-size:28px}.panel{padding:16px}
+ .side{border-radius:10px}.side a{padding:9px}
+}
+@media(prefers-reduced-motion:reduce){.kpi,.panel,.btn,.topnav a,.side a{transition:none}.kpi:hover,.panel:hover,.btn:hover{transform:none}}
+
 </style>
 <script defer src="./eu-language-selector.js"></script>
 </head>
