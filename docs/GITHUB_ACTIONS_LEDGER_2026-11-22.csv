@@ -1,0 +1,10 @@
+run_id,workflow,result,url
+44995000992,PR245 repository verification,406/406 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44995000992
+44995000937,PR245 SEVA isolated verification,429/429 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44995000937
+44996049832,PR246 hotfix verification,407/407 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44996049832
+44996700474,PR247 repository verification,410/410 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44996700474
+44996700436,PR247 browser smoke,14/14 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44996700436
+44996700422,PR247 Android emulator,API24 and API36 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44996700422
+44997188511,PR248 repository verification,411/411 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997188511
+44997198193,PR248 browser smoke,14/14 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997198193
+44997198186,PR248 Android emulator,API24 and API36 PASS,https://github.com/karimkatlane0-crypto/-URBAN-ONE/actions/runs/44997198186
