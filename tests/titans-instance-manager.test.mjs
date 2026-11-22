@@ -8,7 +8,7 @@ function harness({ approved = true, provision = async () => ({ accepted: true, p
   const manager = createInstanceManager({
     catalog: [manifest],
     authorize: async request => { calls.push(request); return approved; },
-    provisioner: { provision, stop: async () => ({ stopped: true }) },
+    provisioner: { provision, stop: async () => ({ stopped: true }), delete: async () => ({ deleted: true }) },
     maxInstancesPerTenant: max
   });
   return { manager, calls };
@@ -83,4 +83,19 @@ test('invalid identifiers and states are rejected', async () => {
   const { manager } = harness();
   await assert.rejects(manager.create({ tenantId: 'tenant-a', moduleId: 'unknown', idempotencyKey: 'create-0011' }), /MODULE_NOT_FOUND/);
   await assert.rejects(manager.create({ tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'bad' }), /IDEMPOTENCY_KEY_INVALID/);
+});
+
+test('concurrent duplicate creates share one provisioning operation', async () => {
+  let count = 0;
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const { manager } = harness({ provision: async () => { count++; await gate; return { accepted: true }; } });
+  const input = { tenantId: 'tenant-a', moduleId: 'ingest', idempotencyKey: 'create-0012' };
+  const first = manager.create(input);
+  const second = manager.create(input);
+  await new Promise(resolve => setImmediate(resolve));
+  release();
+  const [a, b] = await Promise.all([first, second]);
+  assert.equal(a.id, b.id);
+  assert.equal(count, 1);
 });
