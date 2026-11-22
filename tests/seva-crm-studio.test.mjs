@@ -30,6 +30,19 @@ test('CRM snapshot and consent gate remain explicit and privacy-safe',()=>{
   assert.ok(!web.includes('SNAPSHOT VERIFICATO'));
 });
 
+test('Engagement drafts are consent-aware and integration states match observed permissions',()=>{
+  assert.ok(web.includes('Engagement message library · draft-only'));
+  assert.ok(web.includes('Nessun invio, audience o budget attivato'));
+  assert.ok(web.includes('consenso verificato'));
+  assert.ok(web.includes('Supermetrics · Meta Ads'));
+  assert.ok(web.includes('Authenticated · 1 account discovered'));
+  assert.ok(web.includes('Google Ads'));
+  assert.ok(web.includes('no account discovered'));
+  assert.ok(web.includes('Write: permission change required'));
+  assert.ok(web.includes('Stripe'));
+  assert.ok(web.includes('1 LIVE account available'));
+});
+
 test('AI orchestration and MLOps status is described without claiming live training',()=>{
   assert.ok(web.includes('Agent orchestration'));
   assert.ok(web.includes('MLOps / DLoPs'));
