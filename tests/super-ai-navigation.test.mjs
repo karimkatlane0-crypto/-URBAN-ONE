@@ -61,6 +61,8 @@ test('all navigation links are connected to their declared route and boundary', 
   assert.equal(document.documentElement.dataset.navigationGraph, 'pass');
   for (const [id] of expected) assert.ok(anchors.get(id).dataset.productBoundary);
   assert.equal(anchors.get('seva-public').attrs.rel, 'noopener noreferrer');
+  assert.equal(anchors.get('universal-36').attrs['aria-label'], undefined);
+  assert.match(anchors.get('universal-36').attrs['aria-description'], /control-plane/);
 });
 
 test('missing node fails closed and is surfaced to the live status region', () => {
