@@ -127,10 +127,6 @@ export function createInstanceManager({
       } catch (error) {
         idempotency.delete(idem);
         throw error;
-      } finally {
-        if (idempotency.get(idem) === operation && store.has?.(await Promise.resolve(''))) {
-          // The completed operation remains cached in the local idempotency map.
-        }
       }
     },
 
