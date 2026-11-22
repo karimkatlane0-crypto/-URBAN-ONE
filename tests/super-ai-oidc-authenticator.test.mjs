@@ -113,7 +113,7 @@ test('invalid signature and unknown signing key fail closed', async () => {
 
 test('OIDC authenticator verifies every enabled asymmetric signing algorithm', async () => {
   const variants = [
-    { alg: 'PS256', pair: primary, key: { ...jwk, alg: 'PS256' }, kid: 'rsa-ps256' },
+    { alg: 'PS256', pair: primary, key: { ...jwk, kid: 'rsa-ps256', alg: 'PS256' }, kid: 'rsa-ps256' },
     { alg: 'ES256', pair: ecPair, key: { ...ecPair.publicKey.export({ format: 'jwk' }), kid: 'ec-1', use: 'sig', alg: 'ES256', key_ops: ['verify'] }, kid: 'ec-1' },
     { alg: 'EdDSA', pair: edPair, key: { ...edPair.publicKey.export({ format: 'jwk' }), kid: 'ed-1', use: 'sig', alg: 'EdDSA', key_ops: ['verify'] }, kid: 'ed-1' }
   ];
