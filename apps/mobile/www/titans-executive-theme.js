@@ -9,7 +9,7 @@ const apply=value=>{
  root.dataset.theme=theme;
  root.style.colorScheme=theme;
  const button=document.getElementById('titans-theme-toggle');
- if(button){const next=theme==='dark'?'light':'dark';button.setAttribute('aria-label','Attiva modalità '+(next==='light'?'chiara':'scura'));button.setAttribute('aria-pressed',String(theme==='light'));button.title='Passa alla modalità '+(next==='light'?'chiara':'scura');button.innerHTML='<span class="theme-icon" aria-hidden="true">'+(next==='light'?'☼':'◐')+'</span><span>'+(next==='light'?'LIGHT MODE':'DARK MODE')+'</span>'}
+ if(button){const next=theme==='dark'?'light':'dark';button.setAttribute('aria-label','Attiva modalità '+(next==='light'?'chiara':'scura'));button.setAttribute('aria-pressed',String(theme==='light'));button.title='Passa alla modalità '+(next==='light'?'chiara':'scura');button.innerHTML='<span class="theme-icon" aria-hidden="true">'+(next==='light'?'☼':'◐')+'</span><span>'+(next==='light'?'PASSA A CHIARO':'PASSA A SCURO')+'</span>'}
 };
 apply(theme);
 const mount=()=>{
