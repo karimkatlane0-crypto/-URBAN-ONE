@@ -104,3 +104,79 @@ footer a{color:var(--exec-gold-soft)!important;font-weight:800}
 @media(min-width:641px) and (max-width:900px){
  :where(.grid,.sectors,.product-grid){grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* UNIVERSAL 36 · INSIDERS visual quality pass — shared across executive portals. */
+:root{
+ --uo-focus:var(--exec-gold);
+ --uo-surface:#17212b;
+ --uo-surface-raised:#1c2934;
+ --uo-border-strong:#465563;
+ --uo-radius:10px;
+}
+:where(.shell,.wrap,.container,.page-shell,main){min-width:0}
+:where(.card,.panel,.metric,.stat,.tile,.provider,.notice,.warn,.box,.result,.item,.contact,.section-card){
+ border-color:var(--exec-line)!important;
+ border-radius:var(--uo-radius)!important;
+}
+:where(.card,.panel,.metric,.stat,.tile,.provider,.result,.item,.contact,.section-card){
+ box-shadow:var(--exec-shadow);
+}
+:where(a,button,input,select,textarea,summary,[role="button"]):focus-visible{
+ outline:3px solid var(--uo-focus)!important;
+ outline-offset:3px!important;
+}
+:where(button,.button,.btn,[role="button"]){
+ min-height:44px;
+ transition:background-color .16s ease,border-color .16s ease,transform .16s ease;
+}
+:where(button,.button,.btn,[role="button"]):active{transform:translateY(1px)}
+:where(button,.button,.btn,[role="button"]):disabled,
+:where(button,.button,.btn,[role="button"])[aria-disabled="true"]{
+ opacity:.58;cursor:not-allowed;filter:saturate(.55);transform:none;
+}
+:where(input,select,textarea){accent-color:var(--exec-gold)}
+:where(input,select,textarea):disabled{opacity:.65;cursor:not-allowed}
+:where(nav a[aria-current="page"],nav a[aria-current="true"]){
+ color:var(--exec-gold-soft)!important;
+ background:#202d37!important;
+ border-color:#665638!important;
+}
+:where(details,dialog,.accordion,.disclosure){
+ border:1px solid var(--exec-line);
+ border-radius:10px;
+}
+:where(summary){cursor:pointer}
+:where(hr){border:0;border-top:1px solid var(--exec-line)}
+:where(img,video,iframe,svg,canvas){max-width:100%}
+:where(pre,code){overflow-wrap:anywhere}
+:where(table){max-width:100%}
+:where(.eyebrow,.kicker,.section-label){letter-spacing:.14em;text-transform:uppercase}
+:where(.status,.badge,.tag){max-width:100%;overflow-wrap:anywhere}
+@media(max-width:640px){
+ :where(.shell,.wrap,.container,.page-shell,main){max-width:100%;min-width:0}
+ :where(.toolbar,.form-grid,.filter-row){grid-template-columns:minmax(0,1fr)!important}
+ :where(.card,.panel,.metric,.stat,.tile,.provider,.notice,.warn,.box,.result,.item,.contact,.section-card){min-width:0}
+ :where(table){display:block;overflow-x:auto}
+}
+@media(prefers-reduced-motion:reduce){
+ :where(button,.button,.btn,[role="button"],article){transition:none!important}
+}
+@media print{
+ body{background:#fff!important;color:#111!important}
+ header,nav,button,.button,.btn{box-shadow:none!important}
+ :where(.card,.panel,article){break-inside:avoid;box-shadow:none!important}
+}
+
+
+/* Print contrast correction — Codex P2. Keep cards readable when browsers omit background graphics. */
+@media print{
+ body,.shell,.wrap,main,article,.article,.panel,.card,.metric,.status,.result,.item,.provider,.notice,.warn,.box,.empty,.hero-meta,.start-panel{
+  color:#111!important;
+  background:#fff!important;
+  border-color:#bbb!important;
+  box-shadow:none!important;
+ }
+ :where(h1,h2,h3,h4,p,li,td,th,strong,small,a,label){color:#111!important}
+ a{text-decoration:underline!important}
+}
