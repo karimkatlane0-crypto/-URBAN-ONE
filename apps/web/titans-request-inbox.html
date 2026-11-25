@@ -37,10 +37,10 @@ function renderReceipt(r){
  appendText(root,'p','Stato: '+r.state+' · Finalità: '+(purposeLabels[r.purpose]||r.purpose));
  appendText(root,'p','Scope: '+r.scopes.join(', '));
  appendText(root,'p','Ricevuta audit SHA-256: '+(r.auditHash||'non disponibile'));
- if(r.grant){appendText(root,'p','Grant: '+r.grant.grantId+' · '+(r.grant.active?'ATTIVO':'REVOCATO'));
+ if(r.grant){const grantStatus=r.grant.active?'ATTIVO':r.grant.revokedAt?'REVOCATO':Date.parse(r.grant.expiresAt)<=Date.now()?'SCADUTO':'NON ATTIVO';appendText(root,'p','Grant: '+r.grant.grantId+' · '+grantStatus);
   if(r.grant.active&&actor?.scopes.includes('titans:grant:revoke')&&actor.actorId===r.grant.subjectId){
    const b=document.createElement('button');b.type='button';b.className='decline';b.textContent='Revoca autorizzazione';
-   b.addEventListener('click',async()=>{b.disabled=true;try{const result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});renderReceipt(result.receipt);status('Revoca registrata: '+result.revokedAt,'ok');await refreshInbox()}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false}});
+   b.addEventListener('click',async()=>{b.disabled=true;let result;try{result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false;return;}renderReceipt(result.receipt);status('Revoca registrata: '+result.revokedAt,'ok');try{await refreshInbox();}catch(e){status('Revoca registrata; aggiornamento inbox non riuscito: '+e.message,'error');}});
    root.append(b);
   }
  }
@@ -58,7 +58,7 @@ function renderInbox(rows){
   const actions=document.createElement('div');actions.className='actions';
   const accept=document.createElement('button');accept.type='button';accept.className='primary';accept.textContent='ACCEPT';
   const decline=document.createElement('button');decline.type='button';decline.className='decline';decline.textContent='DECLINE';
-  async function decide(decision,button){accept.disabled=true;decline.disabled=true;try{const receipt=await api('/api/titans/requests/'+r.id+'/decision','POST',{decision});renderReceipt(receipt);status(decision==='accept'?'Consenso specifico registrato.':'Richiesta rifiutata.','ok');await refreshInbox()}catch(e){status('Decisione non registrata: '+e.message,'error');accept.disabled=false;decline.disabled=false;}}
+  async function decide(decision,button){accept.disabled=true;decline.disabled=true;let receipt;try{receipt=await api('/api/titans/requests/'+r.id+'/decision','POST',{decision});}catch(e){status('Decisione non registrata: '+e.message,'error');accept.disabled=false;decline.disabled=false;return;}renderReceipt(receipt);status(decision==='accept'?'Consenso specifico registrato.':'Richiesta rifiutata.','ok');try{await refreshInbox();}catch(e){status('Decisione registrata; aggiornamento inbox non riuscito: '+e.message,'error');}}
   accept.addEventListener('click',()=>decide('accept',accept));decline.addEventListener('click',()=>decide('decline',decline));
   actions.append(accept,decline);card.append(actions);root.append(card);
  }
