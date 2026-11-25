@@ -9,6 +9,7 @@ const targets = [
   { name: 'SEVA CRM Studio', file: 'seva-crm-studio.html', title: /customer intelligence studio/i },
   { name: 'SEVA Unified Studio', file: 'seva-unified-studio.html', title: /unified saas portal/i },
   { name: 'Universal 36', file: 'universal-36.html', title: /UNIVERSAL 36/i, localeSelector: false, verifyUniversalLinks: true },
+  { name: 'Universal Command Center', file: 'universal-command-center.html', title: /UNIVERSAL COMMAND CENTER/i, localeSelector: false, verifyCommandCenter: true },
   { name: 'TITANS Enterprise Studio', file: 'titans-enterprise-studio.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Mobile Workspace', file: 'titans-enterprise-studio-mobile.html', title: /TITANS.*Enterprise Intelligence Studio/i, localeSelector: false },
   { name: 'TITANS Partner and SEVA Enterprise Onboarding', file: 'seva-titans-onboarding.html', title: /Sovereign Onboarding/i, localeSelector: false },
@@ -41,6 +42,45 @@ try {
 
       result.title = await page.title();
       if (!target.title.test(result.title)) throw new Error('Unexpected page title: ' + result.title);
+
+      if (target.verifyCommandCenter) {
+        await page.waitForFunction(() => {
+          const frame = document.querySelector('#module-frame');
+          return frame?.contentDocument?.readyState === 'complete';
+        }, null, { timeout: 15000 });
+        result.screenDiagnostics = await page.locator('#screen-info').textContent();
+        if (!/viewport \d+×\d+/.test(result.screenDiagnostics || '') || !/DPR/.test(result.screenDiagnostics || '')) {
+          throw new Error('Screen resolution diagnostics missing at startup');
+        }
+        const moduleFrame = page.locator('#module-frame');
+        for (const [label, route] of [
+          ['SEVA INTELLIGENCE', 'seva-unified-studio.html'],
+          ['ADVANCED INSIGHTS', 'insights-free.html'],
+          ['SYNAPSY', 'synapsy.html'],
+          ['KKUBERA', 'discovery.html'],
+          ['TITANS', 'titans-enterprise-studio.html'],
+          ['URBAN ONE', 'v10-workspace.html'],
+          ['INSTANCE MANAGER', 'instance-manager.html']
+        ]) {
+          await page.locator('nav[aria-label="Navigazione moduli"] button').filter({ hasText: label }).click();
+          await page.waitForFunction(expected => {
+            const frame = document.querySelector('#module-frame');
+            try { return frame.contentWindow.location.pathname.endsWith('/' + expected); }
+            catch { return false; }
+          }, route, { timeout: 10000 });
+        }
+        result.moduleSwitching = '7/7 routes loaded in the same iframe';
+        if (context.pages().length !== 1) throw new Error('Internal module navigation opened another browser tab');
+        await page.waitForFunction(() => sessionStorage.getItem('ucc:last-module')?.endsWith('/instance-manager.html'));
+        result.sessionStorage = await page.evaluate(() => sessionStorage.getItem('ucc:last-module'));
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => {
+          const frame = document.querySelector('#module-frame');
+          try { return frame.contentWindow.location.pathname.endsWith('/instance-manager.html'); }
+          catch { return false; }
+        }, null, { timeout: 15000 });
+        result.sessionRestore = 'last module restored';
+      }
 
       if (target.verifyInstanceManager) {
         await page.waitForFunction(() => document.querySelector('#connection')?.textContent !== 'Verifica backend…', null, { timeout: 10000 }).catch(() => {});
@@ -108,6 +148,10 @@ try {
 
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
+      if (target.verifyCommandCenter) {
+        await page.waitForFunction(() => /viewport 390×844/.test(document.querySelector('#screen-info')?.textContent || ''));
+        result.responsiveDiagnostics = '390×844 portrait';
+      }
       result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
       if (result.horizontalOverflow) throw new Error(target.name + ' horizontal overflow at mobile viewport');
       result.pageErrors = pageErrors;

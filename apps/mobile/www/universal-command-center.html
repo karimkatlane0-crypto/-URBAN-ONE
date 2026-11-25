@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d14">
+<meta name="description" content="Universal Command Center: accesso unico a SEVA Intelligence Studio, Advanced Insights, SYNAPSY, KKUBERA, TITANS e URBAN ONE.">
+<title>UNIVERSAL COMMAND CENTER · ALL</title>
+<style>
+:root{color-scheme:dark;--bg:#090d14;--panel:#111a27;--line:#2b3a4e;--gold:#e9c875;--ink:#f3f5f7;--muted:#aab7c7;--green:#9bd6a6}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{display:grid;grid-template-rows:auto auto 1fr;overflow:hidden}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);background:#0c121d}
+.brand{font-weight:850;letter-spacing:.1em}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.16em}
+#screen-info{font-size:11px;color:var(--gold);text-align:right;font-variant-numeric:tabular-nums}
+nav{display:flex;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);overflow-x:auto;overscroll-behavior-x:contain;background:#0d1420}
+nav button{flex:0 0 auto;border:1px solid var(--line);border-radius:7px;background:#121d2c;color:var(--muted);padding:9px 12px;font:700 12px/1.2 system-ui,sans-serif;cursor:pointer}
+nav button[aria-current=page]{background:#302918;border-color:var(--gold);color:#ffe8ae}
+nav button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+main{min-height:0;position:relative;background:#0b1018}
+iframe{display:block;width:100%;height:100%;border:0;background:#fff}
+#loading{position:absolute;inset:0;display:grid;place-items:center;background:#0b1018;color:var(--muted);pointer-events:none}
+#loading[hidden]{display:none}
+@media(max-width:650px){header{align-items:flex-start;padding:10px 12px}.brand{font-size:12px}#screen-info{max-width:54%;font-size:10px}nav{padding:8px;gap:6px}nav button{padding:9px 10px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header><div class="brand">UNIVERSAL COMMAND CENTER<small>SEVA INTELLIGENCE STUDIO · ADVANCED INSIGHTS · ALL</small></div><output id="screen-info" aria-live="polite">Rilevamento schermo…</output></header>
+<nav aria-label="Navigazione moduli">
+<button type="button" data-src="./index.html" aria-current="page">ALL · HOME</button>
+<button type="button" data-src="./seva-unified-studio.html">SEVA INTELLIGENCE</button>
+<button type="button" data-src="./insights-free.html">ADVANCED INSIGHTS</button>
+<button type="button" data-src="./synapsy.html">SYNAPSY</button>
+<button type="button" data-src="./discovery.html">KKUBERA</button>
+<button type="button" data-src="./titans-enterprise-studio.html">TITANS</button>
+<button type="button" data-src="./v10-workspace.html">URBAN ONE</button>
+<button type="button" data-src="./instance-manager.html">INSTANCE MANAGER</button>
+</nav>
+<main><div id="loading" role="status">Caricamento modulo…</div><iframe id="module-frame" title="Area di lavoro integrata" src="./index.html" allow="clipboard-read; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe></main>
+<script>
+(()=> {
+ const frame=document.getElementById('module-frame');
+ const loading=document.getElementById('loading');
+ const info=document.getElementById('screen-info');
+ const buttons=[...document.querySelectorAll('nav button[data-src]')];
+ const allowed=new Set(buttons.map(b=>new URL(b.dataset.src,location.href).href));
+ const updateScreen=()=>{
+   const w=window.innerWidth,h=window.innerHeight,dpr=window.devicePixelRatio||1;
+   const screenInfo=window.screen||{};
+   const sw=screenInfo.width||0,sh=screenInfo.height||0;
+   const orientation=w>=h?'landscape':'portrait';
+   const device=w<=650?'MOBILE':w<=1024?'TABLET':'DESKTOP';
+   info.textContent=device+' · viewport '+w+'×'+h+' · screen '+sw+'×'+sh+' CSS px · DPR '+dpr.toFixed(2)+' · '+orientation;
+   document.documentElement.dataset.device=device.toLowerCase();
+ };
+ const setActive=url=>buttons.forEach(button=>{
+   const active=new URL(button.dataset.src,location.href).pathname===url.pathname;
+   if(active)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+ });
+ const load=(src,button)=>{
+   if(!src)return;
+   const next=new URL(src,location.href);
+   if(!allowed.has(next.href)||new URL(frame.src,location.href).href===next.href)return;
+   buttons.forEach(b=>b.removeAttribute('aria-current'));
+   if(button)button.setAttribute('aria-current','page');
+   try{sessionStorage.setItem('ucc:last-module',next.href);}catch{}
+   loading.hidden=false;
+   frame.src=next.href;
+ };
+ buttons.forEach(button=>button.addEventListener('click',()=>load(button.dataset.src,button)));
+ frame.addEventListener('load',()=>{
+   loading.hidden=true;
+   try{
+     const doc=frame.contentDocument;
+     doc.addEventListener('click',event=>{
+       const anchor=event.target.closest&&event.target.closest('a[href]');
+       if(!anchor)return;
+       const destination=new URL(anchor.href,doc.baseURI);
+       if(destination.origin!==location.origin)return;
+       if(destination.pathname.endsWith('/universal-command-center.html')){
+         event.preventDefault();
+         return;
+       }
+       if(anchor.target!=='_blank')return;
+       event.preventDefault();
+       frame.src=destination.href;
+     },true);
+     const current=new URL(frame.contentWindow.location.href);
+     setActive(current);
+     const route=[...allowed].find(item=>new URL(item).pathname===current.pathname);
+     if(route)sessionStorage.setItem('ucc:last-module',current.href);
+   }catch{}
+ });
+ frame.addEventListener('error',()=>{
+   loading.textContent='Modulo non disponibile: verifica il percorso e lo stato del servizio.';
+   loading.hidden=false;
+ });
+ window.addEventListener('resize',updateScreen,{passive:true});
+ window.addEventListener('orientationchange',updateScreen,{passive:true});
+ try{
+   const saved=sessionStorage.getItem('ucc:last-module');
+   if(saved){
+     const candidate=new URL(saved,location.href);
+     const route=[...allowed].find(item=>new URL(item).pathname===candidate.pathname);
+     if(route)frame.src=candidate.href;
+   }
+ }catch{}
+ updateScreen();
+})();
+</script>
+</body>
+</html>
