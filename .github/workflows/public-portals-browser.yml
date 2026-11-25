@@ -2,11 +2,11 @@ name: public-portals-browser
 on:
   push:
     paths:
-      - 'apps/web/universal-36.html'
+      - 'apps/web/universal-36.html'\n      - 'apps/web/universal-command-center.html'\n      - 'apps/web/insights-free.html'\n      - 'apps/web/financial-dashboard.html'
       - 'apps/web/instance-manager.*'
       - 'apps/web/discovery.html'
       - 'apps/web/seva-crm-studio.html'
-      - 'apps/web/seva-unified-studio.html'
+      - 'apps/web/seva-unified-studio.html'\n      - 'tests/universal-command-center.test.mjs'\n      - 'scripts/public-portals-browser-smoke.mjs'
       - 'apps/web/eu-language-selector.js'
       - 'scripts/public-portals-browser-smoke.mjs'
       - '.github/workflows/public-portals-browser.yml'
