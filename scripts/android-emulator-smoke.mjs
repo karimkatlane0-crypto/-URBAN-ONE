@@ -100,6 +100,44 @@ try {
   report.integrationDiagnostics=diagnostics.slice(-20);
   if(!status.includes('non disponibile')){report.fallbackStatus=status;throw Error('LOCAL_SERVER_FALLBACK_FAILED');}
   report.checks.unconfiguredBackendFallback=true;
+  report.phase='command-center-entry';
+  const opened=await evaluate("(()=>{const link=[...document.querySelectorAll('a[href]')].find(a=>a.getAttribute('href')==='./universal-command-center.html');if(!link)return false;link.click();return true})()");
+  if(!opened)throw Error('COMMAND_CENTER_ENTRY_LINK_MISSING');
+  let commandCenterReady=false,lastCommandCenterError='';
+  for(let i=0;i<30;i++){
+    try{
+      commandCenterReady=await evaluateReadWithRetry("document.readyState==='complete'&&document.title.includes('UNIVERSAL COMMAND CENTER')&&Boolean(document.getElementById('screen-info'))&&Boolean(document.getElementById('module-frame'))",2);
+      if(commandCenterReady)break;
+    }catch(error){lastCommandCenterError=error.message;}
+    await pause(500);
+  }
+  if(!commandCenterReady)throw Error('COMMAND_CENTER_NOT_READY'+(lastCommandCenterError?': '+lastCommandCenterError:''));
+  report.screenDiagnostics=await evaluateReadWithRetry("document.getElementById('screen-info').textContent");
+  if(!report.screenDiagnostics.includes('viewport')||!report.screenDiagnostics.includes('DPR'))throw Error('COMMAND_CENTER_SCREEN_DIAGNOSTICS_MISSING');
+  report.checks.commandCenterOpened=true;
+  const moduleRoutes=[
+    ['SEVA INTELLIGENCE','seva-unified-studio.html'],
+    ['ADVANCED INSIGHTS','insights-free.html'],
+    ['SYNAPSY','synapsy.html'],
+    ['KKUBERA','discovery.html'],
+    ['TITANS','titans-enterprise-studio.html'],
+    ['URBAN ONE','v10-workspace.html'],
+    ['INSTANCE MANAGER','instance-manager.html']
+  ];
+  for(const [label,route] of moduleRoutes){
+    const clicked=await evaluate("(()=>{const button=[...document.querySelectorAll('nav[aria-label=\\"Navigazione moduli\\"] button')].find(b=>b.textContent.includes("+JSON.stringify(label)+"));if(!button)return false;button.click();return true})()");
+    if(!clicked)throw Error('COMMAND_CENTER_BUTTON_MISSING: '+label);
+    let routeReady=false;
+    for(let attempt=0;attempt<30;attempt++){
+      try{
+        routeReady=await evaluateReadWithRetry("(()=>{const frame=document.getElementById('module-frame');try{return frame.contentWindow.location.pathname.endsWith('/"+route+"')&&frame.contentDocument.readyState==='complete'}catch{return false}})()",2);
+        if(routeReady)break;
+      }catch{}
+      await pause(300);
+    }
+    if(!routeReady)throw Error('COMMAND_CENTER_ROUTE_FAILED: '+route);
+  }
+  report.checks.commandCenterRoutes='7/7';
   report.phase='relaunch-check';
   ws.close();ws=undefined;
   device('shell','am','force-stop',pkg);
