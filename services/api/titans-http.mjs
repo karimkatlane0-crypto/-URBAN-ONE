@@ -71,7 +71,8 @@ export async function handleTitansApi({method='GET',path='/',headers={},body={},
     const revoke=/^\/api\/titans\/grants\/([0-9a-f-]{36})\/revoke$/.exec(path);
     if(method==='POST'&&revoke){
       requireScope(actor,'titans:grant:revoke');
-      return {status:200,body:db.revoke({grantId:revoke[1],actorId:actor.id})};
+      const result=db.revoke({grantId:revoke[1],actorId:actor.id});
+      return {status:200,body:{...result,receipt:db.receipt({requestId:result.requestId,actorId:actor.id})}};
     }
     return {status:404,body:{error:'NOT_FOUND'}};
   }catch(error){return respond(error);}
