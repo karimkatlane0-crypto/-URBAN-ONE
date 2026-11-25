@@ -49,10 +49,10 @@ test('mobile Advanced Insights contains the real local dashboard route', async (
 test('Advanced Insights connects executive governance and free KPI scenarios on web and mobile', async () => {
   for (const p of ['apps/web/insights-free.html', 'apps/mobile/www/insights-free.html']) {
     const html = await read(p);
-    assert.match(html, /seva-advanced-insights-executive\\.html/);
+    assert.match(html, /seva-advanced-insights-executive\.html/);
   }
   const executive = await read('apps/web/seva-advanced-insights-executive.html');
-  assert.match(executive, /insights-free\\.html/);
+  assert.match(executive, /insights-free\.html/);
   assert.match(executive, /PREVIEW VISIVA · DATI LIVE NON COLLEGATI/);
   await access(path.join(root, 'apps/web/seva-executive-premium.css'));
 });
