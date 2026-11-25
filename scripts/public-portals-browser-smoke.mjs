@@ -60,7 +60,7 @@ try {
                 const accepted=payload.decision==='accept';
                 return json({requestId:request.id,requesterId:request.requesterId,recipientId:request.recipientId,purpose:request.purpose,scopes:request.scopes,note:request.note,state:accepted?'ACCEPTED':'DECLINED',auditHash:'a'.repeat(64),grant:accepted?{grantId:'33333333-3333-4333-8333-333333333333',granteeId:request.requesterId,subjectId:request.recipientId,purpose:request.purpose,scopes:request.scopes,active:true}:null});
               }
-              if(url.includes('/api/titans/grants/')&&url.endsWith('/revoke'))return json({revoked:true,revokedAt:new Date().toISOString()});
+              if(url.includes('/api/titans/grants/')&&url.endsWith('/revoke'))return json({revoked:true,revokedAt:new Date().toISOString(),receipt:{requestId:'11111111-1111-4111-8111-111111111111',requesterId:'alice-test',recipientId:'bob-test',purpose:'data_sharing',scopes:['contacts:read'],state:'ACCEPTED',auditHash:'b'.repeat(64),grant:{grantId:'33333333-3333-4333-8333-333333333333',granteeId:'alice-test',subjectId:'bob-test',purpose:'data_sharing',scopes:['contacts:read'],active:false,revokedAt:new Date().toISOString()}}});
               return json({error:'NOT_FOUND'},404);
             };
           });
