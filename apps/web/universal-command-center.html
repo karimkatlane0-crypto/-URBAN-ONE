@@ -44,26 +44,62 @@ iframe{display:block;width:100%;height:100%;border:0;background:#fff}
  const loading=document.getElementById('loading');
  const info=document.getElementById('screen-info');
  const buttons=[...document.querySelectorAll('nav button[data-src]')];
+ const allowed=new Set(buttons.map(b=>new URL(b.dataset.src,location.href).href));
  const updateScreen=()=>{
    const w=window.innerWidth,h=window.innerHeight,dpr=window.devicePixelRatio||1;
    const sw=window.screen?.width||0,sh=window.screen?.height||0;
    const orientation=w>=h?'landscape':'portrait';
    const device=w<=650?'MOBILE':w<=1024?'TABLET':'DESKTOP';
-   info.textContent=device+' · viewport '+w+'×'+h+' · screen '+sw+'×'+sh+' · DPR '+dpr.toFixed(2)+' · '+orientation;
+   info.textContent=device+' · viewport '+w+'×'+h+' · screen '+sw+'×'+sh+' CSS px · DPR '+dpr.toFixed(2)+' · '+orientation;
    document.documentElement.dataset.device=device.toLowerCase();
  };
+ const setActive=url=>buttons.forEach(button=>{
+   const active=new URL(button.dataset.src,location.href).pathname===url.pathname;
+   if(active)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+ });
  const load=(src,button)=>{
-   if(!src||frame.getAttribute('src')===src)return;
+   if(!src)return;
+   const next=new URL(src,location.href);
+   if(!allowed.has(next.href)||new URL(frame.src,location.href).href===next.href)return;
    buttons.forEach(b=>b.removeAttribute('aria-current'));
    if(button)button.setAttribute('aria-current','page');
    loading.hidden=false;
-   frame.src=src;
+   frame.src=next.href;
  };
  buttons.forEach(button=>button.addEventListener('click',()=>load(button.dataset.src,button)));
- frame.addEventListener('load',()=>{loading.hidden=true;});
- frame.addEventListener('error',()=>{loading.textContent='Modulo non disponibile: verifica il percorso e lo stato del servizio.';loading.hidden=false;});
+ frame.addEventListener('load',()=>{
+   loading.hidden=true;
+   try{
+     const doc=frame.contentDocument;
+     doc.addEventListener('click',event=>{
+       const anchor=event.target.closest&&event.target.closest('a[href]');
+       if(!anchor||anchor.target!=='_blank')return;
+       const destination=new URL(anchor.href,doc.baseURI);
+       if(destination.origin!==location.origin)return;
+       event.preventDefault();
+       frame.src=destination.href;
+     },true);
+     const current=new URL(frame.contentWindow.location.href);
+     setActive(current);
+     const route=[...allowed].find(item=>new URL(item).pathname===current.pathname);
+     if(route)sessionStorage.setItem('ucc:last-module',current.href);
+   }catch{}
+ });
+ frame.addEventListener('error',()=>{
+   loading.textContent='Modulo non disponibile: verifica il percorso e lo stato del servizio.';
+   loading.hidden=false;
+ });
  window.addEventListener('resize',updateScreen,{passive:true});
  window.addEventListener('orientationchange',updateScreen,{passive:true});
+ try{
+   const saved=sessionStorage.getItem('ucc:last-module');
+   if(saved){
+     const candidate=new URL(saved,location.href);
+     const route=[...allowed].find(item=>new URL(item).pathname===candidate.pathname);
+     if(route)frame.src=candidate.href;
+   }
+ }catch{}
  updateScreen();
 })();
 </script>
