@@ -75,6 +75,14 @@ test('unknown decisions and missing purposes are rejected', () => {
   }).reason, 'REQUEST_PURPOSE_REQUIRED');
 });
 
+test('wildcard scopes are rejected by the pure decision policy', () => {
+  assert.equal(decideTitansRequest({
+    request: {...request, requestedScopes: ['*']},
+    actorId: 'recipient-01', actorAuthenticated: true,
+    decision: 'accept', now
+  }).reason, 'REQUEST_SCOPES_INVALID');
+});
+
 test('decision policy has no implicit external side effect', () => {
   const result = decideTitansRequest({
     request, actorId: 'recipient-01', actorAuthenticated: true,
