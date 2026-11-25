@@ -1,0 +1,67 @@
+/* SEVA Executive Studio — premium visual layer, isolated preview.
+   No metric values or source states are fabricated by this stylesheet. */
+:root{
+  color-scheme:dark;
+  --seva-bg:#0b1015;--seva-surface:#111922;--seva-surface-2:#17222c;
+  --seva-line:#2a3945;--seva-ink:#f4f2ec;--seva-muted:#a6b2ba;
+  --seva-platinum:#d9e0e3;--seva-champagne:#d8bd83;
+  --seva-green:#8fc4a5;--seva-amber:#e2bd78;--seva-red:#d98d86;
+  --seva-radius:16px;--seva-shadow:0 18px 50px rgba(0,0,0,.24);
+  font-family:Inter,"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--seva-bg)}
+body{margin:0;background:radial-gradient(ellipse at 78% -10%,rgba(216,189,131,.11),transparent 36%),var(--seva-bg);color:var(--seva-ink);font-size:14px;line-height:1.65}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--seva-champagne);outline-offset:3px}
+button,input,select{font:inherit}
+.seva-shell{max-width:1440px;margin:auto;padding:0 clamp(18px,4vw,56px) 64px}
+.seva-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:78px;border-bottom:1px solid var(--seva-line)}
+.seva-brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.12em;font-size:12px}
+.seva-brand-mark{display:grid;place-items:center;width:36px;height:36px;border:1px solid #806f4e;color:var(--seva-champagne);font:700 17px/1 Georgia,serif}
+.seva-nav{display:flex;gap:20px;flex-wrap:wrap;color:var(--seva-muted);font-size:12px}
+.seva-nav a:hover{color:var(--seva-champagne)}
+.seva-label{color:var(--seva-champagne);font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+.seva-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:48px;align-items:end;padding:68px 0 38px;border-bottom:1px solid var(--seva-line)}
+.seva-hero h1{font:600 clamp(42px,6vw,78px)/.98 Georgia,"Times New Roman",serif;letter-spacing:-.045em;margin:14px 0 18px;max-width:900px}
+.seva-hero h1 span{color:var(--seva-champagne)}
+.seva-lead{max-width:760px;color:var(--seva-muted);font-size:16px}
+.seva-side-note{border-left:2px solid var(--seva-champagne);padding:4px 0 4px 18px;color:var(--seva-muted);font-size:12px}
+.seva-side-note strong{display:block;color:var(--seva-ink);font-size:13px;margin-bottom:7px}
+.seva-status-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.seva-tag{border:1px solid var(--seva-line);border-radius:999px;padding:6px 11px;color:var(--seva-muted);font-size:10px;letter-spacing:.06em}
+.seva-tag.demo{border-color:#786342;color:var(--seva-amber)}
+.seva-section{padding:34px 0 8px}
+.seva-section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.seva-section h2{font:600 26px/1.15 Georgia,"Times New Roman",serif;letter-spacing:-.02em;margin:0}
+.seva-section-head p{color:var(--seva-muted);font-size:12px;margin:7px 0 0}
+.seva-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.seva-panel{background:linear-gradient(145deg,rgba(23,34,44,.96),rgba(15,23,31,.98));border:1px solid var(--seva-line);border-radius:var(--seva-radius);box-shadow:var(--seva-shadow)}
+.seva-kpi{padding:20px;min-height:142px;position:relative;overflow:hidden}
+.seva-kpi:after{content:"";position:absolute;top:0;right:0;width:42px;height:2px;background:var(--seva-champagne)}
+.seva-kpi-label{color:var(--seva-muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.seva-kpi-value{font:600 34px/1.1 Georgia,"Times New Roman",serif;margin:17px 0 7px;color:var(--seva-platinum)}
+.seva-kpi-note{font-size:11px;color:var(--seva-amber)}
+.seva-grid-2{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.seva-card{padding:22px}
+.seva-card h3{font-size:14px;margin:0 0 6px}
+.seva-card p{font-size:12px;color:var(--seva-muted);margin:0}
+.seva-empty-chart{height:210px;margin-top:18px;border:1px dashed #45545f;border-radius:12px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--seva-muted);background:repeating-linear-gradient(0deg,transparent,transparent 41px,rgba(255,255,255,.035) 42px)}
+.seva-empty-chart strong{display:block;color:var(--seva-platinum);font-size:12px;margin-bottom:5px}
+.seva-table-wrap{overflow-x:auto;border:1px solid var(--seva-line);border-radius:var(--seva-radius)}
+.seva-table{width:100%;border-collapse:collapse;min-width:640px}
+.seva-table th,.seva-table td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--seva-line);font-size:12px}
+.seva-table th{color:var(--seva-champagne);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#141e27}
+.seva-table td{color:var(--seva-muted)}
+.seva-table tr:last-child td{border-bottom:0}
+.seva-gate{display:flex;align-items:flex-start;gap:12px;padding:15px 0;border-bottom:1px solid var(--seva-line)}
+.seva-gate:last-child{border:0}
+.seva-gate-mark{width:8px;height:8px;border-radius:50%;background:var(--seva-amber);margin-top:7px;flex:none}
+.seva-gate strong{display:block;font-size:12px;color:var(--seva-ink)}
+.seva-gate span{display:block;font-size:11px;color:var(--seva-muted);margin-top:3px}
+.seva-footnote{border:1px solid #665638;background:#191a19;border-radius:12px;padding:16px 18px;color:var(--seva-muted);font-size:11px;margin-top:26px}
+.seva-footnote strong{color:var(--seva-champagne)}
+.seva-footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--seva-line);margin-top:34px;padding-top:18px;color:var(--seva-muted);font-size:10px}
+@media(max-width:900px){.seva-hero{grid-template-columns:1fr;gap:24px;padding-top:48px}.seva-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.seva-grid-2{grid-template-columns:1fr}}
+@media(max-width:560px){.seva-shell{padding-left:16px;padding-right:16px}.seva-topbar{align-items:flex-start;padding:18px 0;flex-direction:column}.seva-nav{gap:14px}.seva-hero h1{font-size:44px}.seva-kpi-grid{grid-template-columns:1fr 1fr;gap:8px}.seva-kpi{padding:14px;min-height:124px}.seva-kpi-value{font-size:28px}.seva-section h2{font-size:23px}.seva-card{padding:16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
