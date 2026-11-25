@@ -101,7 +101,7 @@ export function createPostgresInstanceRepository({ pool, resolveQuota, defaultQu
           : defaultQuota;
         if (!Number.isSafeInteger(quota) || quota < 1 || quota > 100000) throw new Error('INSTANCE_TENANT_QUOTA_INVALID');
         const count = await client.query(
-          "SELECT count(*)::int AS total FROM super_ai.service_instances WHERE tenant_id=$1 AND state NOT IN ('deleted','failed')",
+          "SELECT count(*)::int AS total FROM super_ai.service_instances WHERE tenant_id=$1 AND state IN ('queued','provisioning','running','stopping')",
           [data.tenantId]
         );
         if ((count.rows?.[0]?.total ?? 0) >= quota) throw new Error('INSTANCE_TENANT_QUOTA_REACHED');
