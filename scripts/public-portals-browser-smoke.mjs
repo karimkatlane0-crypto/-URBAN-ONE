@@ -235,7 +235,7 @@ try {
       result.pageErrors = pageErrors;
       if (pageErrors.length) throw new Error('Browser page errors: ' + pageErrors.join('; '));
 
-      const safeName = target.file.replace(/\.html$/, '');
+      const safeName = (target.root || 'web') + '-' + target.file.replace(/\.html$/, '');
       await page.screenshot({ path: path.join(outDir, safeName + '.png'), fullPage: true });
       result.screenshot = safeName + '.png';
       result.status = 'PASS';
