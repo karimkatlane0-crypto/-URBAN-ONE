@@ -125,7 +125,8 @@ try {
     ['INSTANCE MANAGER','instance-manager.html']
   ];
   for(const [label,route] of moduleRoutes){
-    const clicked=await evaluate("(()=>{const button=[...document.querySelectorAll('nav[aria-label=\\"Navigazione moduli\\"] button')].find(b=>b.textContent.includes("+JSON.stringify(label)+"));if(!button)return false;button.click();return true})()");
+    const clickExpression="(()=>{const button=[...document.querySelectorAll('nav[aria-label=\\\"Navigazione moduli\\\"] button')].find(b=>b.textContent.includes("+JSON.stringify(label)+"));if(!button)return false;button.click();return true})()";
+    const clicked=await evaluate(clickExpression);
     if(!clicked)throw Error('COMMAND_CENTER_BUTTON_MISSING: '+label);
     let routeReady=false;
     for(let attempt=0;attempt<30;attempt++){
