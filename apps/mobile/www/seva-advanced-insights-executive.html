@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1015">
+<meta name="description" content="SEVA Intelligence Studio — Advanced Insights, executive analytics, KPI governance e controlli di evidenza.">
+<title>SEVA Intelligence Studio · Advanced Insights</title>
+<link rel="stylesheet" href="./seva-executive-premium.css">
+</head>
+<body>
+<main class="seva-shell">
+<header class="seva-topbar">
+  <a class="seva-brand" href="./seva-unified-studio.html"><span class="seva-brand-mark">S</span><span>SEVA INTELLIGENCE STUDIO</span></a>
+  <nav class="seva-nav" aria-label="Navigazione principale">
+    <a href="./seva-unified-studio.html">Studio</a><a href="./insights-free.html">Dashboard KPI & scenari</a><a href="#overview">Overview</a><a href="#performance">Performance</a><a href="#governance">Governance</a>
+  </nav>
+</header>
+<section class="seva-hero">
+  <div>
+    <div class="seva-label">Decision intelligence · Executive edition</div>
+    <h1>Advanced <span>Insights.</span></h1>
+    <p class="seva-lead">Una vista direzionale per leggere performance, conversioni, crescita e qualità dei dati. Ogni indicatore deve essere riconducibile a una fonte, a un intervallo temporale e a una regola di calcolo verificabile.</p>
+    <div class="seva-status-row"><span class="seva-tag demo">PREVIEW VISIVA · DATI LIVE NON COLLEGATI</span><span class="seva-tag">CEO / BOARD VIEW</span><span class="seva-tag">MOBILE READY</span></div>
+  </div>
+  <aside class="seva-side-note"><strong>Principio di affidabilità</strong>Questa anteprima non interroga il backend e non mostra metriche inventate. I valori restano vuoti finché la fonte reale non viene autenticata, sincronizzata e verificata.<br><br><span class="seva-label">Build → Verify → Release</span></aside>
+</section>
+<section class="seva-section" id="overview">
+  <div class="seva-section-head"><div><h2>Executive overview</h2><p>Indicatori prioritari · valori in attesa di una sorgente validata</p></div><span class="seva-tag">SOURCE STATUS · NOT CONNECTED</span></div>
+  <div class="seva-kpi-grid">
+    <article class="seva-panel seva-kpi"><div class="seva-kpi-label">Net revenue</div><div class="seva-kpi-value">—</div><div class="seva-kpi-note">Fonte transazionale non verificata</div></article>
+    <article class="seva-panel seva-kpi"><div class="seva-kpi-label">Conversion rate</div><div class="seva-kpi-value">—</div><div class="seva-kpi-note">Eventi e denominatore da validare</div></article>
+    <article class="seva-panel seva-kpi"><div class="seva-kpi-label">Active customers</div><div class="seva-kpi-value">—</div><div class="seva-kpi-note">CRM / identità non riconciliati</div></article>
+    <article class="seva-panel seva-kpi"><div class="seva-kpi-label">Creator commission</div><div class="seva-kpi-value">—</div><div class="seva-kpi-note">Ledger e regole non certificate</div></article>
+  </div>
+</section>
+<section class="seva-section" id="performance">
+  <div class="seva-section-head"><div><h2>Performance & growth</h2><p>Trend, coorti e funnel verranno visualizzati dopo la verifica delle fonti</p></div></div>
+  <div class="seva-grid-2">
+    <article class="seva-panel seva-card"><h3>Revenue & conversion trend</h3><p>Serie temporale con confronto periodo su periodo, intervallo e definizione metrica.</p><div class="seva-empty-chart"><div><strong>In attesa della connessione dati</strong>Il grafico sarà attivato dopo il collaudo della sorgente e la riconciliazione dei totali.</div></div></article>
+    <article class="seva-panel seva-card"><h3>Acquisition & retention</h3><p>Funnel, retention e coorti per canale, con denominatori e finestre temporali espliciti.</p><div class="seva-empty-chart"><div><strong>Nessuna coorte verificata</strong>Nessun valore dimostrativo viene presentato come performance reale.</div></div></article>
+  </div>
+</section>
+<section class="seva-section">
+  <div class="seva-section-head"><div><h2>Data sources & integrations</h2><p>Registro di controllo per la qualità e la provenienza dei dati</p></div></div>
+  <div class="seva-table-wrap"><table class="seva-table"><thead><tr><th>Source</th><th>Purpose</th><th>Evidence status</th><th>Next gate</th></tr></thead><tbody>
+  <tr><td>SEVA CRM</td><td>Customer lifecycle & activity</td><td>Not verified</td><td>Auth, tenant isolation, reconciliation</td></tr>
+  <tr><td>Power BI / Power Query</td><td>Executive reporting & refresh</td><td>Offline package documented; Microsoft runtime not tested</td><td>Authenticated model refresh and source totals</td></tr>
+  <tr><td>Commerce / Stripe</td><td>Orders, payments & entitlements</td><td>End-to-end flow not demonstrated</td><td>Signed TEST webhook, durable record, idempotency</td></tr>
+  <tr><td>Amazon / Awin</td><td>Affiliate attribution</td><td>Applications / links require advertiser-level proof</td><td>Approved partner, tracked transaction, commission report</td></tr>
+  </tbody></table></div>
+</section>
+<section class="seva-section" id="governance">
+  <div class="seva-section-head"><div><h2>Governance & release gates</h2><p>Stato sintetico delle verifiche necessarie prima di attivare le metriche</p></div></div>
+  <div class="seva-panel seva-card">
+    <div class="seva-gate"><span class="seva-gate-mark"></span><div><strong>Source authentication & permissions</strong><span>Verificare identità, scope, consenso e segregazione per tenant.</span></div></div>
+    <div class="seva-gate"><span class="seva-gate-mark"></span><div><strong>Data quality & reconciliation</strong><span>Definire grain, chiavi, duplicati, missingness, timezone e denominatori.</span></div></div>
+    <div class="seva-gate"><span class="seva-gate-mark"></span><div><strong>Power BI runtime validation</strong><span>Aprire il modello in Microsoft, eseguire refresh e riconciliare i totali.</span></div></div>
+    <div class="seva-gate"><span class="seva-gate-mark"></span><div><strong>Payment-to-entitlement proof</strong><span>Test end-to-end in TEST: webhook firmato, persistenza, accesso, replay e revoca.</span></div></div>
+    <div class="seva-gate"><span class="seva-gate-mark"></span><div><strong>Release authorization</strong><span>Revisione indipendente delle evidenze e autorizzazione esplicita prima della pubblicazione.</span></div></div>
+  </div>
+  <div class="seva-footnote"><strong>Nota sui dati.</strong> I documenti disponibili descrivono pacchetti e scenari offline del 4–6 novembre 2026. Non costituiscono prova di analytics live, refresh Power BI riuscito, pagamenti completati o commissioni incassate. Questa pagina è una preview grafica isolata e non modifica il servizio pubblico.</div>
+</section>
+<footer class="seva-footer"><span>SEVA INTELLIGENCE STUDIO · ADVANCED INSIGHTS</span><span>Executive visual standard · Preview only · No production release</span></footer>
+</main>
+</body>
+</html>
