@@ -49,7 +49,7 @@ try {
           return frame?.contentDocument?.readyState === 'complete';
         }, null, { timeout: 15000 });
         result.screenDiagnostics = await page.locator('#screen-info').textContent();
-        if (!/viewport \\d+×\\d+/.test(result.screenDiagnostics || '') || !/DPR/.test(result.screenDiagnostics || '')) {
+        if (!/viewport \d+×\d+/.test(result.screenDiagnostics || '') || !/DPR/.test(result.screenDiagnostics || '')) {
           throw new Error('Screen resolution diagnostics missing at startup');
         }
         const moduleFrame = page.locator('#module-frame');
@@ -146,6 +146,10 @@ try {
 
       await page.setViewportSize({ width: 390, height: 844 });
       result.mobileViewport = '390x844';
+      if (target.verifyCommandCenter) {
+        await page.waitForFunction(() => /viewport 390×844/.test(document.querySelector('#screen-info')?.textContent || ''));
+        result.responsiveDiagnostics = '390×844 portrait';
+      }
       result.horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
       if (result.horizontalOverflow) throw new Error(target.name + ' horizontal overflow at mobile viewport');
       result.pageErrors = pageErrors;
