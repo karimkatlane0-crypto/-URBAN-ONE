@@ -86,6 +86,29 @@ test('expired requests become EXPIRED and cannot create a grant',()=>{
     assert.equal(db.verifyAudit(request.requestId),true);
   }finally{db.close();}
 });
+test('grant expires with its request and is no longer active in receipts',()=>{
+  const db=store();
+  try{
+    const now=Date.parse('2026-11-20T12:00:00.000Z');
+    const request=db.create({requesterId:'alice',recipientId:'bob',purpose:'data_sharing',scopes:['contacts:read'],expiresAt:new Date(now+60000).toISOString(),now});
+    const accepted=db.decide({requestId:request.requestId,actorId:'bob',decision:'accept',now:now+1000});
+    assert.equal(accepted.grant.active,true);
+    const expired=db.receipt({requestId:request.requestId,actorId:'alice',now:now+61000});
+    assert.equal(expired.grant.active,false);
+    assert.equal(expired.grant.expiresAt,request.expiresAt);
+  }finally{db.close();}
+});
+test('inbox transitions expired pending requests and writes an audit event',()=>{
+  const db=store();
+  try{
+    const now=Date.parse('2026-11-20T12:00:00.000Z');
+    const request=db.create({requesterId:'alice',recipientId:'bob',purpose:'data_sharing',scopes:['contacts:read'],expiresAt:new Date(now+60000).toISOString(),now});
+    assert.deepEqual(db.inbox('bob',now+61000),[]);
+    const receipt=db.receipt({requestId:request.requestId,actorId:'bob',now:now+61000});
+    assert.equal(receipt.state,'EXPIRED');
+    assert.equal(db.verifyAudit(request.requestId),true);
+  }finally{db.close();}
+});
 test('only the recipient can revoke a grant; revoked grants cannot be revoked twice',()=>{
   const db=store();
   try{
