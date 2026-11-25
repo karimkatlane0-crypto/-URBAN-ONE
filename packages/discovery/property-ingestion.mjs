@@ -19,8 +19,8 @@ function sourceGate(source, now) {
   const age = now - reviewed;
   const allowed = auth?.status === 'APPROVED' && Number.isFinite(age) && age >= 0 && age <= 90 * DAY &&
     Boolean(text(auth?.agreementRef, 120)) && Array.isArray(auth?.purposes) &&
-    auth.purposes.some(purpose => PURPOSES.has(purpose)) && METHODS.has(source.accessMethod) &&
-    Array.isArray(source.allowedHosts) && source.allowedHosts.length > 0;
+    auth.purposes.some(purpose => PURPOSES.has(purpose)) && METHODS.has(source?.accessMethod) &&
+    Array.isArray(source?.allowedHosts) && source.allowedHosts.length > 0;
   return {allowed, reason: allowed ? null : 'SOURCE_AUTHORIZATION_MISSING_STALE_OR_INCOMPLETE'};
 }
 
