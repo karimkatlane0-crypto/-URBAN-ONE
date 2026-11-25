@@ -31,6 +31,8 @@ test('screen diagnostics and single-workspace navigation are wired', async () =>
     const html = await read(p);
     assert.match(html, /screen-info/);
     assert.match(html, /devicePixelRatio/);
+    assert.match(html, /const screenInfo=window\.screen\|\|\{\}/);
+    assert.doesNotMatch(html, /window\.screen\?\./);
     assert.match(html, /orientationchange/);
     assert.match(html, /addEventListener\('resize'/);
     assert.match(html, /module-frame/);
