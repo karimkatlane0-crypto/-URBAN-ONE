@@ -20,6 +20,7 @@ let bearerToken='',actor=null;
 const purposeLabels={service_access:'Accesso a un servizio',data_sharing:'Condivisione dati',partner_collaboration:'Collaborazione partner',skill_installation:'Installazione skill',analytics_access:'Accesso analytics'};
 function status(message,kind=''){const el=$('status');el.textContent=message;el.className='status'+(kind?' '+kind:'');}
 function hidePrivate(){ $('create-panel').hidden=true;$('inbox-panel').hidden=true;$('receipt-panel').hidden=true;$('identity').hidden=true; }
+function clearPrivateState(){bearerToken='';actor=null;$('token').value='';$('identity').textContent='';$('inbox').replaceChildren();$('receipt').replaceChildren();$('create-form').reset();hidePrivate();$('disconnect').disabled=true;}
 async function api(path,method='GET',body){
  const headers={authorization:'Bearer '+bearerToken,accept:'application/json'};
  const options={method,headers,cache:'no-store',credentials:'same-origin'};
