@@ -24,6 +24,10 @@ test('inbox browser script is syntax-valid and does not persist tokens or use un
   assert.match(script,/Authorization|authorization/);
   assert.match(script,/Bearer /);
   assert.match(script,/pagehide/);
+  assert.match(script,/pageshow/);
+  assert.match(script,/function clearPrivateState\(\)/);
+  assert.match(script,/inbox'\)\.replaceChildren\(\)/);
+  assert.match(script,/renderReceipt\(result\.receipt\)/);
   assert.doesNotMatch(script,/localStorage|sessionStorage|document\.cookie|innerHTML|outerHTML/);
   assert.doesNotMatch(page,/<script[^>]+src=|googletagmanager|google-analytics|fbq\(/i);
 });
