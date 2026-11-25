@@ -109,7 +109,7 @@ export function createJwtAuthenticator({
 
     const ttl = Number(env.IAM_JWKS_CACHE_SECONDS || 300);
     if (!Number.isFinite(ttl) || ttl < 30 || ttl > 900) throw new Error('IAM_JWKS_CACHE_CONFIGURATION_INVALID');
-    if (!cachedJwks || now >= cacheExpiresAt) {
+    const fetchJwks = async () => {
       if (typeof fetchImpl !== 'function') throw new Error('IAM_JWKS_FETCH_UNAVAILABLE');
       const response = await fetchImpl(url.href, { headers: { accept: 'application/json' }, cache: 'no-store' });
       if (!response?.ok) throw new Error('IAM_JWKS_FETCH_FAILED');
@@ -117,14 +117,26 @@ export function createJwtAuthenticator({
       if (!Array.isArray(body?.keys)) throw new Error('IAM_JWKS_INVALID');
       cachedJwks = body.keys;
       cacheExpiresAt = now + ttl;
+    };
+    let fetchedThisRequest = false;
+    if (!cachedJwks || now >= cacheExpiresAt) {
+      await fetchJwks();
+      fetchedThisRequest = true;
     }
 
-    const jwk = cachedJwks.find(key =>
+    const findSigningKey = () => cachedJwks.find(key =>
       key?.kid === header.kid &&
       (!key.use || key.use === 'sig') &&
       (!key.alg || key.alg === header.alg) &&
       (!Array.isArray(key.key_ops) || key.key_ops.includes('verify'))
     );
+    let jwk = findSigningKey();
+    // Identity providers may rotate keys before the cache expires. Refresh once
+    // on an unknown kid, but never loop or accept a key with mismatched metadata.
+    if (!jwk && !fetchedThisRequest) {
+      await fetchJwks();
+      jwk = findSigningKey();
+    }
     if (!jwk) throw new Error('IAM_SIGNING_KEY_NOT_FOUND');
 
     let signature;
