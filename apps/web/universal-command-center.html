@@ -62,7 +62,9 @@ iframe{display:block;width:100%;height:100%;border:0;background:#fff}
  const load=(src,button)=>{
    if(!src)return;
    const next=new URL(src,location.href);
-   if(!allowed.has(next.href)||new URL(frame.src,location.href).href===next.href)return;
+   let currentUrl='';
+   try{currentUrl=frame.contentWindow.location.href;}catch{}
+   if(!allowed.has(next.href)||currentUrl===next.href)return;
    buttons.forEach(b=>b.removeAttribute('aria-current'));
    if(button)button.setAttribute('aria-current','page');
    try{sessionStorage.setItem('ucc:last-module',next.href);}catch{}
