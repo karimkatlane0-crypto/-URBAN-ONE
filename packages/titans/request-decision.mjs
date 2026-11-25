@@ -31,7 +31,7 @@ export function decideTitansRequest({
   const scopes = request.requestedScopes;
   if (!Array.isArray(scopes) || scopes.length === 0 ||
       scopes.some(scope => typeof scope !== 'string' || !scope.trim()) ||
-      new Set(scopes).size !== scopes.length) {
+      scopes.includes('*') || new Set(scopes).size !== scopes.length) {
     return deny('REQUEST_SCOPES_INVALID');
   }
   if (typeof request.purpose !== 'string' || !request.purpose.trim()) {
