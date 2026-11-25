@@ -62,6 +62,14 @@ test('Advanced Insights connects executive governance and free KPI scenarios on 
   }
 });
 
+test('web command center compares the iframe current URL and is discoverable from the deployed root', async () => {
+  const shell = await read('apps/web/universal-command-center.html');
+  const homepage = await read('apps/web/index.html');
+  assert.match(shell, /frame\.contentWindow\.location\.href/);
+  assert.doesNotMatch(shell, /new URL\(frame\.src,location\.href\)/);
+  assert.match(homepage, /href="\.\/universal-command-center\.html"/);
+});
+
 test('web and mobile home pages link to the command center', async () => {
   const web = await read('apps/web/universal-36.html');
   const mobile = await read('apps/mobile/www/index.html');
