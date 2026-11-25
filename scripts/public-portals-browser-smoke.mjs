@@ -71,6 +71,8 @@ try {
         }
         result.moduleSwitching = '7/7 routes loaded in the same iframe';
         if (context.pages().length !== 1) throw new Error('Internal module navigation opened another browser tab');
+        await page.waitForFunction(() => sessionStorage.getItem('ucc:last-module')?.endsWith('/instance-manager.html'));
+        result.sessionStorage = await page.evaluate(() => sessionStorage.getItem('ucc:last-module'));
         await page.reload({ waitUntil: 'domcontentloaded' });
         await page.waitForFunction(() => {
           const frame = document.querySelector('#module-frame');
