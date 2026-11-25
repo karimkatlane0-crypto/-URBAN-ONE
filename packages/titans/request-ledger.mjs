@@ -146,7 +146,7 @@ export class TitansRequestStore{
         .run(next,stamp,recipient,grantId,id,recipient,stamp);
       if(updated.changes!==1)throw new TitansRequestError('REQUEST_STATE_CONFLICT',409);
       appendAudit(this.db,id,recipient,next,{grantId, purpose:r.purpose,scopes:JSON.parse(r.scopes_json)},stamp);
-      return this.receipt({requestId:id,actorId:recipient});
+      return this.receipt({requestId:id,actorId:recipient,now:at});
     });
   }
   revoke({grantId,actorId,now=Date.now()}){
