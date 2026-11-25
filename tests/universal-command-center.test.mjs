@@ -51,10 +51,15 @@ test('Advanced Insights connects executive governance and free KPI scenarios on 
     const html = await read(p);
     assert.match(html, /seva-advanced-insights-executive\.html/);
   }
-  const executive = await read('apps/web/seva-advanced-insights-executive.html');
-  assert.match(executive, /insights-free\.html/);
-  assert.match(executive, /PREVIEW VISIVA · DATI LIVE NON COLLEGATI/);
-  await access(path.join(root, 'apps/web/seva-executive-premium.css'));
+  for (const [htmlPath, cssPath] of [
+    ['apps/web/seva-advanced-insights-executive.html', 'apps/web/seva-executive-premium.css'],
+    ['apps/mobile/www/seva-advanced-insights-executive.html', 'apps/mobile/www/seva-executive-premium.css']
+  ]) {
+    const executive = await read(htmlPath);
+    assert.match(executive, /insights-free\.html/);
+    assert.match(executive, /PREVIEW VISIVA · DATI LIVE NON COLLEGATI/);
+    await access(path.join(root, cssPath));
+  }
 });
 
 test('web and mobile home pages link to the command center', async () => {
