@@ -31,7 +31,17 @@ jobs:
           cd android
           sed -i 's/versionCode 1/versionCode 7000001/' app/build.gradle
           sed -i 's/versionName "1.0"/versionName "7.0.0"/' app/build.gradle
-          ./gradlew assembleDebug
+          for attempt in 1 2 3; do
+            if ./gradlew assembleDebug; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Android build failed after 3 attempts" >&2
+              exit 1
+            fi
+            echo "Gradle dependency resolution failed; retrying in $((attempt * 20)) seconds (attempt $attempt/3)"
+            sleep $((attempt * 20))
+          done
       - name: Enable emulator acceleration
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
