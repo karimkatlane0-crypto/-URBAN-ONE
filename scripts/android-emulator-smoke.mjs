@@ -112,8 +112,16 @@ try {
     await pause(500);
   }
   if(!commandCenterReady)throw Error('COMMAND_CENTER_NOT_READY'+(lastCommandCenterError?': '+lastCommandCenterError:''));
-  report.screenDiagnostics=await evaluateReadWithRetry("document.getElementById('screen-info').textContent");
-  if(!report.screenDiagnostics.includes('viewport')||!report.screenDiagnostics.includes('DPR'))throw Error('COMMAND_CENTER_SCREEN_DIAGNOSTICS_MISSING');
+  let screenReady=false,lastScreenReadError='';
+  for(let attempt=0;attempt<30;attempt++){
+    try{
+      report.screenDiagnostics=await evaluateReadWithRetry("document.getElementById('screen-info').textContent",2);
+      screenReady=report.screenDiagnostics.includes('viewport')&&report.screenDiagnostics.includes('DPR');
+      if(screenReady)break;
+    }catch(error){lastScreenReadError=error.message;}
+    await pause(300);
+  }
+  if(!screenReady)throw Error('COMMAND_CENTER_SCREEN_DIAGNOSTICS_MISSING'+(lastScreenReadError?': '+lastScreenReadError:''));
   report.checks.commandCenterOpened=true;
   const moduleRoutes=[
     ['SEVA INTELLIGENCE','seva-unified-studio.html'],
