@@ -12,6 +12,7 @@ function actorsFrom(env){
       !Array.isArray(a.scopes)||a.scopes.some(s=>typeof s!=='string'))throw new TitansRequestError('STAGING_ACTORS_INVALID',503);
   }
   if(new Set(list.map(a=>a.id)).size!==list.length)throw new TitansRequestError('STAGING_ACTORS_INVALID',503);
+  if(new Set(list.map(a=>a.tokenHash.toLowerCase())).size!==list.length)throw new TitansRequestError('STAGING_ACTORS_INVALID',503);
   return list;
 }
 export function resolveTitansActor(header,env={}){
