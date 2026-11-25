@@ -96,9 +96,18 @@ jobs:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           test -n "$PAGE_URL"
-          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/europe-immobili.html apps/web/pole-premium.html apps/web/pole-premium.js apps/web/pole-spectrum.css apps/web/v10-workspace.html; do
+          for page in index.html apps/web/index.html apps/web/press.html apps/web/hospitality-it.html apps/web/hospitality-en.html apps/web/hospitality-de.html apps/web/hospitality-fr.html apps/web/hospitality-es.html apps/web/pole-position.html apps/web/pole-position.js apps/web/universal-command-center.html apps/web/insights-free.html apps/web/financial-dashboard.html apps/web/europe-immobili.html apps/web/pole-premium.html apps/web/pole-premium.js apps/web/pole-spectrum.css apps/web/v10-workspace.html; do
             curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output /dev/null "${PAGE_URL%/}/$page"
           done
+          # Verify Universal Command Center and free Advanced Insights are publicly reachable.
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/universal-command-center.html" "${PAGE_URL%/}/apps/web/universal-command-center.html"
+          grep -q 'data-src="./insights-free.html"' "$RUNNER_TEMP/universal-command-center.html"
+          grep -q 'ADVANCED INSIGHTS' "$RUNNER_TEMP/universal-command-center.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/insights-free.html" "${PAGE_URL%/}/apps/web/insights-free.html"
+          grep -q 'INSIGHTS · EXECUTIVE DECISION SUPPORT' "$RUNNER_TEMP/insights-free.html"
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/financial-dashboard.html" "${PAGE_URL%/}/apps/web/financial-dashboard.html"
+          grep -q 'Financial Scenario Calculator' "$RUNNER_TEMP/financial-dashboard.html"
+          echo "Universal Command Center and Advanced Insights verified: ${PAGE_URL%/}/apps/web/universal-command-center.html" >> "$GITHUB_STEP_SUMMARY"
           # Verify that the published property preview is this release's demo,
           # not a stale/empty page or a misleading live payment flow.
           curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --retry-all-errors --max-time 30 --output "$RUNNER_TEMP/pole-position.html" "${PAGE_URL%/}/apps/web/pole-position.html"
