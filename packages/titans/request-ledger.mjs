@@ -76,7 +76,7 @@ export class TitansRequestStore{
       CREATE TABLE IF NOT EXISTS titans_grants(
         id TEXT PRIMARY KEY, request_id TEXT NOT NULL UNIQUE REFERENCES titans_requests(id),
         grantee_id TEXT NOT NULL, subject_id TEXT NOT NULL, purpose TEXT NOT NULL,
-        scopes_json TEXT NOT NULL, granted_at TEXT NOT NULL, revoked_at TEXT, revoked_by TEXT
+        scopes_json TEXT NOT NULL, granted_at TEXT NOT NULL, expires_at TEXT NOT NULL, revoked_at TEXT, revoked_by TEXT
       );
       CREATE INDEX IF NOT EXISTS titans_grants_subject_idx ON titans_grants(subject_id,grantee_id);
       CREATE TABLE IF NOT EXISTS titans_request_audit(
@@ -86,6 +86,11 @@ export class TitansRequestStore{
       );
       CREATE INDEX IF NOT EXISTS titans_request_audit_idx ON titans_request_audit(request_id,occurred_at);
     `);
+    const grantColumns=this.db.prepare('PRAGMA table_info(titans_grants)').all();
+    if(!grantColumns.some(column=>column.name==='expires_at')){
+      this.db.exec('ALTER TABLE titans_grants ADD COLUMN expires_at TEXT');
+      this.db.exec('UPDATE titans_grants SET expires_at=(SELECT expires_at FROM titans_requests WHERE id=titans_grants.request_id) WHERE expires_at IS NULL');
+    }
   }
   close(){this.db.close();}
   create({requesterId,recipientId,purpose:purposeValue,scopes:scopeValues,note='',expiresAt,now=Date.now()}){
@@ -105,6 +110,13 @@ export class TitansRequestStore{
   }
   inbox(recipientId,now=Date.now()){
     const recipient=actor(recipientId),at=iso(time(now));
+    transaction(this.db,()=>{
+      const expired=this.db.prepare("SELECT id FROM titans_requests WHERE recipient_id=? AND state='PENDING' AND expires_at<=?").all(recipient,at);
+      for(const row of expired){
+        const updated=this.db.prepare("UPDATE titans_requests SET state='EXPIRED',decided_at=?,decision_by=? WHERE id=? AND state='PENDING'").run(at,recipient,row.id);
+        if(updated.changes===1)appendAudit(this.db,row.id,recipient,'REQUEST_EXPIRED',{},at);
+      }
+    });
     return this.db.prepare(`SELECT id,requester_id AS requesterId,recipient_id AS recipientId,purpose,
       scopes_json AS scopes,note,state,created_at AS createdAt,expires_at AS expiresAt
       FROM titans_requests WHERE recipient_id=? AND state='PENDING' AND expires_at>?
@@ -126,8 +138,8 @@ export class TitansRequestStore{
       let grantId=null;
       if(decision==='accept'){
         grantId=randomUUID();
-        this.db.prepare('INSERT INTO titans_grants(id,request_id,grantee_id,subject_id,purpose,scopes_json,granted_at) VALUES(?,?,?,?,?,?,?)')
-          .run(grantId,id,r.requester_id,r.recipient_id,r.purpose,r.scopes_json,stamp);
+        this.db.prepare('INSERT INTO titans_grants(id,request_id,grantee_id,subject_id,purpose,scopes_json,granted_at,expires_at) VALUES(?,?,?,?,?,?,?,?)')
+          .run(grantId,id,r.requester_id,r.recipient_id,r.purpose,r.scopes_json,stamp,r.expires_at);
       }
       const next=decision==='accept'?'ACCEPTED':'DECLINED';
       const updated=this.db.prepare('UPDATE titans_requests SET state=?,decided_at=?,decision_by=?,grant_id=? WHERE id=? AND recipient_id=? AND state=\'PENDING\' AND expires_at>?')
@@ -150,7 +162,7 @@ export class TitansRequestStore{
       return {grantId:id,requestId:g.request_id,revoked:true,revokedAt:stamp};
     });
   }
-  receipt({requestId,actorId}){
+  receipt({requestId,actorId,now=Date.now()}){
     const id=required(requestId,'INVALID_REQUEST_ID',80),who=actor(actorId);
     const r=this.db.prepare('SELECT * FROM titans_requests WHERE id=?').get(id);
     if(!r||(r.requester_id!==who&&r.recipient_id!==who))throw new TitansRequestError('REQUEST_NOT_FOUND',404);
@@ -161,7 +173,8 @@ export class TitansRequestStore{
       scopes:JSON.parse(r.scopes_json),note:r.note,state:r.state,createdAt:r.created_at,expiresAt:r.expires_at,
       decidedAt:r.decided_at,decisionBy:r.decision_by,
       grant:g?{grantId:g.id,granteeId:g.grantee_id,subjectId:g.subject_id,purpose:g.purpose,
-        scopes:JSON.parse(g.scopes_json),grantedAt:g.granted_at,revokedAt:g.revoked_at,active:g.revoked_at===null}:null,
+        scopes:JSON.parse(g.scopes_json),grantedAt:g.granted_at,expiresAt:g.expires_at,revokedAt:g.revoked_at,
+        active:g.revoked_at===null&&Date.parse(g.expires_at)>time(now)}:null,
       auditEventId:last?.id||null,auditHash:last?.event_hash||null
     };
   }
