@@ -19,7 +19,7 @@ test('fails closed when source approval is absent, stale or method is prohibited
 test('rejects unsafe URLs, unauthorized purposes, stale records and invalid prices',()=>{
  const result=ingestPropertyBatch({source,records:[
   row({sourceUrl:'http://feed.example.it/a'}),
-  row({purpose:'rent'}),
+  row({purpose:'holiday_let'}),
   row({observedAt:'2026-11-01T00:00:00.000Z'}),
   row({price:{currency:'EUR',amountCents:0}}),
   row({sourceUrl:'https://feed.example.it.attacker.test/a'})
