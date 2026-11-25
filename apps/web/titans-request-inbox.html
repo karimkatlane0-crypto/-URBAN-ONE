@@ -39,7 +39,7 @@ function renderReceipt(r){
  if(r.grant){appendText(root,'p','Grant: '+r.grant.grantId+' · '+(r.grant.active?'ATTIVO':'REVOCATO'));
   if(r.grant.active&&actor?.scopes.includes('titans:grant:revoke')&&actor.actorId===r.grant.subjectId){
    const b=document.createElement('button');b.type='button';b.className='decline';b.textContent='Revoca autorizzazione';
-   b.addEventListener('click',async()=>{b.disabled=true;try{const result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});appendText(root,'p','Revoca registrata: '+result.revokedAt,'status ok');await refreshInbox()}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false}});
+   b.addEventListener('click',async()=>{b.disabled=true;try{const result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});renderReceipt(result.receipt);status('Revoca registrata: '+result.revokedAt,'ok');await refreshInbox()}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false}});
    root.append(b);
   }
  }
@@ -80,7 +80,7 @@ $('connect').addEventListener('click',async()=>{
  }catch(e){bearerToken='';actor=null;hidePrivate();$('disconnect').disabled=true;status('Connessione staging non riuscita: '+e.message,'error');}
  finally{$('connect').disabled=false;}
 });
-$('disconnect').addEventListener('click',()=>{bearerToken='';actor=null;hidePrivate();$('disconnect').disabled=true;status('Sessione locale terminata. Nessun token conservato.');});
+$('disconnect').addEventListener('click',()=>{clearPrivateState();status('Sessione locale terminata. Nessun token conservato.');});
 $('refresh').addEventListener('click',async()=>{try{await refreshInbox();status('Inbox aggiornata.','ok')}catch(e){status('Inbox non disponibile: '+e.message,'error')}});
 $('create-form').addEventListener('submit',async e=>{
  e.preventDefault();if(!actor?.scopes.includes('titans:request:create'))return;
@@ -93,5 +93,6 @@ $('create-form').addEventListener('submit',async e=>{
  catch(err){status('Creazione non riuscita: '+err.message,'error');}
  finally{if(button)button.disabled=false;}
 });
-window.addEventListener('pagehide',()=>{bearerToken='';actor=null;});
+window.addEventListener('pagehide',()=>{clearPrivateState();});
+window.addEventListener('pageshow',event=>{if(event.persisted)clearPrivateState();});
 </script></body></html>
