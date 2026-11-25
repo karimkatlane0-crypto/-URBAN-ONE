@@ -25,6 +25,13 @@ test('staging bearer authentication resolves server-owned identity and scopes on
   assert.throws(()=>resolveTitansActor(auth('unknown-token-012345678901234567890'),env),e=>e.code==='AUTH_REQUIRED');
   assert.throws(()=>resolveTitansActor('',env),e=>e.code==='AUTH_REQUIRED');
 });
+test('staging actor configuration rejects duplicate bearer token hashes',()=>{
+  const duplicateEnv={...env,TITANS_STAGING_ACTORS_JSON:JSON.stringify([
+    {id:'alice',tokenHash:hash(aliceToken),scopes:['titans:request:create']},
+    {id:'bob',tokenHash:hash(aliceToken),scopes:['titans:request:respond']}
+  ])};
+  assert.throws(()=>resolveTitansActor(auth(aliceToken),duplicateEnv),error=>error.code==='STAGING_ACTORS_INVALID');
+});
 test('API creates an individual request and only the intended recipient sees the inbox',async()=>{
   const db=store();
   try{
