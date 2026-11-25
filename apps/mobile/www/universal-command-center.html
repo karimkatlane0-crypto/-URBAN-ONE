@@ -64,6 +64,7 @@ iframe{display:block;width:100%;height:100%;border:0;background:#fff}
    if(!allowed.has(next.href)||new URL(frame.src,location.href).href===next.href)return;
    buttons.forEach(b=>b.removeAttribute('aria-current'));
    if(button)button.setAttribute('aria-current','page');
+   try{sessionStorage.setItem('ucc:last-module',next.href);}catch{}
    loading.hidden=false;
    frame.src=next.href;
  };
