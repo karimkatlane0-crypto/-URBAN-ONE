@@ -65,19 +65,22 @@ function renderInbox(rows){
 }
 async function refreshInbox(){
  if(!actor?.scopes.includes('titans:request:respond'))return;
- const data=await api('/api/titans/requests/inbox');renderInbox(data.requests||[]);
+ const version=sessionVersion;
+ const data=await api('/api/titans/requests/inbox');
+ if(version!==sessionVersion||!bearerToken)return;
+ renderInbox(data.requests||[]);
 }
 $('connect').addEventListener('click',async()=>{
  const candidate=$('token').value.trim();$('token').value='';
  if(candidate.length<32){status('Token staging non valido.','error');return;}
- bearerToken=candidate;$('connect').disabled=true;
+ bearerToken=candidate;$('connect').disabled=true;const version=sessionVersion;
  try{
-  actor=await api('/api/titans/session');$('disconnect').disabled=false;
+  const session=await api('/api/titans/session');if(version!==sessionVersion||!bearerToken)return;actor=session;$('disconnect').disabled=false;
   $('identity').hidden=false;$('identity').textContent='Identità verificata: '+actor.actorId+' · scope: '+actor.scopes.join(', ');
   $('create-panel').hidden=!actor.scopes.includes('titans:request:create');
   $('inbox-panel').hidden=!actor.scopes.includes('titans:request:respond');
   if(actor.scopes.includes('titans:request:respond'))await refreshInbox();
-  status('Sessione staging verificata. Token mantenuto solo in memoria.','ok');
+  if(version===sessionVersion&&bearerToken)status('Sessione staging verificata. Token mantenuto solo in memoria.','ok');
  }catch(e){bearerToken='';actor=null;hidePrivate();$('disconnect').disabled=true;status('Connessione staging non riuscita: '+e.message,'error');}
  finally{$('connect').disabled=false;}
 });
