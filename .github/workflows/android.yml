@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main-@URBAN-ONE
+      - feat/all-in-one-superapp-integration-20261126
     paths:
       - 'apps/mobile/**'
       - 'packages/**'
