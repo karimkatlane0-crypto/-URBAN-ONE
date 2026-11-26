@@ -83,7 +83,7 @@ export function createApiServer({env=process.env, authenticate=async()=>null}={}
 
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const port=Number(process.env.PORT||8787);
-  // Provider-neutral OIDC validation is wired but remains inert until the
-  // issuer, audience and HTTPS JWKS URL are explicitly configured.
+  // Standalone entrypoint is intentionally fail-closed. Production must compose
+  // createPlatformApiServer with verified PostgreSQL membership and IAM config.
   createApiServer().listen(port,()=>console.log('URBAN ONE UNIVERSAL API '+port));
 }
