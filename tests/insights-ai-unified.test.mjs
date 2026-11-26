@@ -34,6 +34,14 @@ test('SUPER.AI links directly to the unified INSIGHTS.ai workspace', () => {
   assert.match(hub, /INSIGHTS\.ai · Unified Intelligence/);
 });
 
+test('mobile TITANS offer matches the approved 30-day manual-renewal contract',()=>{
+ assert.match(mobile,/€10 per utente per 30 giorni/);
+ assert.match(mobile,/bonifico manuale per ciascun periodo/);
+ assert.match(mobile,/causale esatta REEDEEM/);
+ assert.doesNotMatch(mobile,/accesso lifetime|pagamento unico/i);
+ assert.match(mobile,/github\\.com\\/karimkatlane0-crypto\\/\\-URBAN-ONE\\/blob\\/main-%40URBAN-ONE\\/docs\\/TITANS-GO-ENTERPRISE-GLOBAL\\.md/);
+});
+
 test('mobile INSIGHTS uses only packaged mobile routes for primary navigation', () => {
   assert.doesNotMatch(mobile, /\.\.\/\.\.\/apps\/web/);
   for (const href of ['./super-ai.html','./super-ai-settings.html#integrations','./seva-crm-studio.html','./seva-unified-studio.html','./discovery.html']) {
