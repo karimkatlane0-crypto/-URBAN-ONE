@@ -135,6 +135,7 @@ footer{background:#f4f4f1;border-color:#d8d8d1;color:#666}footer a{color:#5e5300
 <tr><td>Klaviyo</td><td><span class="pill ok">Account readable · LIVE mode</span></td><td>Draft/lifecycle provider</td><td>No sending or profile export; consent and channel cost checks required</td></tr>
 <tr><td>Stripe</td><td><span class="pill">1 LIVE account available</span></td><td>Payment status evidence only</td><td>No account-specific read, payment action or CRM sync performed</td></tr>
 <tr><td>OpenAI / model runtime</td><td><span class="pill off">Preflight bloccato</span></td><td>Assistenza e scoring controllato</td><td>Credenziale, limiti, budget e autorizzazione esecutiva da verificare</td></tr>
+<tr><td>Telegram Bot API</td><td><span class="pill off">Webhook draft · durable store missing</span></td><td>Inbound CRM events only</td><td>PR #269 draft; PostgreSQL event store, bot secret, identity mapping, consent and end-to-end verification required</td></tr>
 <tr><td>WhatsApp / Skebby</td><td><span class="pill off">Non configurati</span></td><td>Canali opzionali</td><td>Asset provider, token server, webhook e consenso canale-specifico</td></tr>
 <tr><td>Power BI</td><td><span class="pill">Non verificato</span></td><td>Reporting aggregato</td><td>Tenant, dataset, refresh e RLS</td></tr>
 </tbody></table></div>
