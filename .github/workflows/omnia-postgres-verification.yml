@@ -1,0 +1,44 @@
+name: OMNIA PostgreSQL tenant isolation
+
+on:
+  push:
+    branches: [ 'feat/all-in-one-superapp-integration-20261126' ]
+  pull_request:
+    branches: [ 'main-@URBAN-ONE' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-schema-and-rls:
+    name: PostgreSQL 16 migration, tenant isolation and Telegram idempotency
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: omnia-ci-only
+          POSTGRES_DB: omnia_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d omnia_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: omnia-ci-only
+      PGDATABASE: omnia_ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Apply additive OMNIA migration
+        run: psql -v ON_ERROR_STOP=1 -f db/postgres/migrations/0001_omnia_core.sql
+      - name: Verify RLS, cross-tenant denial and Telegram replay protection
+        run: psql -v ON_ERROR_STOP=1 -f db/postgres/tests/0001_omnia_rls.sql
