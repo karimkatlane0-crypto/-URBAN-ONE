@@ -42,7 +42,7 @@ const server=http.createServer(async(req,res)=>{
       res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
     }
     if(req.method==='POST'&&path==='/api/telegram/webhook'){
-      const r=handleTelegramWebhook({rawBody,headers:req.headers,env:process.env});
+      const r=await handleTelegramWebhook({rawBody,headers:req.headers,env:process.env});
       res.writeHead(r.status,headers);res.end(JSON.stringify(r.body));return;
     }
     if(req.method==='POST'&&path==='/api/stripe/webhook'){
