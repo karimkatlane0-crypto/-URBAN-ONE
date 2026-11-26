@@ -52,11 +52,12 @@ test('mobile INSIGHTS uses only packaged mobile routes for primary navigation', 
 test('browser and PostgreSQL workflows cover the pages and resolver they verify',()=>{
  const browser=read('.github/workflows/public-portals-browser.yml');
  const postgres=read('.github/workflows/super-ai-postgres-integration.yml');
- assert.match(browser,/pull_request:[\\s\\S]*apps\\/web\\/insights-ai\\.html/);
- assert.equal((browser.match(/apps\\/web\\/insights-ai\\.html/g)||[]).length,2);
- assert.equal((postgres.match(/services\\/api\\/postgres-membership-resolver\\.mjs/g)||[]).length,2);
+ const browserPr=browser.split('pull_request:')[1]||'';
+ assert.ok(browserPr.includes("apps/web/insights-ai.html"));
+ assert.equal(browser.split("apps/web/insights-ai.html").length-1,2);
+ assert.equal(postgres.split("services/api/postgres-membership-resolver.mjs").length-1,2);
  const smoke=read('scripts/public-portals-browser-smoke.mjs');
- assert.match(smoke,/target\\.root.*target\\.file|target\\.root/);
+ assert.ok(smoke.includes('target.root') && smoke.includes('safeName'));
 });
 
 test('settings centers expose INSIGHTS.ai as a service', () => {
