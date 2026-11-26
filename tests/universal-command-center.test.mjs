@@ -21,7 +21,8 @@ test('all command-center navigation targets exist in each package', async () => 
   ]) {
     const html = await read(shellPath);
     const targets = [...html.matchAll(/data-src="([^"]+)"/g)].map(m => m[1]);
-    assert.ok(targets.length >= 8, shellPath + ' should expose all modules');
+    assert.ok(targets.length >= 9, shellPath + ' should expose all modules and CRM');
+    assert.ok(targets.includes('./seva-crm-studio.html'), shellPath + ' must expose the CRM workspace');
     for (const target of targets) await access(path.join(root, base, target.replace(/^\.\//, '')));
   }
 });
@@ -37,6 +38,20 @@ test('screen diagnostics and single-workspace navigation are wired', async () =>
     assert.match(html, /addEventListener\('resize'/);
     assert.match(html, /module-frame/);
     assert.match(html, /ucc:last-module/);
+  }
+});
+
+test('web and mobile command centers expose the CRM workspace without claiming cross-product sync', async () => {
+  for (const p of ['apps/web/universal-command-center.html', 'apps/mobile/www/universal-command-center.html']) {
+    const html = await read(p);
+    assert.match(html, /CRM WORKSPACE/);
+    assert.ok(html.includes('data-src="./seva-crm-studio.html"'));
+  }
+  for (const p of ['apps/web/seva-crm-studio.html', 'apps/mobile/www/seva-crm-studio.html']) {
+    const html = await read(p);
+    assert.match(html, /Telegram Bot API/);
+    assert.match(html, /durable store missing/);
+    assert.match(html, /READ-ONLY SNAPSHOT/);
   }
 });
 
