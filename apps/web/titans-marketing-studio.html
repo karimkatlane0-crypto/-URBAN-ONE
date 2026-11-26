@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10151d">
+<meta name="description" content="TITANS Marketing Data, Mobile CRM and Analytics Cookie Studio.">
+<title>TITANS · Marketing & Cookie Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1219;--panel:#171f2a;--line:#303d4d;--muted:#aab7c7;--text:#f4f7fb;--accent:#a9e6c0;--warn:#f0d28b;font:15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}a{color:var(--accent)}button,input{font:inherit}button{min-height:46px;padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:#263445;color:var(--text);font-weight:650;cursor:pointer}button.primary{background:var(--accent);color:#102017;border-color:var(--accent)}button.secondary{background:transparent}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--warn);outline-offset:2px}.shell{max-width:1120px;margin:auto;padding:clamp(14px,3vw,30px) 16px 120px}.top,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:clamp(16px,3vw,24px);margin-bottom:14px}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--accent);font-weight:750}.top h1{font-size:clamp(28px,5vw,48px);line-height:1.05;margin:9px 0}.muted{color:var(--muted);line-height:1.6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:12px}.tile{background:#101720;border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}.tile h3{margin:0 0 8px;font-size:17px}.tag{display:inline-block;border:1px solid #496354;border-radius:999px;padding:4px 8px;color:var(--accent);font-size:11px;margin-bottom:9px}.tag.pending{border-color:#75633d;color:var(--warn)}.tile p{font-size:13px;color:var(--muted);line-height:1.5}.tile a{font-size:13px}.phone-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:end}.field label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}.field input{width:100%;min-height:46px;border-radius:11px;border:1px solid var(--line);background:#0d141d;color:var(--text);padding:10px 12px}.small{font-size:12px;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.consent-banner{position:fixed;z-index:10;inset:auto 0 0;background:#17212d;border-top:1px solid #536477;padding:14px max(14px,env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));box-shadow:0 -12px 40px #0008}.consent-inner{max-width:1120px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}.consent-actions{display:flex;gap:8px;flex-wrap:wrap}.consent-settings{margin-top:10px;display:flex;gap:18px;flex-wrap:wrap}.consent-settings label{display:flex;gap:7px;align-items:center;font-size:13px}.hidden{display:none!important}.status{font-size:12px;color:var(--accent);min-height:18px}.divider{border:0;border-top:1px solid var(--line);margin:18px 0}@media(max-width:680px){.consent-inner{grid-template-columns:1fr}.consent-actions button{flex:1}.phone-row{grid-template-columns:1fr}.phone-row button{width:100%}.shell{padding-bottom:230px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="top">
+  <span class="eyebrow">TITANS ENTERPRISE STUDIO · TIER 1</span>
+  <h1>Marketing Data<br>Mobile & Analytics Studio</h1>
+  <p class="muted">Area mobile-first per acquisizione, misurazione, privacy e contatto diretto. Questa build è un prototipo locale: non collega account, non invia dati a provider e non attiva tracker esterni.</p>
+  <div class="actions"><a href="#marketing">Marketing data</a><a href="#mobile">Mobile phone</a><a href="#privacy">Cookie & analytics</a></div>
+</header>
+
+<section class="panel" id="marketing">
+  <h2>Free marketing data stack</h2>
+  <p class="muted">Selezione iniziale. I servizi cloud possono cambiare limiti e condizioni; “gratuito” non include hosting, configurazione, consulenza o costi API.</p>
+  <div class="grid">
+    <article class="tile"><span class="tag">OPEN SOURCE · SELF-HOST</span><h3>Matomo On-Premise</h3><p>Analytics proprietaria e controllo dell'hosting. Valutare aggiornamenti, backup, hardening e configurazione privacy.</p><a href="https://matomo.org/free-software/" target="_blank" rel="noopener noreferrer">Fonte ufficiale Matomo</a></article>
+    <article class="tile"><span class="tag">FREE STANDARD</span><h3>Google Analytics 4</h3><p>Acquisizione, eventi e conversioni. Non caricare il tag prima del consenso quando richiesto.</p><a href="https://support.google.com/analytics/answer/11828307" target="_blank" rel="noopener noreferrer">Fonte ufficiale Google</a></article>
+    <article class="tile"><span class="tag">FREE</span><h3>Microsoft Clarity</h3><p>Heatmap e session replay. Trattare come tracciamento opzionale e attivare solo dopo il consenso applicabile.</p><a href="https://clarity.microsoft.com/" target="_blank" rel="noopener noreferrer">Sito ufficiale Clarity</a></article>
+    <article class="tile"><span class="tag">FREE</span><h3>Google Search Console</h3><p>Query organiche, indicizzazione e problemi SEO. Non richiede un cookie analytics sul sito.</p><a href="https://search.google.com/search-console/about" target="_blank" rel="noopener noreferrer">Fonte ufficiale Search Console</a></article>
+    <article class="tile"><span class="tag">OPEN SOURCE · SELF-HOST</span><h3>Umami</h3><p>Analytics essenziale privacy-first; hosting, manutenzione e backup restano a carico del gestore.</p><a href="https://umami.is/" target="_blank" rel="noopener noreferrer">Sito ufficiale Umami</a></article>
+    <article class="tile"><span class="tag pending">CMP · FREE PLAN CON LIMITI</span><h3>CookieYes / Cookiebot</h3><p>Opzioni CMP con piano gratuito soggetto a limiti. Verificare domini, pagine, lingue, scansione e registri prima della scelta.</p><a href="https://www.cookieyes.com/" target="_blank" rel="noopener noreferrer">CookieYes</a> · <a href="https://www.cookiebot.com/" target="_blank" rel="noopener noreferrer">Cookiebot</a></article>
+  </div>
+</section>
+
+<section class="panel" id="mobile">
+  <h2>Mobile phone integration</h2>
+  <p class="muted">Layout touch-friendly e chiamata diretta tramite app telefono del dispositivo. Il numero viene configurato localmente su questo browser; non viene trasmesso al server.</p>
+  <div class="phone-row">
+    <div class="field"><label for="phone-number">Numero aziendale / assistenza (E.164 consigliato)</label><input id="phone-number" type="tel" inputmode="tel" autocomplete="tel" placeholder="+39 02 12345678" maxlength="24"></div>
+    <div class="actions"><button class="secondary" id="save-phone" type="button">Salva sul dispositivo</button><button id="call-button" type="button" disabled>Chiama</button></div>
+  </div>
+  <p class="small">Il pulsante Chiama apre il dialer nativo solo dopo la configurazione. Nessuna chiamata automatica, SMS, WhatsApp o rubrica viene attivata.</p>
+  <p class="status" id="phone-status" aria-live="polite"></p>
+</section>
+
+<section class="panel" id="privacy">
+  <h2>Analytics & Cookie Studio</h2>
+  <div class="grid">
+    <article class="tile"><span class="tag">NECESSARI</span><h3>Funzionamento essenziale</h3><p>Preferenze privacy e funzioni richieste dall'utente. Nessun tracker pubblicitario è incluso in questa build.</p></article>
+    <article class="tile"><span class="tag pending">CONSENSO OPZIONALE</span><h3>Analytics</h3><p>GA4, Clarity o altro provider potranno essere collegati solo tramite adapter esplicito dopo consenso valido.</p></article>
+    <article class="tile"><span class="tag pending">CONSENSO OPZIONALE</span><h3>Marketing</h3><p>Pixel pubblicitari, retargeting e profilazione restano disattivati fino a scelta specifica e integrazione verificata.</p></article>
+  </div>
+  <hr class="divider">
+  <p class="muted">Stato preferenze: <strong id="consent-status">nessuna scelta registrata</strong></p>
+  <div class="actions"><button id="open-consent" class="secondary" type="button">Gestisci preferenze</button><button id="withdraw-consent" class="secondary" type="button">Revoca scelta</button></div>
+  <p class="small">La console memorizza localmente la scelta per ricordarla. Non installa cookie di analytics o marketing, non carica script di terze parti e non certifica la conformità legale. Prima della produzione servono scansione effettiva dei tag/cookie, informativa aggiornata, DPA e verifica legale.</p>
+</section>
+
+<footer class="small">TITANS · BUILD → VERIFY → AUTHORIZE → RELEASE → SCALE · Prototipo non pubblicato.</footer>
+</main>
+
+<aside class="consent-banner" id="consent-banner" aria-label="Preferenze privacy">
+  <div class="consent-inner">
+    <div><strong>Privacy & cookie preferences</strong><p class="small">Scegli se consentire analytics e marketing. Le categorie opzionali sono disattivate per impostazione predefinita. Puoi modificare o revocare la scelta in seguito.</p>
+      <div class="consent-settings hidden" id="consent-settings">
+        <label><input type="checkbox" checked disabled> Necessari (sempre attivi)</label>
+        <label><input type="checkbox" id="analytics-choice"> Analytics</label>
+        <label><input type="checkbox" id="marketing-choice"> Marketing</label>
+      </div>
+    </div>
+    <div class="consent-actions">
+      <button class="secondary" id="reject-optional" type="button">Rifiuta opzionali</button>
+      <button class="secondary" id="customize" type="button">Personalizza</button>
+      <button class="secondary" id="accept-all" type="button">Accetta tutti</button>
+      <button class="primary" id="accept-selected" type="button">Salva scelta</button>
+    </div>
+  </div>
+</aside>
+
+<script type="module">
+import {
+  CONSENT_STORAGE_KEY, PHONE_STORAGE_KEY, canRunCategory, createConsentRecord,
+  normalizeDialTarget, readConsent, writeConsent, clearConsent,
+} from './titans-marketing-studio.js';
+
+const $ = id => document.getElementById(id);
+const banner = $('consent-banner');
+const settings = $('consent-settings');
+let consent = null;
+
+function renderConsent() {
+  consent = readConsent(window.localStorage);
+  $('consent-status').textContent = consent
+    ? 'scelta registrata · analytics ' + (consent.analytics ? 'ON' : 'OFF') + ' · marketing ' + (consent.marketing ? 'ON' : 'OFF')
+    : 'nessuna scelta registrata';
+  banner.classList.toggle('hidden', Boolean(consent));
+}
+function saveChoices(analytics, marketing) {
+  consent = writeConsent(window.localStorage, { analytics, marketing });
+  renderConsent();
+}
+$('reject-optional').addEventListener('click', () => saveChoices(false, false));
+$('accept-all').addEventListener('click', () => saveChoices(true, true));
+$('accept-selected').addEventListener('click', () => {
+  const analytics = settings.classList.contains('hidden') ? false : $('analytics-choice').checked;
+  const marketing = settings.classList.contains('hidden') ? false : $('marketing-choice').checked;
+  saveChoices(analytics, marketing);
+});
+$('customize').addEventListener('click', () => settings.classList.toggle('hidden'));
+$('open-consent').addEventListener('click', () => {
+  if (consent) {
+    $('analytics-choice').checked = consent.analytics;
+    $('marketing-choice').checked = consent.marketing;
+  }
+  settings.classList.remove('hidden');
+  banner.classList.remove('hidden');
+});
+$('withdraw-consent').addEventListener('click', () => {
+  clearConsent(window.localStorage);
+  renderConsent();
+  banner.classList.remove('hidden');
+});
+
+function updatePhone(value) {
+  const dial = normalizeDialTarget(value);
+  const button = $('call-button');
+  button.disabled = !dial;
+  button.dataset.dialTarget = dial;
+}
+try {
+  const savedPhone = window.localStorage.getItem(PHONE_STORAGE_KEY) || '';
+  $('phone-number').value = savedPhone;
+  updatePhone(savedPhone);
+} catch {
+  updatePhone('');
+}
+$('phone-number').addEventListener('input', event => updatePhone(event.target.value));
+$('call-button').addEventListener('click', () => {
+  const dial = normalizeDialTarget($('call-button').dataset.dialTarget || '');
+  if (dial) window.location.href = 'tel:' + dial;
+});
+$('save-phone').addEventListener('click', () => {
+  const dial = normalizeDialTarget($('phone-number').value);
+  if (!dial) {
+    $('phone-status').textContent = 'Inserisci un numero valido in formato internazionale.';
+    updatePhone('');
+    return;
+  }
+  try {
+    window.localStorage.setItem(PHONE_STORAGE_KEY, dial);
+    $('phone-number').value = dial;
+    $('phone-status').textContent = 'Numero salvato soltanto su questo dispositivo.';
+  } catch {
+    $('phone-status').textContent = 'Memoria locale non disponibile: il numero non è stato salvato.';
+  }
+  updatePhone(dial);
+});
+
+try { renderConsent(); } catch { banner.classList.remove('hidden'); }
+</script>
+</body>
+</html>
