@@ -38,7 +38,7 @@
   <p class="muted">Layout touch-friendly e chiamata diretta tramite app telefono del dispositivo. Il numero viene configurato localmente su questo browser; non viene trasmesso al server.</p>
   <div class="phone-row">
     <div class="field"><label for="phone-number">Numero aziendale / assistenza (E.164 consigliato)</label><input id="phone-number" type="tel" inputmode="tel" autocomplete="tel" placeholder="+39 02 12345678" maxlength="24"></div>
-    <div class="actions"><button class="secondary" id="save-phone" type="button">Salva sul dispositivo</button><a id="call-link" href="#" aria-disabled="true"><button id="call-button" type="button" disabled>Chiama</button></a></div>
+    <div class="actions"><button class="secondary" id="save-phone" type="button">Salva sul dispositivo</button><button id="call-button" type="button" disabled>Chiama</button></div>
   </div>
   <p class="small">Il pulsante Chiama apre il dialer nativo solo dopo la configurazione. Nessuna chiamata automatica, SMS, WhatsApp o rubrica viene attivata.</p>
   <p class="status" id="phone-status" aria-live="polite"></p>
@@ -72,6 +72,7 @@
     <div class="consent-actions">
       <button class="secondary" id="reject-optional" type="button">Rifiuta opzionali</button>
       <button class="secondary" id="customize" type="button">Personalizza</button>
+      <button class="secondary" id="accept-all" type="button">Accetta tutti</button>
       <button class="primary" id="accept-selected" type="button">Salva scelta</button>
     </div>
   </div>
@@ -100,6 +101,7 @@ function saveChoices(analytics, marketing) {
   renderConsent();
 }
 $('reject-optional').addEventListener('click', () => saveChoices(false, false));
+$('accept-all').addEventListener('click', () => saveChoices(true, true));
 $('accept-selected').addEventListener('click', () => {
   const analytics = settings.classList.contains('hidden') ? false : $('analytics-choice').checked;
   const marketing = settings.classList.contains('hidden') ? false : $('marketing-choice').checked;
@@ -122,17 +124,9 @@ $('withdraw-consent').addEventListener('click', () => {
 
 function updatePhone(value) {
   const dial = normalizeDialTarget(value);
-  const link = $('call-link');
   const button = $('call-button');
-  if (dial) {
-    link.href = 'tel:' + dial;
-    link.setAttribute('aria-disabled', 'false');
-    button.disabled = false;
-  } else {
-    link.href = '#';
-    link.setAttribute('aria-disabled', 'true');
-    button.disabled = true;
-  }
+  button.disabled = !dial;
+  button.dataset.dialTarget = dial;
 }
 try {
   const savedPhone = window.localStorage.getItem(PHONE_STORAGE_KEY) || '';
@@ -142,6 +136,10 @@ try {
   updatePhone('');
 }
 $('phone-number').addEventListener('input', event => updatePhone(event.target.value));
+$('call-button').addEventListener('click', () => {
+  const dial = normalizeDialTarget($('call-button').dataset.dialTarget || '');
+  if (dial) window.location.href = 'tel:' + dial;
+});
 $('save-phone').addEventListener('click', () => {
   const dial = normalizeDialTarget($('phone-number').value);
   if (!dial) {
