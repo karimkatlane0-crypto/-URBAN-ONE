@@ -92,6 +92,11 @@ test('PostgreSQL control plane migration, RLS and Instance Manager integration',
     assert.equal(await resolveMembership({ actorId: 'actor-a', tenantId: tenantB }), null);
     assert.equal(await resolveMembership({ actorId: 'unknown-actor', tenantId: tenantA }), null);
 
+    await ownerPool.query("UPDATE super_ai.tenants SET status='suspended' WHERE id=$1", [tenantA]);
+    assert.equal(await resolveMembership({ actorId: 'actor-a', tenantId: tenantA }), null);
+    await ownerPool.query("UPDATE super_ai.tenants SET status='active' WHERE id=$1", [tenantA]);
+    assert.deepEqual(await resolveMembership({ actorId: 'actor-a', tenantId: tenantA }), membershipA);
+
     const { publicKey, privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
     const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'super-ai-postgres-ci-key', use: 'sig', alg: 'RS256' };
     const iamEnv = {
