@@ -6,7 +6,7 @@
 **Date:** 2026-11-26  
 **Canonical repository:** `karimkatlane0-crypto/-URBAN-ONE`  
 **Canonical branch:** `main-@URBAN-ONE`  
-**Working branch:** `codex/omnia-universal-master-blueprint-20261126`
+**Working branch:** `feat/all-in-one-superapp-integration-20261126`
 
 ---
 

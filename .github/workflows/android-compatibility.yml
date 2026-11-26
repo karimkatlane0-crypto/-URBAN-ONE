@@ -1,6 +1,12 @@
 name: android-compatibility
 on:
   workflow_dispatch:
+  push:
+    branches: [ 'feat/all-in-one-superapp-integration-20261126' ]
+    paths:
+      - 'apps/mobile/**'
+      - 'scripts/android-emulator-smoke.mjs'
+      - '.github/workflows/android-compatibility.yml'
   pull_request:
     paths:
       - 'apps/mobile/**'
