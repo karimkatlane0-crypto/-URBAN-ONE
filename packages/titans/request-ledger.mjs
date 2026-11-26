@@ -113,8 +113,8 @@ export class TitansRequestStore{
     transaction(this.db,()=>{
       const expired=this.db.prepare("SELECT id FROM titans_requests WHERE recipient_id=? AND state='PENDING' AND expires_at<=?").all(recipient,at);
       for(const row of expired){
-        const updated=this.db.prepare("UPDATE titans_requests SET state='EXPIRED',decided_at=?,decision_by=? WHERE id=? AND state='PENDING'").run(at,recipient,row.id);
-        if(updated.changes===1)appendAudit(this.db,row.id,recipient,'REQUEST_EXPIRED',{},at);
+        const updated=this.db.prepare("UPDATE titans_requests SET state='EXPIRED',decided_at=?,decision_by=? WHERE id=? AND state='PENDING'").run(at,null,row.id);
+        if(updated.changes===1)appendAudit(this.db,row.id,'system','REQUEST_EXPIRED',{},at);
       }
     });
     return this.db.prepare(`SELECT id,requester_id AS requesterId,recipient_id AS recipientId,purpose,
@@ -131,8 +131,8 @@ export class TitansRequestStore{
       if(!r||r.recipient_id!==recipient)throw new TitansRequestError('REQUEST_NOT_FOUND',404);
       if(r.state!=='PENDING')throw new TitansRequestError('REQUEST_ALREADY_DECIDED',409);
       if(Date.parse(r.expires_at)<=at){
-        this.db.prepare("UPDATE titans_requests SET state='EXPIRED',decided_at=?,decision_by=? WHERE id=? AND state='PENDING'").run(stamp,recipient,id);
-        appendAudit(this.db,id,recipient,'REQUEST_EXPIRED',{},stamp);
+        this.db.prepare("UPDATE titans_requests SET state='EXPIRED',decided_at=?,decision_by=? WHERE id=? AND state='PENDING'").run(stamp,null,id);
+        appendAudit(this.db,id,'system','REQUEST_EXPIRED',{},stamp);
         return {state:'EXPIRED',requestId:id};
       }
       let grantId=null;
