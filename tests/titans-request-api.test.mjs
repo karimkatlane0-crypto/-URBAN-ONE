@@ -89,7 +89,11 @@ test('expired requests become EXPIRED and cannot create a grant',()=>{
       expiresAt:new Date(now+60000).toISOString(),now});
     const expired=db.decide({requestId:request.requestId,actorId:'bob',decision:'accept',now:now+60001});
     assert.equal(expired.state,'EXPIRED');
-    assert.equal(db.receipt({requestId:request.requestId,actorId:'alice'}).grant,null);
+    const receipt=db.receipt({requestId:request.requestId,actorId:'alice'});
+    assert.equal(receipt.grant,null);
+    assert.equal(receipt.decisionBy,null);
+    const expiryAudit=db.db.prepare("SELECT actor_id FROM titans_request_audit WHERE request_id=? AND event_type='REQUEST_EXPIRED'").get(request.requestId);
+    assert.equal(expiryAudit.actor_id,'system');
     assert.equal(db.verifyAudit(request.requestId),true);
   }finally{db.close();}
 });
@@ -113,6 +117,9 @@ test('inbox transitions expired pending requests and writes an audit event',()=>
     assert.deepEqual(db.inbox('bob',now+61000),[]);
     const receipt=db.receipt({requestId:request.requestId,actorId:'bob',now:now+61000});
     assert.equal(receipt.state,'EXPIRED');
+    assert.equal(receipt.decisionBy,null);
+    const expiryAudit=db.db.prepare("SELECT actor_id FROM titans_request_audit WHERE request_id=? AND event_type='REQUEST_EXPIRED'").get(request.requestId);
+    assert.equal(expiryAudit.actor_id,'system');
     assert.equal(db.verifyAudit(request.requestId),true);
   }finally{db.close();}
 });
