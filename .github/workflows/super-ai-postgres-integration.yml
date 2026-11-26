@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - 'packages/super-ai/**'
+      - 'services/api/postgres-membership-resolver.mjs'
       - 'tests/super-ai-postgres*'
       - '.github/workflows/super-ai-postgres-integration.yml'
   workflow_dispatch:
