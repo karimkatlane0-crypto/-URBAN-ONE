@@ -2,6 +2,7 @@ import {handleScienceApi} from './science.mjs';
 import http from 'node:http';
 import {route} from './router.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
+import {handleTelegramWebhook} from './telegram-webhook.mjs';
 import {serveWeb} from './web.mjs';
 import {handlePoleApi} from './pole-http.mjs';
 
@@ -39,6 +40,10 @@ const server=http.createServer(async(req,res)=>{
       }
       const result=await handlePoleApi({method:req.method,path,headers:req.headers,body,env:process.env});
       res.writeHead(result.status,headers);res.end(JSON.stringify(result.body));return;
+    }
+    if(req.method==='POST'&&path==='/api/telegram/webhook'){
+      const r=await handleTelegramWebhook({rawBody,headers:req.headers,env:process.env});
+      res.writeHead(r.status,headers);res.end(JSON.stringify(r.body));return;
     }
     if(req.method==='POST'&&path==='/api/stripe/webhook'){
       const r=handleStripeWebhook({rawBody,headers:req.headers,env:process.env});
