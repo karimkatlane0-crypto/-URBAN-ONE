@@ -18,7 +18,7 @@ function normalizeUpdate(update) {
 
 // store.process(updateId, envelope) must be a durable, atomic insert-once operation.
 // No in-memory fallback: replay protection must survive process restarts.
-export function handleTelegramWebhook({rawBody,headers={},env={}}) {
+export async function handleTelegramWebhook({rawBody,headers={},env={}}) {
   const expected=env.TELEGRAM_WEBHOOK_SECRET;
   const supplied=headers['x-telegram-bot-api-secret-token'];
   if (!secretMatches(expected,supplied)) return {status:401,body:{error:'TELEGRAM_WEBHOOK_UNAUTHORIZED'}};
@@ -31,8 +31,7 @@ export function handleTelegramWebhook({rawBody,headers={},env={}}) {
   const store=env.telegramUpdateStore;
   if (!store || typeof store.process!=='function') return {status:503,body:{error:'TELEGRAM_STORE_UNAVAILABLE'}};
   try {
-    const result=store.process(update.update_id,envelope);
-    if (result && typeof result.then==='function') return {status:503,body:{error:'TELEGRAM_STORE_MUST_BE_SYNCHRONOUS'}};
+    const result=await store.process(update.update_id,envelope);
     return {status:200,body:{ok:true,duplicate:Boolean(result?.duplicate)}};
   } catch { return {status:503,body:{error:'TELEGRAM_STORE_UNAVAILABLE'}}; }
 }
