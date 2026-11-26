@@ -19,6 +19,14 @@ test('API server serves health without an identity provider',async()=>{
   });
 });
 
+test('default API runtime denies protected routes until membership-backed IAM is composed',async()=>{
+  await withServer({env:{SUPER_AI_IAM_ISSUER:'https://issuer.example',SUPER_AI_IAM_AUDIENCE:'api',SUPER_AI_IAM_JWKS_URL:'https://issuer.example/jwks'}},async base=>{
+    const response=await fetch(base+'/api/contacts/import-preview',{method:'POST',headers:{authorization:'Bearer unverified-token','content-type':'application/json'},body:JSON.stringify({records:[]})});
+    assert.equal(response.status,401);
+    assert.equal((await response.json()).error,'AUTH_REQUIRED');
+  });
+});
+
 test('request JSON cannot impersonate an authenticated principal',async()=>{
   await withServer({},async base=>{
     const response=await fetch(base+'/api/contacts/import-preview',{
