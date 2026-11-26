@@ -39,7 +39,8 @@ test('mobile TITANS offer matches the approved 30-day manual-renewal contract',(
  assert.match(mobile,/bonifico manuale per ciascun periodo/);
  assert.match(mobile,/causale esatta REEDEEM/);
  assert.doesNotMatch(mobile,/accesso lifetime|pagamento unico/i);
- assert.match(mobile,/github\\.com\\/karimkatlane0-crypto\\/\\-URBAN-ONE\\/blob\\/main-%40URBAN-ONE\\/docs\\/TITANS-GO-ENTERPRISE-GLOBAL\\.md/);
+ assert.ok(mobile.includes('https://github.com/karimkatlane0-crypto/-URBAN-ONE/blob/main-%40URBAN-ONE/docs/TITANS-GO-ENTERPRISE-GLOBAL.md'));
+
 });
 
 test('mobile INSIGHTS uses only packaged mobile routes for primary navigation', () => {
@@ -48,6 +49,16 @@ test('mobile INSIGHTS uses only packaged mobile routes for primary navigation', 
     assert.ok(mobile.includes(href), href);
   }
 });
+test('browser and PostgreSQL workflows cover the pages and resolver they verify',()=>{
+ const browser=read('.github/workflows/public-portals-browser.yml');
+ const postgres=read('.github/workflows/super-ai-postgres-integration.yml');
+ assert.match(browser,/pull_request:[\\s\\S]*apps\\/web\\/insights-ai\\.html/);
+ assert.equal((browser.match(/apps\\/web\\/insights-ai\\.html/g)||[]).length,2);
+ assert.equal((postgres.match(/services\\/api\\/postgres-membership-resolver\\.mjs/g)||[]).length,2);
+ const smoke=read('scripts/public-portals-browser-smoke.mjs');
+ assert.match(smoke,/target\\.root.*target\\.file|target\\.root/);
+});
+
 test('settings centers expose INSIGHTS.ai as a service', () => {
   for (const path of ['apps/web/super-ai-settings.html','apps/mobile/www/super-ai-settings.html']) {
     assert.match(read(path), /INSIGHTS\.ai · Financial Intelligence/);
