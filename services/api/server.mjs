@@ -1,7 +1,6 @@
 import {handleScienceApi} from './science.mjs';
 import http from 'node:http';
 import {route} from './router.mjs';
-import {createOidcAuthenticator} from '../../packages/super-ai/oidc-authenticator.mjs';
 import {handleStripeWebhook} from './stripe-webhook.mjs';
 import {serveWeb} from './web.mjs';
 import {handlePoleApi} from './pole-http.mjs';
@@ -14,10 +13,10 @@ const headers={'content-type':'application/json','cache-control':'no-store','x-c
  * Create the HTTP API server.
  * authenticate must be a trusted adapter that verifies credentials and resolves
  * membership/scopes server-side. It receives headers only, never request JSON.
- * The default intentionally denies protected routes until a platform IAM adapter
- * is explicitly supplied by the runtime composition layer.
+ * The default denies protected routes. Production callers must explicitly use
+ * createPlatformApiServer with a verified membership-backed PostgreSQL adapter.
  */
-export function createApiServer({env=process.env, authenticate=createOidcAuthenticator()}={}) {
+export function createApiServer({env=process.env, authenticate=async()=>null}={}) {
   const server=http.createServer(async(req,res)=>{
     try{
       const path=new URL(req.url,'http://localhost').pathname;
