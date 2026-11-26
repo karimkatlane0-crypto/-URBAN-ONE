@@ -23,6 +23,7 @@ on:
       - 'apps/mobile/www/**'
       - 'apps/web/super-ai.html'
       - 'apps/web/super-ai-settings.html'
+      - 'apps/web/insights-ai.html'
       - 'apps/web/executive-system.css'
       - 'apps/web/universal-navigation.js'
       - 'apps/web/universal-36.html'
