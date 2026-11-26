@@ -1,14 +1,12 @@
 name: publish-hospitality-site
 on:
-  push:
-    branches:
-      - main-@URBAN-ONE
-    paths:
-      - 'apps/web/**'
-      - 'index.html'
-      - 'scripts/build-pages.mjs'
-      - '.github/workflows/publish-hospitality-site.yml'
   workflow_dispatch:
+    inputs:
+      authorize_publication:
+        description: "Explicitly authorize publication to GitHub Pages"
+        required: true
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -68,6 +66,7 @@ jobs:
         with:
           path: dist/pages
   deploy:
+    if: ${{ inputs.authorize_publication == true }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
