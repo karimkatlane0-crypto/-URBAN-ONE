@@ -16,18 +16,18 @@
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-let bearerToken='',actor=null;
+let bearerToken='',actor=null,sessionVersion=0;
 const purposeLabels={service_access:'Accesso a un servizio',data_sharing:'Condivisione dati',partner_collaboration:'Collaborazione partner',skill_installation:'Installazione skill',analytics_access:'Accesso analytics'};
 function status(message,kind=''){const el=$('status');el.textContent=message;el.className='status'+(kind?' '+kind:'');}
 function hidePrivate(){ $('create-panel').hidden=true;$('inbox-panel').hidden=true;$('receipt-panel').hidden=true;$('identity').hidden=true; }
-function clearPrivateState(){bearerToken='';actor=null;$('token').value='';$('identity').textContent='';$('inbox').replaceChildren();$('receipt').replaceChildren();$('create-form').reset();hidePrivate();$('disconnect').disabled=true;}
+function clearPrivateState(){sessionVersion++;bearerToken='';actor=null;$('token').value='';$('identity').textContent='';$('inbox').replaceChildren();$('receipt').replaceChildren();$('create-form').reset();hidePrivate();$('disconnect').disabled=true;}
 async function api(path,method='GET',body){
  const headers={authorization:'Bearer '+bearerToken,accept:'application/json'};
  const options={method,headers,cache:'no-store',credentials:'same-origin'};
  if(body!==undefined){headers['content-type']='application/json';options.body=JSON.stringify(body);}
  const response=await fetch(path,options);
  let data={};try{data=await response.json()}catch{}
- if(!response.ok)throw new Error(data.error||('HTTP '+response.status));
+ if(!response.ok){const error=new Error(data.error||('HTTP '+response.status));error.status=response.status;throw error;}
  return data;
 }
 function appendText(parent,tag,text,cls){const node=document.createElement(tag);node.textContent=String(text??'');if(cls)node.className=cls;parent.append(node);return node;}
@@ -40,7 +40,7 @@ function renderReceipt(r){
  if(r.grant){const grantStatus=r.grant.active?'ATTIVO':r.grant.revokedAt?'REVOCATO':Date.parse(r.grant.expiresAt)<=Date.now()?'SCADUTO':'NON ATTIVO';appendText(root,'p','Grant: '+r.grant.grantId+' · '+grantStatus);
   if(r.grant.active&&actor?.scopes.includes('titans:grant:revoke')&&actor.actorId===r.grant.subjectId){
    const b=document.createElement('button');b.type='button';b.className='decline';b.textContent='Revoca autorizzazione';
-   b.addEventListener('click',async()=>{b.disabled=true;let result;try{result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});}catch(e){status('Revoca non riuscita: '+e.message,'error');b.disabled=false;return;}renderReceipt(result.receipt);status('Revoca registrata: '+result.revokedAt,'ok');try{await refreshInbox();}catch(e){status('Revoca registrata; aggiornamento inbox non riuscito: '+e.message,'error');}});
+   b.addEventListener('click',async()=>{const version=sessionVersion;b.disabled=true;let result;try{result=await api('/api/titans/grants/'+r.grant.grantId+'/revoke','POST',{});}catch(e){if(version!==sessionVersion)return;status('Revoca non riuscita: '+e.message,'error');b.disabled=false;return;}if(version!==sessionVersion||!bearerToken)return;renderReceipt(result.receipt);status('Revoca registrata: '+result.revokedAt,'ok');try{await refreshInbox();}catch(e){if(version===sessionVersion)status('Revoca registrata; aggiornamento inbox non riuscito: '+e.message,'error');}});
    root.append(b);
   }
  }
@@ -58,7 +58,7 @@ function renderInbox(rows){
   const actions=document.createElement('div');actions.className='actions';
   const accept=document.createElement('button');accept.type='button';accept.className='primary';accept.textContent='ACCEPT';
   const decline=document.createElement('button');decline.type='button';decline.className='decline';decline.textContent='DECLINE';
-  async function decide(decision,button){accept.disabled=true;decline.disabled=true;let receipt;try{receipt=await api('/api/titans/requests/'+r.id+'/decision','POST',{decision});}catch(e){status('Decisione non registrata: '+e.message,'error');accept.disabled=false;decline.disabled=false;return;}renderReceipt(receipt);status(decision==='accept'?'Consenso specifico registrato.':'Richiesta rifiutata.','ok');try{await refreshInbox();}catch(e){status('Decisione registrata; aggiornamento inbox non riuscito: '+e.message,'error');}}
+  async function decide(decision,button){const version=sessionVersion;accept.disabled=true;decline.disabled=true;let receipt;try{receipt=await api('/api/titans/requests/'+r.id+'/decision','POST',{decision});}catch(e){if(version!==sessionVersion||!bearerToken)return;if(e.status===410){try{await refreshInbox();status('Richiesta scaduta: inbox aggiornata, nessun consenso registrato.','error');}catch(refreshError){status('Richiesta scaduta; aggiornamento inbox non riuscito: '+refreshError.message,'error');}return;}status('Decisione non registrata: '+e.message,'error');accept.disabled=false;decline.disabled=false;return;}if(version!==sessionVersion||!bearerToken)return;renderReceipt(receipt);status(decision==='accept'?'Consenso specifico registrato.':'Richiesta rifiutata.','ok');try{await refreshInbox();}catch(e){if(version===sessionVersion)status('Decisione registrata; aggiornamento inbox non riuscito: '+e.message,'error');}}
   accept.addEventListener('click',()=>decide('accept',accept));decline.addEventListener('click',()=>decide('decline',decline));
   actions.append(accept,decline);card.append(actions);root.append(card);
  }
@@ -90,8 +90,8 @@ $('create-form').addEventListener('submit',async e=>{
  const body={recipientId:$('recipient').value.trim(),purpose:$('purpose').value,scopes,note:$('note').value.trim()};
  if($('expiry').value){const expiry=new Date($('expiry').value);if(!Number.isFinite(expiry.getTime())){status('Scadenza non valida.','error');return;}body.expiresAt=expiry.toISOString();}
  const button=e.submitter;if(button)button.disabled=true;
- try{const receipt=await api('/api/titans/requests','POST',body);renderReceipt(receipt);status('Richiesta individuale creata. Nessun messaggio esterno è stato inviato.','ok');e.currentTarget.reset();}
- catch(err){status('Creazione non riuscita: '+err.message,'error');}
+ const version=sessionVersion;try{const receipt=await api('/api/titans/requests','POST',body);if(version!==sessionVersion||!bearerToken)return;renderReceipt(receipt);status('Richiesta individuale creata. Nessun messaggio esterno è stato inviato.','ok');e.currentTarget.reset();}
+ catch(err){if(version===sessionVersion)status('Creazione non riuscita: '+err.message,'error');}
  finally{if(button)button.disabled=false;}
 });
 window.addEventListener('pagehide',()=>{clearPrivateState();});
