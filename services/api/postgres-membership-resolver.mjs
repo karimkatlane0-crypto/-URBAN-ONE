@@ -23,7 +23,7 @@ export function createPostgresMembershipResolver({ pool, roleScopes = {} } = {})
       await client.query('BEGIN');
       await client.query("SELECT set_config('app.tenant_id', $1, true)", [tenantId]);
       const result = await client.query(
-        'SELECT role,status FROM super_ai.tenant_memberships WHERE tenant_id=$1 AND actor_id=$2 LIMIT 1',
+        'SELECT m.role,m.status FROM super_ai.tenant_memberships m JOIN super_ai.tenants t ON t.id=m.tenant_id AND t.status=\'active\' WHERE m.tenant_id=$1 AND m.actor_id=$2 LIMIT 1',
         [tenantId, actorId]
       );
       await client.query('COMMIT');
