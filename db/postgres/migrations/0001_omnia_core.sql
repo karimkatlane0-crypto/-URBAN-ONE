@@ -146,13 +146,19 @@ CREATE TABLE omnia.telegram_webhook_receipts (
 DO $$
 DECLARE t text;
 BEGIN
-  FOREACH t IN ARRAY ARRAY['tenants','tenant_memberships','workspaces','crm_contacts','crm_interactions','crm_tasks','consent_records','audit_events','telegram_bindings']
+  FOREACH t IN ARRAY ARRAY['tenant_memberships','workspaces','crm_contacts','crm_interactions','crm_tasks','consent_records','audit_events','telegram_bindings']
   LOOP
     EXECUTE format('ALTER TABLE omnia.%I ENABLE ROW LEVEL SECURITY',t);
     EXECUTE format('ALTER TABLE omnia.%I FORCE ROW LEVEL SECURITY',t);
     EXECUTE format('CREATE POLICY tenant_isolation ON omnia.%I USING (tenant_id = nullif(current_setting(''app.tenant_id'',true),'''')::uuid) WITH CHECK (tenant_id = nullif(current_setting(''app.tenant_id'',true),'''')::uuid)',t);
   END LOOP;
-END $$;
+END $;
+
+ALTER TABLE omnia.tenants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE omnia.tenants FORCE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON omnia.tenants
+  USING (id = nullif(current_setting('app.tenant_id',true),'')::uuid)
+  WITH CHECK (id = nullif(current_setting('app.tenant_id',true),'')::uuid);
 
 ALTER TABLE omnia.telegram_webhook_receipts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE omnia.telegram_webhook_receipts FORCE ROW LEVEL SECURITY;
