@@ -152,7 +152,7 @@ BEGIN
     EXECUTE format('ALTER TABLE omnia.%I FORCE ROW LEVEL SECURITY',t);
     EXECUTE format('CREATE POLICY tenant_isolation ON omnia.%I USING (tenant_id = nullif(current_setting(''app.tenant_id'',true),'''')::uuid) WITH CHECK (tenant_id = nullif(current_setting(''app.tenant_id'',true),'''')::uuid)',t);
   END LOOP;
-END $;
+END $$;
 
 ALTER TABLE omnia.tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE omnia.tenants FORCE ROW LEVEL SECURITY;
